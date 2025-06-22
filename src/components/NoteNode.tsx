@@ -3,12 +3,13 @@ import { Handle, Position } from 'reactflow';
 import styled from '@emotion/styled';
 import { useNoteStore } from '../store/noteStore';
 
-const NoteContainer = styled.div<{ isFocused: boolean }>`
-  background: white;
+const NoteContainer = styled.div<{ isFocused: boolean; isLinked: boolean }>`
+  background: ${props => props.isLinked ? '#f5f5f5' : 'white'};
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 12px;
-  min-width: 200px;
+  width: 280px;
+  min-height: 80px;
   box-shadow: ${props => props.isFocused ? '0 0 0 2px #000000' : '0 2px 4px rgba(0,0,0,0.05)'};
   transition: all 0.2s ease;
 `;
@@ -25,6 +26,7 @@ const TextArea = styled.textarea`
   color: #333;
   background: transparent;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow: hidden;
 
   &:focus {
     outline: none;
@@ -41,9 +43,31 @@ interface NoteNodeProps {
 }
 
 const NoteNode = ({ data, id }: NoteNodeProps) => {
-  const { updateNote, addNote, nodes, columns } = useNoteStore();
+  const { updateNote, addNote, nodes, columns, edges } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+
+  // Auto-resize textarea based on content
+  const adjustHeight = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, []);
+
+  // Check if this note is linked to the currently focused note
+  const isLinked = useCallback(() => {
+    const focusedNode = nodes.find(node => 
+      document.activeElement === document.querySelector(`[data-id="${node.id}"] textarea`)
+    );
+    
+    if (!focusedNode) return false;
+
+    return edges.some(edge => 
+      (edge.source === id && edge.target === focusedNode.id) ||
+      (edge.source === focusedNode.id && edge.target === id)
+    );
+  }, [nodes, edges, id]);
 
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
@@ -55,9 +79,15 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
     }
   }, [data.isNew]);
 
+  // Adjust height when content changes
+  useEffect(() => {
+    adjustHeight();
+  }, [data.content, adjustHeight]);
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNote(id, e.target.value);
-  }, [id, updateNote]);
+    adjustHeight();
+  }, [id, updateNote, adjustHeight]);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
@@ -139,7 +169,7 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
   }, [id, data.columnId, addNote, columns, nodes]);
 
   return (
-    <NoteContainer isFocused={isFocused}>
+    <NoteContainer isFocused={isFocused} isLinked={isLinked()}>
       <Handle type="target" position={Position.Left} />
       <TextArea
         ref={textareaRef}
