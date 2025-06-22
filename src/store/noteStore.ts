@@ -22,7 +22,6 @@ interface NoteStore {
 
 const COLUMN_WIDTH = 300;
 const COLUMN_SPACING = 50;
-const NOTE_HEIGHT = 100;
 const NOTE_SPACING = 20;
 const NOTE_WIDTH = 280;
 
@@ -140,7 +139,7 @@ const processDialogue = (
   });
 };
 
-export const useNoteStore = create<NoteStore>((set, get) => ({
+export const useNoteStore = create<NoteStore>((set) => ({
   nodes: [initialNode],
   edges: [],
   columns: [initialColumn],

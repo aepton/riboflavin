@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ReactFlow, {
-  Background,
   Controls,
   useNodesState,
   useEdgesState,
-  addEdge,
   useReactFlow,
 } from 'reactflow';
 import type { Connection, Node } from 'reactflow';
@@ -15,10 +13,9 @@ import NoteNode from './NoteNode';
 
 // Import constants from store
 const COLUMN_WIDTH = 300;
-const NOTE_WIDTH = 280;
 
 // Custom edge component for article-generated links
-const ArticleEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {} }: any) => {
+const ArticleEdge = ({ sourceX, sourceY, targetX, targetY, style = {} }: any) => {
   const [edgePath, setEdgePath] = useState('');
 
   useEffect(() => {
@@ -268,7 +265,7 @@ const Flow = () => {
   }, [handleKeyDown]);
 
   // Handle node selection
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
     setSelectedColumnId(node.data.columnId);
   }, []);
 
