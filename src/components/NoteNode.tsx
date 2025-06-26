@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import styled from '@emotion/styled';
 import { useNoteStore } from '../store/noteStore';
@@ -12,6 +12,7 @@ const NoteContainer = styled.div<{ isFocused: boolean; isLinked: boolean }>`
   min-height: 80px;
   box-shadow: ${props => props.isFocused ? '0 0 0 2px #000000' : '0 2px 4px rgba(0,0,0,0.05)'};
   transition: all 0.2s ease;
+  position: relative;
 `;
 
 const TextArea = styled.textarea`
@@ -33,6 +34,44 @@ const TextArea = styled.textarea`
   }
 `;
 
+const HandleContainer = styled.div<{ isVisible: boolean; position: string }>`
+  position: absolute;
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transition: opacity 0.2s ease;
+  pointer-events: ${props => props.isVisible ? 'auto' : 'none'};
+  
+  ${props => {
+    switch (props.position) {
+      case 'top':
+        return `
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        `;
+      case 'right':
+        return `
+          top: 50%;
+          right: 0;
+          transform: translateY(-50%);
+        `;
+      case 'bottom':
+        return `
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        `;
+      case 'left':
+        return `
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+        `;
+      default:
+        return '';
+    }
+  }}
+`;
+
 interface NoteNodeProps {
   data: {
     content: string;
@@ -42,10 +81,11 @@ interface NoteNodeProps {
   id: string;
 }
 
-const NoteNode = ({ data, id }: NoteNodeProps) => {
+const NoteNode = memo(({ data, id }: NoteNodeProps) => {
   const { updateNote, addNote, nodes, columns, edges } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [showHandles, setShowHandles] = useState(false);
 
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
@@ -68,6 +108,23 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
       (edge.source === focusedNode.id && edge.target === id)
     );
   }, [nodes, edges, id]);
+
+  // Check which handles should be visible based on connections
+  const getHandleVisibility = useCallback(() => {
+    const connectedEdges = edges.filter(edge => 
+      edge.source === id || edge.target === id
+    );
+    
+    const hasIncomingEdges = connectedEdges.some(edge => edge.target === id);
+    const hasOutgoingEdges = connectedEdges.some(edge => edge.source === id);
+    
+    return {
+      top: hasIncomingEdges,
+      right: hasOutgoingEdges,
+      bottom: hasIncomingEdges,
+      left: hasOutgoingEdges
+    };
+  }, [edges, id]);
 
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
@@ -95,6 +152,14 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setShowHandles(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setShowHandles(false);
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -168,9 +233,27 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
     }
   }, [id, data.columnId, addNote, columns, nodes]);
 
+  const handleVisibility = getHandleVisibility();
+
   return (
-    <NoteContainer isFocused={isFocused} isLinked={isLinked()}>
-      <Handle type="target" position={Position.Left} />
+    <NoteContainer 
+      isFocused={isFocused} 
+      isLinked={isLinked()}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <HandleContainer isVisible={showHandles && handleVisibility.top} position="top">
+        <Handle type="target" position={Position.Top} />
+      </HandleContainer>
+      <HandleContainer isVisible={showHandles && handleVisibility.right} position="right">
+        <Handle type="source" position={Position.Right} />
+      </HandleContainer>
+      <HandleContainer isVisible={showHandles && handleVisibility.bottom} position="bottom">
+        <Handle type="target" position={Position.Bottom} />
+      </HandleContainer>
+      <HandleContainer isVisible={showHandles && handleVisibility.left} position="left">
+        <Handle type="source" position={Position.Left} />
+      </HandleContainer>
       <TextArea
         ref={textareaRef}
         value={data.content}
@@ -180,9 +263,10 @@ const NoteNode = ({ data, id }: NoteNodeProps) => {
         onBlur={handleBlur}
         placeholder="Type your note here..."
       />
-      <Handle type="source" position={Position.Right} />
     </NoteContainer>
   );
-};
+});
+
+NoteNode.displayName = 'NoteNode';
 
 export default NoteNode; 

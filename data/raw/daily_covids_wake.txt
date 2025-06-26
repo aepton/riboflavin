@@ -1,0 +1,791 @@
+
+0:08/51:00
+Were the Covid Lockdowns Worth It?
+A conversation with two political scientists who argue that there is no evidence the measures saved lives.
+2025-03-20T06:00:10-04:00
+This transcript was created using speech recognition software. While it has been reviewed by human transcribers, it may contain errors. Please review the episode audio before quoting from this transcript and email transcripts@nytimes.com with any questions.
+
+michael barbaro
+From “The New York Times“, I’m Michael Barbaro. This is “The Daily“.
+
+[THEME MUSIC]
+
+Five years ago, at the urging of federal officials, much of the United States locked down to stop the spread of COVID — a decision that, over time, polarized the country and changed the relationship between many Americans and their government. Now, two prominent political scientists are making the case that there’s no clear evidence that those lockdowns saved lives and that it’s time for a national reckoning about the decision-making that led to those lockdowns in the first place.
+
+Today, my conversation with Stephen Macedo and Frances Lee about their new book “In COVID’s Wake“, and what they say will be required for a better outcome when the next pandemic strikes.
+
+It’s Thursday, March 20.
+
+Just to start, can I call you by your first names? Should I call you by your professional title? Is it OK to call you Steve and Frances?
+
+stephen macedo
+Yes.
+
+frances lee
+Absolutely, please.
+
+michael barbaro
+Of course, now that I’ve called you by those names, I’ve pressured you into the informality.
+
+stephen macedo
+Not at all.
+
+michael barbaro
+We’re actually not a show that often speaks to academics, if you listen to “The Daily“. And that’s nothing against academics. We usually talk to our colleagues.
+
+But you have produced a body of work here that feels important and it feels unique. You’re both tenured professors at Princeton University. Steve, you spent a lot of your career researching democracy.
+
+Frances, your work is focused on policy-making. Your big deals in your fields. And so to start, I want to talk about why you undertook this project of examining the US response to COVID in a really rigorous way.
+
+stephen macedo
+Maybe I’ll just say a couple of words about that to start with. I actually had started to work on a larger project on several topics on which I thought progressives were not paying enough attention to arguments coming from the other side, and that included immigration, abortion, and then COVID as well. And as soon as I got deeply into it, it was clear that the COVID policy issues themselves, the COVID crisis itself was large enough.
+
+And moreover, that people were not engaging in critical reflection and the sort of reckoning we’ve tried to do. This is meant to be, in part, a book about policy choices, policy deliberation, and in many ways, policy mistakes, perhaps, that were made during COVID. But there’s also a larger institutional question in the background and principled question in the background, which is, how did the institutions function, which is supposed to be helping us to catch mistakes and correct our mistakes, to seek the truth on difficult matters, how did they function under COVID? And I mean, of course, journalism, science, and the academy more broadly.
+
+And so the biggest theme that runs through the book, I think, is that these, as we call them, truth-seeking institutions, did not function as well as they should have during COVID. That there was a premature policy consensus. There was an unwillingness to re-examine assumptions. And there was an intolerance of criticism and divergent points of view that emerged fairly quickly in the pandemic, and that hurt us, that hurt our policy responses, that hurt our ability to course correct over the course of the pandemic as we learned more and had greater reason to course correct.
+
+frances lee
+I mean, this was, as was frequently said at the time, a whole of government, whole of society response. And it was undertaken without the normal deliberation that accompanies decision-making of that degree of consequence. And I mean, I remember when the pandemic began that I had some doubts as to whether these measures were going to succeed.
+
+I mean, it was just a normal kind of skepticism about whether government policy would work, which is sort of bedrock to political science. I mean, that is one of our main topics of inquiry, whether government policy works or whether it has unanticipated consequences. And I was struck at the lack of skepticism over the course of the pandemic about these measures. I mean, it was obvious that a large share of the workforce —
+
+michael barbaro
+Lack of skepticism from some.
+
+frances lee
+Yes, right. In the quarters that I travel in among academics or on mainstream media, that’s where there seemed to be little questioning. It was almost seen as wrong or immoral to raise questions about whether this was feasible for most of the population.
+
+michael barbaro
+And Stephen, what was your experience of this pandemic? And how did that, in any way, contribute to your desire to excavate the entire thing?
+
+stephen macedo
+My experience was not unusual. I was in New Jersey, a blue state, and I went along with the messaging. I was busy with doing other things.
+
+Of course, we kept teaching online and doing our research online. But I didn’t really investigate, skeptically, during the height of COVID itself in 2020-2021. I started working on this book in 2022.
+
+And frankly, have been kind of shocked on almost a daily basis in researching the book at the things I’m coming across and discussing with Frances. For me, it’s been a kind of voyage of discovery. And I’ve been very surprised at what we’ve uncovered.
+
+michael barbaro
+In your reconstruction of it, I found myself thinking, wow, I thought I knew the pandemic really because I lived through it. But I didn’t know it as I thought I did. And I think the biggest way many people experienced the pandemic was through the mandates, the restrictions.
+
+One of the things that surprised me in your research, in your book, was that heading into the pandemic, you found that there was not a consensus that these restrictions, these mandates around things like school closures, lockdowns, stay-at-home orders, quarantining, masking, that they were the right way to try to fight a respiratory viral pandemic. That, instead, there was some real uncertainty about whether that made sense or that it could work at a large scale as public policy, and actually that there were a lot of doubts that it ever could.
+
+stephen macedo
+There were a number of pre-COVID pandemic planning documents anticipating a respiratory pandemic, such as COVID turned out to be. One of them was published just in the fall of 2019, shortly before the COVID pandemic broke out. That was by the World Health Organization. It surveyed the range of nonpharmaceutical interventions, social distancing measures, school closures.
+
+michael barbaro
+Let’s just zero in on that word, because we’re going to use it a lot I think, nonpharmaceutical interventions.
+
+stephen macedo
+Yes.
+
+michael barbaro
+Just define that.
+
+stephen macedo
+Yeah, so it’s everything other than vaccines and drugs. The whole suite of measures from handwashing, mask wearing, personal hygiene, staying apart, closing schools, restricting businesses, restricting public gatherings, not letting people go to church, and so ons.
+
+michael barbaro
+The big things we associate with the government’s response to the pandemic.
+
+stephen macedo
+Absolutely. Things that are often lumped under the word “lockdown.” And so those measures had been contemplated before. They were investigated.
+
+That was the major subject of these pre-COVID pandemic plans. Obviously, getting a vaccine as soon as possible and administering it was something on which there was a consensus. But the controversial part of the policy was the nonpharmaceutical measures.
+
+michael barbaro
+And what made them controversial? And just how controversial were they?
+
+stephen macedo
+They were quite controversial because one of the things that the plans emphasize is that they would be costly, that keeping children out of school would lead to learning losses and other detriments to health and well-being, including mental well-being, from children being isolated.
+
+Business closures, likewise, could have consequences in terms of human being for those who own businesses, who depend on that, businesses for livelihood. Economic loss can lead also to psychological loss and family conflicts, and so on.
+
+Isolating human beings, who are social creatures, will have a whole series of knock-on effects that the prepandemic planning documents discuss. And these matters had been studied. And they found that there was a lack of good evidence and absence of certainty around the effectiveness of these measures.
+
+michael barbaro
+Effectiveness in terms of actually stopping containing the spread of the virus?
+
+stephen macedo
+Yes, especially reducing morbidity and mortality. That is to say, serious illness and death.
+
+frances lee
+I’d just like to add on this 2019 World Health Organization study. That the study was to examine intervention by intervention, which of them have evidence of effectiveness against a respiratory pandemic. And all of the measures were rated as having very poor evidence. In other words, we don’t know if these measures work.
+
+Four of them, they recommended not to use under any circumstances. Those four measures were quarantine of exposed persons, border closure, entry and exit screening, and contact tracing. There were no assurances that these measures would work. But we were assured that they would have costs.
+
+michael barbaro
+Right. And prompted by you two and what you wrote, I went in and looked at this study. What it says is that while there is, like you just said, low evidence that it was plausible that these kinds of interventions could help mitigate the spread of the virus. What do you make of that word, “plausible?”
+
+frances lee
+They had been suggested. That’s the reason why they are being studied. And of course, we know at some level that viruses transmit from person to person. One can infer that separating people from one another, putting barriers between them, ought to make a difference. There’s a logic there.
+
+But the question is whether that could be scaled up to society or whether it would be sustainable over the course of a pandemic, there was no body of evidence around that. And so when it became the mantra of the pandemic that we should follow the science, there just wasn’t a body of scientific work that undergirded the response that directed us to conclude that these measures were likely to be effective.
+
+michael barbaro
+You’re citing this WHO study. But how widespread, how dominant, would you say, this skepticism of these kinds of interventions as effective, as worth the cost, as practical and scalable, how widely would you say that view was held before the pandemic?
+
+stephen macedo
+Yeah, the World Health Organization was one study, but there was another one in 2019 by Johns Hopkins, which came to similarly skeptical conclusions about these various nonpharmaceutical interventions — school closures, mask wearing, and so on and so forth. Earlier, 2011, the UK government did a prepandemic planning document and, similarly, argued that in times of modern transportation around the world, these nonpharmaceutical interventions could not be counted on to significantly slow the spread of a virus.
+
+And so I would say that was the dominant view. There were, of course, mathematical modelers who were prominent in the George W. Bush administration. They were more optimistic, not based on huge amounts of data, but based on scientific modeling projections. They believed that these measures could work.
+
+michael barbaro
+So given this skepticism in the world of public health toward these nonpharmaceutical interventions, or Steve as you said, basically writ large, the lockdown approach, before the pandemic, how and why did the US shift gears and end up recommending pretty much all the things that you’re saying everybody previously thought wasn’t such a good idea?
+
+stephen macedo
+One factor was the fact that China locked down, and the World Health Organization sent a team to China. And they issued a report after just spending a week there, and it was a fulsome endorsement of the Chinese approach. They said that China has shown the world the way to suppress the virus. Never been done before, but it’s been done by China. And they endorsed the strategy without qualification for around the world.
+
+michael barbaro
+Can I just pause? Because China’s response, as I recall, was pretty heavily criticized at the very beginning as harsh. How does China’s response to COVID, that lockdown approach that was so total, at least according to these recommendations, how did it become persuasive? Especially given that’s a very unique system of government, totally authoritarian, with a big surveillance apparatus, and a much more compliant citizenry than most of the world.
+
+stephen macedo
+You’re expressing some skepticism about the extent to which we should regard the Chinese approach as a model, given the features of its system and their inconsistency with Western civil liberties, freedom of dissent, and so on. And that’s a perfectly good question. None of that is evident in the World Health Organization report. They don’t emphasize those sorts of things at all. They pay no attention to the fact that Chinese had authoritarian powers to require people to be bolted into their apartments, in some cases.
+
+michael barbaro
+Literally, right.
+
+stephen macedo
+Yeah. And then Italy had the first national lockdown in the world.
+
+michael barbaro
+A democracy, we should say, not an authoritarian.
+
+stephen macedo
+Democracy, right. They showed it was possible. I mean, Italy showed that a Western population was willing to go along with the national lockdown and that, I think, had a demonstration effect. Another factor was the report that came out of Imperial College London, the optimistic modeling projections about nonpharmaceutical interventions. That’s Neil M. Ferguson. His report projected something like two million deaths in the United States by August 2020.
+
+michael barbaro
+The report heard around the world.
+
+stephen macedo
+The report heard around the world. One of the most influential, it looks like, reports that was ever issued. And it was that Anthony Fauci and Deborah Birx carried into Donald Trump’s office, leading to a news conference on March 16, that recommended school closures and other measures.
+
+[CAMERA SHUTTERS CLICKING]
+
+archived recording (donald trump)
+I’m glad to see that you’re practicing social distancing. That looks very nice. That’s very good. I want to thank everybody for being here today.
+
+This afternoon, we’re announcing new guidelines for every American to follow. Over the next 15 days, as we combat the virus, each and every one of us has a critical role to play. My administration is recommending that all Americans, including the young and healthy, work to engage in schooling from home when possible, avoid gathering in groups of more than 10 people, avoid discretionary travel, and avoid eating and drinking at bars, restaurants, and public food courts.
+
+archived recording (anthony fauci)
+This, what we’re mentioning now, the guidelines, when you look at them carefully, I believe if the people in the United States take them seriously, because they were based on some rather serious consideration back and forth, some may look at them and say they’re going to be really inconvenient for people. Some will look and say, maybe we’ve gone a little bit too far. They were well thought out.
+
+Take a look at the guidelines. Read them carefully. And we hope that the people of the United States will take them very seriously, because they will fail if people don’t adhere to them. Thank you.
+
+[TENSE MUSIC]
+
+archived recording 1
+Good afternoon. This morning, I signed an executive order directing nearly all of our nine million residents to quite simply stay at home.
+
+archived recording 2
+That we direct a statewide order for people to stay at home.
+
+archived recording 3
+The breaking news, stay at home. That is the order tonight from four state governors, as the coronavirus pandemic spreads.
+
+archived recording 4
+I fully recognize that in some cases, I am choosing between saving people’s lives and saving people’s livelihoods.
+
+archived recording 5
+In California, the notoriously busy highways are nearly empty. The hustle and bustle of New York is at a standstill.
+
+archived recording 6
+More than half of the country’s students have been sent home.
+
+archived recording 7
+Businesses across the country are forced to shut their doors.
+
+archived recording 8
+Estimates about a quarter of all restaurants to close as a result of this pandemic.
+
+archived recording 9
+The coronavirus now has one in four Americans living in lockdown.
+
+archived recording 10
+We are looking at a new war that no one has seen before.
+
+michael barbaro
+Frances, do you think that the reality is that in the face of what felt terrifyingly like an existential threat to so much of our population, US government officials, as aware as they must have been of all this skepticism you two have found, that they just didn’t trust Americans enough to really level with them from the start and say something like, look, these interventions, they are our best guess about what’s going to slow this down, and save as many lives as possible, and get us through this pandemic in the best shape that we possibly can.
+
+And to say, essentially, this is a large-scale experiment. And we have to be honest, it’s going to involve all these trade-offs economic, social, academic, psychological. It may hurt a lot of people in the name of saving an unknown number of people, but we think it’s going to be worth it. Join us. I mean, that is admittedly, a hard message to ask people to join you.
+
+frances lee
+I think under the pressure of the crisis, with the public demanding action, with the sense of catastrophe unfolding, I think they indulged in a great deal of wishful thinking. And so when advocates of nonpharmaceutical interventions recommended these measures and we’re optimistic about it, they heard what they wanted to hear. I mean, there was a sense that with the two weeks to slow the spread, that we get control of this thing, that it’ll go up, there’ll be a peak, and then it’ll come down, we’ll defeat it. This will be done in a few months.
+
+There was optimism that this could be over with in short order. But there just wasn’t a lot of long-term thinking of any sort around this. And a great deal of hope that, long-term, these measures wouldn’t be in place.
+
+stephen macedo
+I mean, I think there was a general social fixation on the number of deaths, the spread of cases. We developed a kind of tunnel vision of the one indices that public health officials were focusing on, was sickness and death from COVID. And these other matters were not highlighted by political leaders or by public health officials.
+
+michael barbaro
+Is there any case to be made that with a new and deadly virus, that everyone was learning about in real time, that if government leaders thought that any of these measures had any chance of working or even just buying time until a vaccine was available, that as a result, it was worth a try? I mean, I guess to distill my question. Is a deep, singular focus on saving lives OK?
+
+stephen macedo
+I don’t see how it is if there are significant costs involved, including in the currency of life. These policy choices always involve a variety of values. And we have to not simply focus on the one indices of saving lives, I think, in so far as —
+
+michael barbaro
+Why not? Just explain that, because I think there will be some people listening who say, that’s the only indices that matters in a pandemic.
+
+stephen macedo
+Look, early on, I think that the initial lockdown orders and those conditions of uncertainty and so on, may have made some sense. But we learned things over the summer that should have helped inform the strategy and that should have at least been more vigorously debated. The success of the public health measures always depended upon public buy-in, public willingness to comply, public willingness to trust and to go along.
+
+And there wasn’t enough public deliberation about these matters. Too much power was accorded to narrow experts in public health and epidemiology, in particular. There should have been a wider conversation simply involving many more people with broader expertise.
+
+But it also should have involved ordinary people in the public, who after all, were being the ones asked to make sacrifices in their own lives, to adopt policies which always involve trade-offs across values, risks. How much are we willing to give up to not visit an elderly relative in the hospital, to not have a funeral, to not be allowed to attend church on Sunday?
+
+These sorts of public questions don’t have scientific answers. They’re value judgments about which ordinary people have a certain expertise about their own lives and what matters to them. And they should have been involved as well, in the deliberation about these measures.
+
+frances lee
+I would also add on this point that it’s not just that there were costs. It’s that the costs were inequitably distributed, so that some would suffer to protect the lives of others. I mean, the pandemic restrictions did not protect essential workers from exposure to COVID. And so they were being asked to bear the societal burden of disease.
+
+I think we have to confront the nature of these restrictions, that it’s not a matter of saving everyone’s life. It was saving some. I mean, that was all they could have achieved is to save some. The question as to whether they saved any in that. As we look back, the places that imposed tougher restrictions did not do better.
+
+[PENSIVE MUSIC]
+
+michael barbaro
+We’ll be right back.
+
+[APPREHENSIVE MUSIC]
+
+archived recording 11
+The coronavirus pandemic has left a trail of destruction in the US and around the world.
+
+archived recording 12
+I’ve never seen much death. So many of the patients are dying, despite our best efforts.
+
+archived recording 13
+I am fighting two wars. I’m fighting a war against coronavirus. And I’m fighting a war against stupidity. People are not listening to what we’re saying.
+
+archived recording 14
+Protesters say the shutdown has lasted too long and inflicted too much pain, especially on small businesses.
+
+archived recording 15
+The cure cannot be worse than the disease. There are 30 million people that are out of work in this country. We have to go back to work.
+
+archived recording 16
+Open our country. Open us up. We need to work.
+
+archived recording 17
+Open up!
+
+archived recording 18
+We are ordering you, end the shutdown now!
+
+[CHEERING]
+
+archived recording 19
+Open up! Open up! Open up!
+
+archived recording 20
+Now, 36 states are seeing increases in new weekly infections this morning.
+
+archived recording 21
+The US just suffered the deadliest day of the summer so far.
+
+archived recording (donald trump)
+We want to reopen the schools. Everybody wants it. The moms want it. The dads want it. The kids want it. It’s time to do it.
+
+archived recording 22
+Tonight, with the virus raging and hospitals on the brink, the president putting pressure on schools, today, threatening to cut off funding for districts that don’t reopen in person.
+
+archived recording 23
+Many teachers across the country are pushing back on plans to bring students back into the classroom.
+
+archived recording 24
+This COVID-19 world we’ve been living in has lasted a full six months.
+
+archived recording (anne-marie green)
+The official COVID-19 death toll in the US has now surpassed 200,000, the most of any nation.
+
+archived recording 25
+It’s a little shocking to see many people not wearing protective masks, not staying 6 feet apart.
+
+archived recording 26
+It’s a hoax! It’s a hoax!
+
+archived recording 27
+How can we coexist with anti-science people? What can we do to survive the ignorance?
+
+archived recording (anthony fauci)
+I just think we need to hunker down and get through this fall and winter, because it’s not going to be easy.
+
+archived recording 26
+It’s a hoax! It’s a hoax! It’s a hoax! It’s a hoax!
+
+michael barbaro
+Let’s talk about what happens as the pandemic progresses and the impacts and the costs of these shutdowns, these quarantines, these stay-at-home orders that the government told us we needed, they begin to grow. You two posit that even as those costs are rising, the country’s public health officials show very little tolerance for an open debate about whether this approach should change.
+
+And for you, this is encapsulated by what happens to three well-known scientists who decide to write what becomes known as the Great Barrington Declaration, which arrives in the fall of 2020, so about seven months into the pandemic. Can you lay out what that declaration was? And how the conversation in response to it unfolded?
+
+stephen macedo
+They were three scientists from Stanford University, Harvard University, and Oxford, well-known, well-established scientists with excellent publication records. They were concerned about the costs of the closures. They were concerned about the disproportionate burdens being borne by essential workers and schoolchildren, and they attempted to start a conversation.
+
+They were arguing that rather than keeping the whole of society closed, rather than keeping schools closed for children at very little risk from COVID, we should be focusing protection on the vulnerable parts of the population. And by October 4, when that document was published, we had good evidence to suggest, to know, that there was highly uneven vulnerability across the population, age being the principal principle factor.
+
+michael barbaro
+Right. Death rates among the elderly were orders of magnitude larger than the general population.
+
+stephen macedo
+Much, much higher. And what they suggested was focusing protection on the vulnerable.
+
+michael barbaro
+And how did they suggest doing that?
+
+frances lee
+The Great Barrington Declaration is a strategic plan. I mean, it’s one-page long. And it just lays out a different approach and then invites people to think carefully about how it might be implemented, how one might engage in the effort of protecting the vulnerable, like more COVID testing of people who interact with the elderly, more help, organized society-wide help of getting groceries and taking them to the elderly. Looking for ways to reduce the risk of those who are at most risk of severe outcomes.
+
+That was what they hoped to initiate with the Great Barrington Declaration, was then a discussion that might develop more fully paths to implementing this strategic plan. But instead, they were denounced. They were presented as if they wanted people to die. Their motives were profoundly questioned. And that happened also at the highest levels of the US scientific establishment.
+
+michael barbaro
+Just explain that.
+
+stephen macedo
+When the Declaration came out a few days later, the Great Barrington people were charged with adopting a herd immunity strategy to let the virus rip through the population, and that it would cost hundreds of thousands of lives. We have now the email by Francis Collins, the head of the National Institutes of Health, in effect, Dr. Anthony Fauci’s boss, he said in his email to Dr. Fauci and others, the document from the three fringe epidemiologists is getting a lot of attention, even a co-signature from a Nobel Prize winner. People were signing this declaration online. And he said, there needs to be a quick and devastating takedown.
+
+archived recording 27
+For those of you who don’t know, the Great Barrington Declaration is a awful, awful idea.
+
+archived recording 28
+It’s the fantasy of petulant children who just want this pandemic to be over.
+
+archived recording 27
+And it is appalling, really, that experts would even suggest something like this as a real plan.
+
+archived recording 29
+Critics, including the director general of the World Health Organization, call this plan a dangerous approach and not an option.
+
+archived recording 30
+You’re essentially asking people to go to concentration camps. I mean, that’s overstatement, I’m sorry. But separating the families, it’s just not workable.
+
+archived recording 31
+NIH director Francis Collins said this. Quote, “What I worry about with this is it’s being presented as if it’s a major alternative view that’s held by large numbers of experts in the scientific community. That is not true. This is a fringe component of epidemiology. This is not mainstream science. It is dangerous.”
+
+archived recording (anthony fauci)
+If you let infections rip, as it were, and say, let everybody get infected that’s going to be able to be getting infected and then we’ll have herd immunity, quite frankly, that is nonsense.
+
+[PENSIVE MUSIC]
+
+michael barbaro
+Frances, was there something to the backlash kind of on principle? Because I recall that there was a response from the scientific and public health community that basically amounted to this alternative vision, the Great Barrington Declaration, it’s just not practical. How do you separate vulnerable people from the rest of society?
+
+Think about your immunocompromised grandmother. She lives on the third floor of a multigenerational household. How is she supposed to be protected when everybody else is suddenly liberated from their stay-at-home orders and bringing that virus home to then infect her, who is very, very vulnerable?
+
+frances lee
+The question presupposes that the measures that we were taking were working. They were not protecting the essential workers. And if we’re not going to be able to contain the virus, if it’s going to continue to spread through society, if it’s going to become endemic, then aiming at protecting those at most risk makes more sense. It’s a matter of what you see as the future trajectory here.
+
+michael barbaro
+The question of what the approach should be to COVID, of course, ends up in the hands of states and governors. And as all our listeners will remember, states take very divergent approaches. Talk to us about what you find in your research about that breakdown across the 50 states, especially on the metric of saving lives.
+
+frances lee
+At the outset, states across the board implemented stay-at-home orders.
+
+michael barbaro
+Right.
+
+frances lee
+Forty-three states put them in place. Of the seven states that did not, all but one had broad business closures. There was great unity of response across the country. And these measures were hugely popular. Something like 87 percent of Americans supported the measures at the time of their implementation.
+
+Where we began to see policy divergence is in the reopening process. Democratic-leaning states maintained these stay-at-home orders two and a half times longer than Republican-leaning states. Democratic-leaning states were slower to reopen schools, dramatically slower to reopen schools.
+
+They maintained more stringent restrictions in terms of business closures and which businesses could reopen, and when and on what timeline, and whether you’d have to have outdoor dining or whether restaurants would be closed again in the winter of 2020. There were substantial policy differences between red states and blue states over the course of the pandemic. And at the time that the vaccine rollout began, there was no difference between red states and blue states in their cumulative COVID mortality over the course of the crisis.
+
+michael barbaro
+No difference?
+
+frances lee
+No difference. The difference begins to emerge in the post-vaccine period. And that’s where you begin to see blue states faring better than red states. So that by the end of the time series we examine in our book, which stops in January ‘23, Republican states had 30 percent more COVID mortality than Democratic states.
+
+michael barbaro
+Can I ask you to linger on this period before the vaccines? Because from what you’re saying, Frances, before the vaccines were introduced, states that had more and longer restrictive measures had the same, more or less, number of deaths as states that had less and shorter restrictive measures.
+
+frances lee
+That’s correct. This is what we can see as we look back. We can see that there was a great deal of variation in how states responded, but that variation doesn’t correlate with variation in COVID outcomes as measured by mortality from the disease, as reported to the CDC. And we controlled for factors like the age structure of the state population, the percent with obesity, the percent who live in urban areas, and other demographic factors likely to affect states’ vulnerability to the virus.
+
+michael barbaro
+Is there any evidence, Steve, that these restrictions slowed the spread of COVID across the states?
+
+stephen macedo
+There’s some evidence that the nonpharmaceutical interventions of various sorts, the lockdown measures, school closures, et cetera, reduced somewhat the spread of the virus. But even the optimistic reports that emphasize that and call that success, do not show evidence of significantly reduced death. The virus evidently spread efficiently enough, so that even if the spread of infection could be reduced, say, 15 percent, that did not yield significant benefits in terms of death and disease.
+
+michael barbaro
+Frances, how is it possible — I just want to make sure we can wrap our heads around, how it might be the case that longer, deeper restrictions didn’t end up meaningfully changing outcomes? I’m just imagining someone hearing that and thinking, I stayed home, I didn’t get sick. And so why, in your estimation, by your analysis, didn’t this save more lives?
+
+frances lee
+Individuals of sufficient means to stay home can protect themselves individually. But what works for individuals may not work for society as a whole.
+
+stephen macedo
+Yes. The lockdowns had lots of holes in them. The social distancing measures were very porous. A third of workers had to keep working as essential workers to keep the rest of us well-fed, the electricity on. So it really was not possible to lock down the entire economy or the workforce.
+
+frances lee
+That’s right. Another explanation is, of course, that it matters greatly who is being infected. It was only highly lethal in certain populations. And so if you were not protecting those in nursing homes, but you were keeping the teenagers and the college students locked down, you’re not going to achieve anything in terms of reducing COVID mortality.
+
+We also didn’t know when the virus reached the United States. There’s evidence from antibodies in blood banks that the virus was already here in December of 2019, so it had already been spreading for months before the first lockdowns occurred. And data from cell phone mobility shows that lockdowns begin to break down after just a few weeks. They’re not sustainable for human beings either. Human beings could not comply over the long haul.
+
+There’s evidence that these measures made a difference for transmission. But there’s not evidence that these measures were effective at reducing COVID mortality. And so that’s just where we are. We need to do more study to understand what happened during the pandemic. And so I think we need to confront our failures and our successes and learn from it.
+
+michael barbaro
+And ultimately, it’s really the vaccine that starts to make the difference when it comes to death rates.
+
+frances lee
+Our data are consistent with that interpretation, in that we begin to see a divergence after the vaccine rollout between states with high vaccine uptake and states with low vaccine uptake in their COVID mortality. At the aggregate level, states that had higher vaccine uptake do have better COVID outcomes in the period after vaccines were available.
+
+michael barbaro
+And so if we go back to where we started this conversation about trade-offs, before the pandemic, you thoroughly described this scientific view that these kinds of interventions we’ve been talking about the whole time, the lockdown approach, was difficult to implement and would come with heavy costs and uncertain benefits. And yet, the United States and dozens of other countries plowed ahead with the shutdown and lockdown approaches anyway, focusing on their theoretical life-saving benefits.
+
+Five years later, what your findings show is that the state-by-state data within the US hasn’t definitively established those life-saving benefits. But what we do know is a lot about the costs. Talk about what you found when it comes to those costs.
+
+frances lee
+I mean, there are extraordinarily wide-ranging. I mean, this was a whole of society intervention and so the whole of society was affected. I mean, we can start by thinking about the cost to education.
+
+We saw unprecedented drops in student learning as gauged by long-standing indicators of student progress. Chronic absenteeism from school roughly doubled nationwide, still elevated. The gaps that emerged in learning outcomes between the better-off and the less-well-off students, they widened.
+
+And they haven’t begun to close since the pandemic ended and since schools reopened. Those gaps are still wider than they were. Those who are academically lagging before the pandemic were much worse off after the pandemic. I mean, we can go through, it’s a long list of costs.
+
+stephen macedo
+I was just going to add one, which is the tremendous expenditures on COVID relief. Now, some of that was going to be necessary. But Frances has pointed out that the initial expenditures were equivalent to the New Deal.
+
+frances lee
+The 2020 COVID response was equivalent, as a share of GDP, to both the New Deal and the 2009 stimulus package combined.
+
+michael barbaro
+Right. Trillions of dollars in the United States.
+
+frances lee
+And then in 2021, we had another New Deal all over again. It’s roughly equivalent in terms of the demand on the US Treasury to war mobilization in 1943. About 10 percent of the total cost went to health care. Most of it is going to sustaining businesses and individuals through the closures. That’s the lion’s share of COVID aid.
+
+michael barbaro
+If we’re putting this all together and summarizing what you found here about the lack of evidence of a life-saving benefit and the real clear evidence of extraordinary cost, from what you’re saying, Frances, we’re not able to say, at this point, that these extraordinary historic interventions, that they were ultimately worth it.
+
+frances lee
+I mean, that’s where things stand. I think that’s one of the reasons why there’s a great deal of hesitance to look back at what was done and to take stock of it.
+
+michael barbaro
+I’m curious about something. In the end, you’re clearly saying that there needs to be a different kind of conversation about the measures that were taken. But are you saying that we shouldn’t have done the things we did during COVID? Because those are two very distinct ways of thinking about this.
+
+frances lee
+I mean, that’s a larger question than I think we are capable of settling. What we can point to is the shortcomings in deliberation, in considering the costs, and in the equivocal and skeptical nature of the evidence when these measures were undertaken, and the doubts about what difference they made based on the data that we have now. That’s why we think a larger conversation is necessary.
+
+It’s not for us to say. I mean, just the scale of the decisions we are talking about are society-wide. They are global. As I have reflected on the work that Steve and I were doing as we were writing, I’m struck by the tragedy if these measures didn’t work, what the costs were, what else we could have done had we been able to make those kinds of public investments in something that was effective for other needs that we have as a society. It is excruciating to think about, but I think we owe it to ourselves to do so.
+
+michael barbaro
+And the risk of any kind of reckoning like this is that it results in people having even less faith in the government, and taking bits and pieces of what you find and weaponizing them. Do you worry that conspiracy theories will be fueled by what you’re asking people to do here?
+
+frances lee
+I think conspiracy theories are fueled by not asking these questions. I mean, obviously, there are many conspiracy theories around COVID. The Plandemic, governments took these actions in order to assert more control over us, I mean, that kind of discourse which exists. If government acknowledged these questions and tried to hash them out, yes, some faith might be lost, but also some faith would be gained.
+
+stephen macedo
+Right. It’s very hard to say for sure what will succeed in raising trust in the institutions in our society that are in the business of pursuing the truth, science, science journalism, the academy, and so on. But we should try to behave in a more trustworthy fashion and hope that greater trust follows from that. We need a franker conversation about what happened and how we can do better the next time around.
+
+michael barbaro
+A final question, and you’re starting to hint at it here. Since we can’t go back and redo our response to COVID, to the degree we can try to get it right next time, if there’s a next time, what is your prescription for that, knowing what you now know and knowing how polarized this country remains over what happened?
+
+stephen macedo
+I guess I would say that we need to consider the costs, as well as the hoped for benefits of policies that are adopted, especially these kinds of nonpharmaceutical interventions, social distancing measures, and so on. And we need to have wider and more tolerant deliberation about these matters and not repose as much authority in narrow experts who have tunnel vision very often, who admitted after COVID to having tunnel vision. Francis Collins admitted, quite frankly, in July 2023, that public health officials, including himself, focused way too narrowly on a narrow set of public health outcomes.
+
+[PENSIVE MUSIC]
+
+archived recording (francis collins)
+As a guy living inside the Beltway, feeling the sense of crisis, trying to decide what to do in some situation room in the White House with people who had data that was incomplete, we weren’t really thinking about what that would mean to Wilk and his family in Minnesota, a thousand miles away from where the virus was hitting hard. We weren’t really considering the consequences in communities that were not New York City or some other big city. If you’re a public health person and you’re trying to make a decision, you have this very narrow view of what the right decision is, and that is something that will save a life.
+
+It doesn’t matter what else happens. You attach infinite value to stopping the disease and saving a life. You attach zero value to whether this actually totally disrupts people’s lives, ruins the economy, and has many kids kept out of school in a way that they never quite recover from.
+
+archived recording 32
+Collateral damage.
+
+archived recording (francis collins)
+Yeah, collateral damage. This is a public health mindset. And I think a lot of us involved in trying to make those recommendations had that mindset, and that was really unfortunate. It’s another mistake we made.
+
+michael barbaro
+That’s a really, really fascinating thing to say aloud.
+
+frances lee
+I mean, that quote is excruciating. It goes right back to what you were asking us to confront a few minutes ago. How can you tell us that all this bought us nothing, that it was futile?
+
+I mean, it’s extremely painful. And I think that’s one of the reasons why there’s a hesitation even to look back at all.
+
+stephen macedo
+Right. And in light of that quotation, how can we not? How can we not look back?
+
+michael barbaro
+It’s an invitation to have a reckoning.
+
+stephen macedo
+Right. How could we not have the reckoning, given what Francis Collins has said?
+
+[PENSIVE MUSIC]
+
+michael barbaro
+Steve and Frances, thank you both very much for your time. We really appreciate it.
+
+stephen macedo
+We appreciate the conversation.
+
+frances lee
+Thank you.
+
+michael barbaro
+We’ll be right back.
+
+[THEME MUSIC]
+
+Here’s what else you need to know today. On Wednesday, the Federal Reserve predicted that inflation would rise this year to 2.7 percent from 2.5 percent, and suggested that President Trump’s tariffs on imported goods likely accounted for much of that increase. Still, the Fed said that it would neither raise nor cut the interest rate, its most powerful tool for influencing inflation, as it waits to see how Trump’s policies affect the economy.
+
+And Ukrainian President Volodymyr Zelensky has agreed to accept Russia’s offer of a mutual pause in attacks on energy targets as a step toward a broader ceasefire. The agreement came during a call between Zelensky and President Trump, their first conversation since a dramatic Oval Office confrontation last month.
+
+Today’s episode was produced by Asthaa Chaturvedi and Caitlin O’Keefe. It was edited by Larissa Anderson and Lisa Chow, fact-checked by Susan Lee, contains original music by Dan Powell, Marion Lozano, and Pat McCusker, and was engineered by Chris Wood. Our theme music is by Jim Brunberg and Ben Landsverk of Wonderly. Special thanks to David Leonhardt, Paula Szuchman, Nick Pitman, Celia Dugger, Michael Mason, Paige Cowett, and Jim Yardley.
+
+[THEME MUSIC]
+
+That’s it for “The Daily“. I’m Michael Barbaro. See you tomorrow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+March 20, 2025
+Share full article
+
+356
+Hosted by Michael Barbaro
+
+Produced by Asthaa Chaturvedi and Caitlin O’Keefe
+
+Edited by Larissa Anderson and Lisa Chow
+
+Original music by Dan PowellMarion Lozano and Pat McCusker
+
+Engineered by Chris Wood
+
+Listen and follow ‘The Daily’
+Apple Podcasts | Spotify | Amazon Music | YouTube | iHeartRadio
+Never miss an episode of The Daily  We'll send you the latest episode as soon as it publishes. Get it sent to your inbox.
+Five years ago, at the urging of federal officials, much of the United States locked down to stop the spread of Covid. Over time, the action polarized the country and changed the relationship between many Americans and their government.
+
+Michael Barbaro speaks to Stephen Macedo and Frances Lee, two prominent political scientists who dispute the effectiveness of the lockdowns, to find out what they think will be required when the next pandemic strikes.
+
+Unlock full access to New York Times podcasts and explore everything from politics to pop culture. Subscribe today at nytimes.com/podcasts or on Apple Podcasts and Spotify.
+
+On today’s episode
+Stephen Macedo and Frances Lee, authors of In Covid’s Wake: How Our Politics Failed Us
+
+ImageIn a park, people are sitting inside white circles.
+Domino Park in New York in 2020. According to several experts, a big lesson learned from Covid is that recommendations during any pandemic are necessarily based on emerging and incomplete information.Credit...Hilary Swift for The New York Times
+Background reading
+As the coronavirus spread, researchers worldwide scrambled to find ways to keep people safe. Some efforts were misguided. Others saved millions of lives.
+
+There are a lot of ways to listen to The Daily. Here’s how.
+
+We aim to make transcripts available the next workday after an episode’s publication. You can find them at the top of the page.
+
+Fact-checking by Susan Lee.
+
+Special thanks to David Leonhardt, Paula Szuchman, Paige Cowett, Nick Pitman, Celia Dugger, Michael Mason, Jim Yardley.
+
+The Daily is made by Rachel Quester, Lynsea Garrison, Clare Toeniskoetter, Paige Cowett, Michael Simon Johnson, Brad Fisher, Chris Wood, Jessica Cheung, Stella Tan, Alexandra Leigh Young, Lisa Chow, Eric Krupke, Marc Georges, M.J. Davis Lin, Dan Powell, Sydney Harper, Michael Benoist, Liz O. Baylen, Asthaa Chaturvedi, Rachelle Bonja, Diana Nguyen, Marion Lozano, Rob Szypko, Elisheba Ittoop, Mooj Zadie, Patricia Willens, Rowan Niemisto, Jody Becker, Rikki Novetsky, Nina Feldman, Will Reid, Carlos Prieto, Ben Calhoun, Susan Lee, Lexie Diao, Mary Wilson, Alex Stern, Sophia Lanman, Shannon Lin, Diane Wong, Devon Taylor, Alyssa Moxley, Olivia Natt, Daniel Ramirez, Brendan Klinkenberg and Chris Haxel.
+
+Our theme music is by Jim Brunberg and Ben Landsverk of Wonderly. Special thanks to Sam Dolnick, Paula Szuchman, Lisa Tobin, Larissa Anderson, Julia Simon, Mahima Chablani, Elizabeth Davis-Moorer, Jeffrey Miranda, Maddy Masiello, Isabella Anderson, Nina Lassam and Nick Pitman.
+
+Read 356 Comments
+Share full article
+
+356
+Advertisement
+
+SKIP ADVERTISEMENT
+Site Index
+Site Information Navigation
+© 2025 The New York Times Company
+NYTCoContact UsAccessibilityWork with usAdvertiseT Brand StudioYour Ad ChoicesPrivacy PolicyTerms of ServiceTerms of SaleSite MapHelpSubscriptionsYour Privacy ChoicesCalifornia Notices

@@ -18,12 +18,13 @@ interface NoteStore {
   deleteNote: (id: string) => void;
   loadArticle: () => Promise<void>;
   parseManualContent: (content: string) => void;
+  loadParsedTranscript: () => Promise<void>;
 }
 
 const COLUMN_WIDTH = 300;
-const COLUMN_SPACING = 50;
-const NOTE_SPACING = 20;
+const COLUMN_SPACING = 100;
 const NOTE_WIDTH = 280;
+const NOTE_SPACING = 40;
 
 // Create initial column and node
 const initialColumn = {
@@ -84,7 +85,7 @@ const processDialogue = (
     newColumns.push({
       id: `column-${colIdx + 1}`,
       title: speaker,
-      x: colIdx * (COLUMN_WIDTH + COLUMN_SPACING) + 50,
+      x: colIdx * (COLUMN_WIDTH + COLUMN_SPACING),
     });
     colIdx++;
   });
@@ -99,9 +100,9 @@ const processDialogue = (
     if (!column) return;
 
     const nodeId = `note-${nodeIdCounter++}`;
-    // Estimate height: 20px per line, min 80px, 50 chars/line
+    // Estimate height: 28px per line, min 140px, 50 chars/line
     const estimatedLines = Math.ceil(text.length / 50);
-    const estimatedHeight = Math.max(80, estimatedLines * 20 + 24);
+    const estimatedHeight = Math.max(140, estimatedLines * 28 + 60);
 
     const node: Node = {
       id: nodeId,
@@ -149,7 +150,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
     const newColumn = {
       id: newColumnId,
       title: speakerName || `Column ${state.columns.length + 1}`,
-      x: state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING) + 50,
+      x: state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING),
     };
     return {
       columns: [...state.columns, newColumn],
@@ -173,7 +174,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
       // Estimate the height of the highest note based on its content
       const contentLength = highestNode.data.content.length;
       const estimatedLines = Math.ceil(contentLength / 50);
-      const estimatedHeight = Math.max(80, estimatedLines * 20 + 24);
+      const estimatedHeight = Math.max(140, estimatedLines * 28 + 60);
       nextY = highestY + estimatedHeight + NOTE_SPACING;
     }
     
@@ -430,7 +431,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
           type: 'note',
           position: { 
             x: column.x + (COLUMN_WIDTH - NOTE_WIDTH) / 2, 
-            y: 50 
+            y: 100 
           },
           data: { 
             content: content.substring(0, 500) + (content.length > 500 ? '...' : ''), 
@@ -447,6 +448,102 @@ export const useNoteStore = create<NoteStore>((set) => ({
       }
     } catch (error) {
       console.error('Error parsing manual content:', error);
+    }
+  },
+
+  loadParsedTranscript: async () => {
+    try {
+      console.log('Loading parsed transcript from API...');
+      // Try to load from backend API first
+      const response = await fetch('http://localhost:8000/api/daily-covids-wake');
+      if (!response.ok) {
+        throw new Error('Backend API not available');
+      }
+      const data = await response.json();
+      console.log('API response received:', data);
+      console.log('Number of columns:', data.columns.length);
+      data.columns.forEach((col: any, idx: number) => {
+        console.log(`Column ${idx + 1}: ${col.title} has ${col.notes.length} notes`);
+      });
+      
+      // Process the data
+      const newColumns: Column[] = data.columns.map((col: any, idx: number) => ({
+        id: col.id,
+        title: col.title,
+        x: idx * (COLUMN_WIDTH + COLUMN_SPACING),
+      }));
+      
+      let nodeIdToColumnX: Record<string, number> = {};
+      newColumns.forEach(col => {
+        nodeIdToColumnX[col.id] = col.x;
+      });
+      
+      // Collect all notes from all columns and sort them by ID to get chronological order
+      const allNotes: any[] = [];
+      data.columns.forEach((col: any) => {
+        col.notes.forEach((note: any) => {
+          allNotes.push(note);
+        });
+      });
+      
+      // Sort notes by their ID to get chronological order (note-1, note-2, note-3, etc.)
+      allNotes.sort((a, b) => {
+        const aNum = parseInt(a.id.replace('note-', ''));
+        const bNum = parseInt(b.id.replace('note-', ''));
+        return aNum - bNum;
+      });
+      
+      console.log(`Processing ${allNotes.length} notes in chronological order`);
+      
+      // Position all notes sequentially in chronological order
+      let currentY = 100; // Start with space from top
+      const allNodes: Node[] = [];
+      
+      allNotes.forEach((note: any) => {
+        // Better height estimation based on content length and line breaks
+        const contentLength = note.content.length;
+        const lineBreaks = (note.content.match(/\n/g) || []).length;
+        const estimatedLines = Math.max(1, Math.ceil(contentLength / 50) + lineBreaks);
+        const estimatedHeight = Math.max(140, estimatedLines * 28 + 60);
+        
+        const node: Node = {
+          id: note.id,
+          type: 'note',
+          position: {
+            x: nodeIdToColumnX[note.columnId] + (COLUMN_WIDTH - NOTE_WIDTH) / 2,
+            y: currentY,
+          },
+          data: {
+            content: note.content,
+            columnId: note.columnId,
+            isNew: false,
+          },
+        };
+        allNodes.push(node);
+        currentY += estimatedHeight + NOTE_SPACING;
+      });
+      
+      // Edges
+      const allEdges: Edge[] = (data.edges || []).map((edge: any) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: 'articleLink',
+      }));
+      
+      console.log(`Created ${allEdges.length} edges`);
+      
+      set({
+        columns: newColumns,
+        nodes: allNodes,
+        edges: allEdges,
+      });
+      
+      console.log('Data loaded successfully');
+      
+    } catch (error) {
+      console.error('Failed to load parsed transcript from API:', error);
+      throw error; // Re-throw the error to see what's happening
     }
   },
 })); 
