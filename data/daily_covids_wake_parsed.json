@@ -1014,7 +1014,7 @@
       "target": "note-3",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-3",
@@ -1022,7 +1022,7 @@
       "target": "note-4",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-4",
@@ -1030,7 +1030,7 @@
       "target": "note-5",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-5",
@@ -1038,7 +1038,7 @@
       "target": "note-6",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-6",
@@ -1054,7 +1054,7 @@
       "target": "note-8",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-8",
@@ -1062,7 +1062,7 @@
       "target": "note-9",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-9",
@@ -1094,7 +1094,7 @@
       "target": "note-13",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-13",
@@ -1102,7 +1102,7 @@
       "target": "note-14",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-14",
@@ -1110,7 +1110,7 @@
       "target": "note-15",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-15",
@@ -1126,7 +1126,7 @@
       "target": "note-17",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-17",
@@ -1142,7 +1142,7 @@
       "target": "note-19",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-19",
@@ -1158,7 +1158,7 @@
       "target": "note-21",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-21",
@@ -1166,7 +1166,7 @@
       "target": "note-22",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-22",
@@ -1174,7 +1174,7 @@
       "target": "note-23",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-23",
@@ -1198,7 +1198,7 @@
       "target": "note-26",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-26",
@@ -1206,7 +1206,7 @@
       "target": "note-27",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-27",
@@ -1214,7 +1214,7 @@
       "target": "note-28",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-28",
@@ -1222,7 +1222,7 @@
       "target": "note-29",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-29",
@@ -1230,7 +1230,7 @@
       "target": "note-30",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-30",
@@ -1246,7 +1246,7 @@
       "target": "note-32",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-32",
@@ -1254,7 +1254,7 @@
       "target": "note-33",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-33",
@@ -1262,7 +1262,7 @@
       "target": "note-34",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-34",
@@ -1270,7 +1270,7 @@
       "target": "note-35",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-35",
@@ -1294,7 +1294,7 @@
       "target": "note-38",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-38",
@@ -1310,7 +1310,7 @@
       "target": "note-40",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-40",
@@ -1334,7 +1334,7 @@
       "target": "note-43",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-43",
@@ -1342,7 +1342,7 @@
       "target": "note-44",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-44",
@@ -1390,7 +1390,7 @@
       "target": "note-50",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-50",
@@ -1406,7 +1406,7 @@
       "target": "note-52",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-52",
@@ -1414,7 +1414,7 @@
       "target": "note-53",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-53",
@@ -1422,7 +1422,7 @@
       "target": "note-54",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-54",
@@ -1438,7 +1438,7 @@
       "target": "note-56",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-56",
@@ -1446,7 +1446,7 @@
       "target": "note-57",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-57",
@@ -1462,7 +1462,7 @@
       "target": "note-59",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-59",
@@ -1470,7 +1470,7 @@
       "target": "note-60",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-60",
@@ -1494,7 +1494,7 @@
       "target": "note-63",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-63",
@@ -1502,7 +1502,7 @@
       "target": "note-64",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-64",
@@ -1510,7 +1510,7 @@
       "target": "note-65",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-65",
@@ -1550,7 +1550,7 @@
       "target": "note-70",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-70",
@@ -1558,7 +1558,7 @@
       "target": "note-71",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-71",
@@ -1598,7 +1598,7 @@
       "target": "note-76",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-76",
@@ -1606,7 +1606,7 @@
       "target": "note-77",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-77",
@@ -1622,7 +1622,7 @@
       "target": "note-79",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-79",
@@ -1638,7 +1638,7 @@
       "target": "note-81",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-81",
@@ -1654,7 +1654,7 @@
       "target": "note-83",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-83",
@@ -1662,7 +1662,7 @@
       "target": "note-84",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-84",
@@ -1670,7 +1670,7 @@
       "target": "note-85",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-85",
@@ -1702,7 +1702,7 @@
       "target": "note-89",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-89",
@@ -1710,7 +1710,7 @@
       "target": "note-90",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-90",
@@ -1718,7 +1718,7 @@
       "target": "note-91",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-91",
@@ -1726,7 +1726,7 @@
       "target": "note-92",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-92",
@@ -1742,7 +1742,7 @@
       "target": "note-94",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-94",
@@ -1750,7 +1750,7 @@
       "target": "note-95",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-95",
@@ -1774,7 +1774,7 @@
       "target": "note-98",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-98",
@@ -1782,7 +1782,7 @@
       "target": "note-99",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-99",
@@ -1830,7 +1830,7 @@
       "target": "note-105",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-105",
@@ -1846,7 +1846,7 @@
       "target": "note-107",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-107",
@@ -1902,7 +1902,7 @@
       "target": "note-114",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-114",
@@ -1910,7 +1910,7 @@
       "target": "note-115",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-115",
@@ -1918,7 +1918,7 @@
       "target": "note-116",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-116",
@@ -1926,7 +1926,7 @@
       "target": "note-117",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-117",
@@ -1942,7 +1942,7 @@
       "target": "note-119",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-119",
@@ -1958,7 +1958,7 @@
       "target": "note-121",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-121",
@@ -1966,7 +1966,7 @@
       "target": "note-122",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-122",
@@ -1982,7 +1982,7 @@
       "target": "note-124",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-124",
@@ -1990,7 +1990,7 @@
       "target": "note-125",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-125",
@@ -1998,7 +1998,7 @@
       "target": "note-126",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-126",
@@ -2022,7 +2022,7 @@
       "target": "note-129",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-129",
@@ -2030,7 +2030,7 @@
       "target": "note-130",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-130",
@@ -2038,7 +2038,7 @@
       "target": "note-131",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-131",
@@ -2054,7 +2054,7 @@
       "target": "note-133",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-133",
@@ -2062,7 +2062,7 @@
       "target": "note-134",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-134",
@@ -2102,7 +2102,7 @@
       "target": "note-139",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-139",
@@ -2142,7 +2142,7 @@
       "target": "note-144",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-144",
@@ -2158,7 +2158,7 @@
       "target": "note-146",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-146",
@@ -2182,7 +2182,7 @@
       "target": "note-149",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-149",
@@ -2198,7 +2198,7 @@
       "target": "note-151",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-151",
@@ -2206,7 +2206,7 @@
       "target": "note-152",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-152",
@@ -2222,7 +2222,7 @@
       "target": "note-154",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-154",
@@ -2238,7 +2238,7 @@
       "target": "note-156",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-156",
@@ -2246,7 +2246,7 @@
       "target": "note-157",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-157",
@@ -2254,7 +2254,7 @@
       "target": "note-158",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-158",
@@ -2262,7 +2262,7 @@
       "target": "note-159",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-159",
@@ -2270,7 +2270,7 @@
       "target": "note-160",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-160",
@@ -2294,7 +2294,7 @@
       "target": "note-163",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-163",
@@ -2310,7 +2310,7 @@
       "target": "note-165",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-165",
@@ -2318,7 +2318,7 @@
       "target": "note-166",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-166",
@@ -2326,7 +2326,7 @@
       "target": "note-167",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-167",
@@ -2366,7 +2366,7 @@
       "target": "note-172",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-172",
@@ -2382,7 +2382,7 @@
       "target": "note-174",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-174",
@@ -2390,7 +2390,7 @@
       "target": "note-175",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-175",
@@ -2430,7 +2430,7 @@
       "target": "note-180",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-180",
@@ -2438,7 +2438,7 @@
       "target": "note-181",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-181",
@@ -2454,7 +2454,7 @@
       "target": "note-183",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-183",
@@ -2462,7 +2462,7 @@
       "target": "note-184",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-184",
@@ -2470,7 +2470,7 @@
       "target": "note-185",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-185",
@@ -2478,7 +2478,7 @@
       "target": "note-186",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-186",
@@ -2494,7 +2494,7 @@
       "target": "note-188",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-188",
@@ -2510,7 +2510,7 @@
       "target": "note-190",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-190",
@@ -2526,7 +2526,7 @@
       "target": "note-192",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-192",
@@ -2542,7 +2542,7 @@
       "target": "note-194",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-194",
@@ -2558,7 +2558,7 @@
       "target": "note-196",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     }
   ]
 }

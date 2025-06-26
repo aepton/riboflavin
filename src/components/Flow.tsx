@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import ReactFlow, {
   Controls,
+  Background,
   useNodesState,
   useEdgesState,
-  useReactFlow,
-  addEdge,
   ReactFlowProvider,
+  useReactFlow,
   Position,
   MarkerType,
 } from 'reactflow';
@@ -20,6 +20,45 @@ const COLUMN_WIDTH = 300;
 const COLUMN_GAP = 100;
 const NODE_HEIGHT = 120;
 const NODE_GAP = 20;
+
+// Modal component
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const ModalText = styled.p`
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: #333;
+`;
+
+const ModalInput = styled.input`
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-top: 1rem;
+`;
 
 // Custom edge component that connects to the closest handles
 const CustomEdge = ({ sourceX, sourceY, targetX, targetY, source, target }: any) => {
@@ -57,14 +96,18 @@ const EllipsisEdge = ({ sourceX, sourceY, targetX, targetY, source, target }: an
         strokeWidth={2}
         fill="none"
       />
-      {/* White background circle */}
+      {/* Gradient background circle */}
+      <defs>
+        <radialGradient id="ellipsisGradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#f8fafc" stopOpacity="1" />
+          <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
+        </radialGradient>
+      </defs>
       <circle
         cx={centerX}
         cy={centerY}
-        r="12"
-        fill="white"
-        stroke="#ef4444"
-        strokeWidth="1"
+        r="16"
+        fill="url(#ellipsisGradient)"
       />
       <text
         x={centerX}
@@ -73,8 +116,7 @@ const EllipsisEdge = ({ sourceX, sourceY, targetX, targetY, source, target }: an
         dominantBaseline="middle"
         fontSize="16"
         fill="#ef4444"
-        fontWeight="bold"
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: 'none', pointerEvents: 'none' }}
       >
         ...
       </text>
@@ -200,6 +242,18 @@ const AddButton = styled.button`
   }
 `;
 
+const ColumnHeadersContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
 const nodeTypes = {
   note: NoteNode,
 };
@@ -264,20 +318,28 @@ const TextModal: React.FC<TextModalProps> = ({ isOpen, onClose, onSave }) => {
   );
 };
 
-const FlowComponent: React.FC = () => {
-  const { nodes: initialNodes, edges: initialEdges, addNote, connectNotes, columns, addColumn, loadArticle, parseManualContent, loadParsedTranscript } = useNoteStore();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+const FlowComponent = () => {
+  const { nodes: initialNodes, edges: initialEdges, columns, loadParsedTranscript } = useNoteStore();
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [showModal, setShowModal] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const reactFlowInstance = useReactFlow();
-  const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showManualInput, setShowManualInput] = useState(false);
-  const [manualContent, setManualContent] = useState('');
-  const [viewportX, setViewportX] = useState(0);
-  const viewportTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const [isTextModalOpen, setIsTextModalOpen] = useState(false);
+
+  // Load parsed transcript immediately on mount
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await loadParsedTranscript();
+      } catch (error) {
+        console.error('Failed to load initial data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, [loadParsedTranscript]);
 
   useEffect(() => {
     setNodes(initialNodes);
@@ -286,54 +348,6 @@ const FlowComponent: React.FC = () => {
     console.log('Edge types:', initialEdges.map(edge => edge.type));
     logEdgeTypes(initialEdges);
   }, [initialNodes, initialEdges, setNodes, setEdges]);
-
-  // Load parsed transcript immediately on mount
-  useEffect(() => {
-    const loadData = async () => {
-      setIsInitialLoading(true);
-      try {
-        await loadParsedTranscript();
-      } catch (error) {
-        console.error('Failed to load initial data:', error);
-        setError('Failed to load initial data. Using fallback content.');
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
-    loadData();
-  }, [loadParsedTranscript]);
-
-  // Set initial viewport position to center the columns
-  useEffect(() => {
-    if (reactFlowInstance && columns.length > 0) {
-      // Calculate the center of all columns
-      const totalWidth = columns.length * COLUMN_WIDTH + (columns.length - 1) * COLUMN_GAP;
-      const centerX = (window.innerWidth - totalWidth) / 2;
-      const viewportX = centerX; // Positive value to move viewport right, centering columns
-      
-      reactFlowInstance.setViewport({ x: viewportX, y: 0, zoom: 1 });
-      setViewportX(viewportX); // Update our tracking immediately
-    }
-  }, [reactFlowInstance, columns]);
-
-  // Track ReactFlow viewport changes with debouncing
-  useEffect(() => {
-    if (reactFlowInstance) {
-      // Get initial viewport
-      const viewport = reactFlowInstance.getViewport();
-      setViewportX(viewport.x);
-    }
-  }, [reactFlowInstance]);
-
-  // Debounced viewport update function
-  const updateViewportX = useCallback((newX: number) => {
-    if (viewportTimeoutRef.current) {
-      clearTimeout(viewportTimeoutRef.current);
-    }
-    viewportTimeoutRef.current = setTimeout(() => {
-      setViewportX(newX);
-    }, 16); // ~60fps
-  }, []);
 
   // Handle mouse wheel for vertical scrolling only
   const onWheel = useCallback((event: Event) => {
@@ -388,31 +402,8 @@ const FlowComponent: React.FC = () => {
         y: clampedY,
         zoom: 1,
       });
-      // Update our viewport tracking with debouncing
-      updateViewportX(x);
     }
-  }, [reactFlowInstance, updateViewportX, nodes]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (viewportTimeoutRef.current) {
-        clearTimeout(viewportTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Memoize the onConnect callback
-  const onConnect = useMemo(() => (connection: Connection) => {
-    if (connection.source && connection.target) {
-      connectNotes(connection.source, connection.target);
-    }
-  }, [connectNotes]);
-
-  // Memoize the onNodeClick callback
-  const onNodeClick = useMemo(() => (_event: React.MouseEvent, node: ReactFlowNode) => {
-    setSelectedColumnId(node.data.columnId);
-  }, []);
+  }, [reactFlowInstance, nodes]);
 
   // Add wheel event listener to the entire flow area
   useEffect(() => {
@@ -425,256 +416,93 @@ const FlowComponent: React.FC = () => {
     }
   }, [onWheel]);
 
-  // Handle keyboard shortcuts
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    // Only handle shortcuts if no textarea is focused
-    if (document.activeElement?.tagName === 'TEXTAREA') {
-      return;
+  const handleModalKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setShowModal(false);
+      // Scroll to the 35th node
+      setTimeout(() => {
+        const targetNode = nodes.find(node => node.id === 'note-35');
+        if (targetNode && reactFlowInstance) {
+          reactFlowInstance.setCenter(targetNode.position.x, targetNode.position.y, { duration: 1000 });
+        }
+      }, 100);
     }
+  }, [nodes, reactFlowInstance]);
 
-    // Cmd/Ctrl + N for new note
-    if ((event.metaKey || event.ctrlKey) && event.key === 'n') {
-      event.preventDefault();
-      if (selectedColumnId) {
-        addNote(selectedColumnId);
-      } else if (columns.length > 0) {
-        addNote(columns[0].id);
-      }
-    }
-
-    // Cmd/Ctrl + Shift + N for new column
-    if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key === 'n') {
-      event.preventDefault();
-      addColumn();
-      // Add a note to the new column and ensure it gets focus
-      if (columns.length > 0) {
-        addNote(columns[columns.length - 1].id);
-      }
-    }
-  }, [addNote, addColumn, columns, selectedColumnId]);
-
-  // Add keyboard event listener
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
-
-  const handleLoadArticle = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      await loadArticle();
-    } catch (error) {
-      console.error('Failed to load article:', error);
-      setError('Failed to load article. Try manual input instead.');
-      setShowManualInput(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleManualParse = () => {
-    if (manualContent.trim()) {
-      parseManualContent(manualContent);
-      setShowManualInput(false);
-      setManualContent('');
-      setError(null);
-    }
-  };
-
-  // Memoize column headers to prevent unnecessary re-renders
-  const columnHeaders = useMemo(() => (
-    columns.map((column) => (
-      <ColumnHeader
-        key={`header-${column.id}`}
-        style={{
-          left: column.x + COLUMN_WIDTH / 2 + viewportX, // Add viewport offset to position where columns appear
-          transform: 'translateX(-50%)', // Center the header around the column center
-        }}
-      >
-        {column.title}
-      </ColumnHeader>
-    ))
-  ), [columns, viewportX, addNote]);
-
-  const handleSaveText = useCallback(async (content: string) => {
-    try {
-      const response = await fetch('http://localhost:8000/api/save-text', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save text');
-      }
-
-      const result = await response.json();
-      console.log('Text saved successfully:', result);
-      
-      // Load the newly parsed data
-      await loadArticle();
-    } catch (error) {
-      console.error('Failed to save text:', error);
-      alert('Failed to save text. Please try again.');
-    }
-  }, [loadArticle]);
-
-  // Group nodes by column
-  const nodesByColumn = useMemo(() => {
-    const grouped: { [key: string]: ReactFlowNode[] } = {};
-    nodes.forEach((node) => {
-      const columnId = node.data?.columnId || 'default';
-      if (!grouped[columnId]) {
-        grouped[columnId] = [];
-      }
-      grouped[columnId].push(node);
-    });
-    return grouped;
-  }, [nodes]);
-
-  // Get unique column titles
   const columnTitles = useMemo(() => {
     return columns.map(col => col.title);
   }, [columns]);
 
   return (
-    <div className="h-screen w-screen relative">
+    <div style={{ width: '100vw', height: '100vh' }} className="flow-area">
       {/* Loading Indicator */}
-      {isInitialLoading && (
-        <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading transcript data...</p>
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(255, 255, 255, 0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 50
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              border: '2px solid #3b82f6',
+              borderTop: '2px solid transparent',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px'
+            }}></div>
+            <p style={{ color: '#666' }}>Loading transcript data...</p>
           </div>
         </div>
       )}
-
-      {/* Status Indicator */}
-      {error && (
-        <div className="absolute top-20 left-4 z-20 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded text-sm">
-          <strong>Note:</strong> {error} 
-          <button 
-            onClick={() => setError(null)}
-            className="ml-2 text-yellow-600 hover:text-yellow-800"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      <FlowArea className="flow-area">
-        {columnHeaders}
-        {error && (
-          <div style={{
-            position: 'fixed',
-            top: '60px',
-            left: '20px',
-            color: '#e74c3c',
-            fontSize: '12px',
-            background: '#fff',
-            padding: '8px 12px',
-            border: '1px solid #e74c3c',
-            borderRadius: '4px',
-            zIndex: 1000,
-          }}>
-            {error}
-            {showManualInput && (
-              <button 
-                onClick={() => setShowManualInput(true)}
-                style={{ 
-                  marginLeft: '10px',
-                  fontSize: '11px',
-                  padding: '4px 8px',
-                  background: '#fff',
-                  border: '1px solid #e74c3c',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Manual Input
-              </button>
-            )}
-          </div>
-        )}
-        {showManualInput && (
-          <div style={{
-            position: 'fixed',
-            top: '100px',
-            left: '20px',
-            right: '20px',
-            maxWidth: '400px',
-            background: '#fff',
-            border: '1px solid #e0e0e0',
-            borderRadius: '6px',
-            padding: '15px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ marginBottom: '10px', fontSize: '14px', fontWeight: 'bold' }}>
-              Paste article content manually:
-            </div>
-            <textarea
-              value={manualContent}
-              onChange={(e) => setManualContent(e.target.value)}
-              placeholder="Paste the article content here... (Look for dialogue with speaker names like 'TONYA MOSLEY:' or 'DEL TORO:')"
-              style={{
-                width: '100%',
-                height: '100px',
-                border: '1px solid #e0e0e0',
-                borderRadius: '4px',
-                padding: '8px',
-                fontSize: '12px',
-                resize: 'vertical'
-              }}
+      {showModal && (
+        <Modal>
+          <ModalContent>
+            <ModalText>
+              Welcome to the conversation flow! This is a sample text to demonstrate the modal functionality.
+              Press Enter to continue and scroll to the 35th node in the conversation.
+            </ModalText>
+            <ModalInput
+              placeholder="Press Enter to continue..."
+              onKeyDown={handleModalKeyDown}
+              autoFocus
             />
-            <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-              <button onClick={handleManualParse} disabled={!manualContent.trim()}>
-                Parse Content
-              </button>
-              <button onClick={() => {
-                setShowManualInput(false);
-                setManualContent('');
-                setError(null);
-              }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          minZoom={0.5}
-          maxZoom={2}
-          defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-          zoomOnScroll={false}
-          panOnScroll={false}
-          zoomOnPinch={true}
-          zoomOnDoubleClick={true}
-          proOptions={{ hideAttribution: true }}
-          nodesDraggable={false}
-          panOnDrag={false}
-        >
-          <Controls showInteractive={false} />
-        </ReactFlow>
-      </FlowArea>
-
-      <TextModal
-        isOpen={isTextModalOpen}
-        onClose={() => setIsTextModalOpen(false)}
-        onSave={handleSaveText}
-      />
+          </ModalContent>
+        </Modal>
+      )}
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.1 }}
+        minZoom={0.1}
+        maxZoom={2}
+        panOnScroll={false}
+        zoomOnScroll={false}
+        style={{ background: '#f8fafc' }}
+      >
+        <Controls />
+      </ReactFlow>
+      {/* Column Headers */}
+      <ColumnHeadersContainer>
+        {columnTitles.map((title, index) => (
+          <ColumnHeader key={index} style={{ left: `${index * (COLUMN_WIDTH + COLUMN_GAP)}px` }}>
+            {title}
+          </ColumnHeader>
+        ))}
+      </ColumnHeadersContainer>
     </div>
   );
 };

@@ -152,8 +152,8 @@ def parse_daily_covids_wake_transcript():
             'id': f'edge-{i + 1}',
             'source': notes[i]['id'],
             'target': notes[i + 1]['id'],
-            'sourceHandle': 'right',  # Default to right handle for source
-            'targetHandle': 'left',   # Default to left handle for target
+            'sourceHandle': 'right',  # Connect from right handle of source
+            'targetHandle': 'left',   # Connect to left handle of target
             'type': edge_type
         })
 

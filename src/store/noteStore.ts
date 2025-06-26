@@ -129,7 +129,7 @@ const processDialogue = (
       id: `edge-${allNodes[i].node.id}-${allNodes[i + 1].node.id}`,
       source: allNodes[i].node.id,
       target: allNodes[i + 1].node.id,
-      type: 'articleLink',
+      type: 'smoothstep',
     });
   }
 
@@ -528,7 +528,9 @@ export const useNoteStore = create<NoteStore>((set) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
-        type: 'articleLink',
+        type: edge.type || 'smoothstep', // Use the type from backend, fallback to smoothstep
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
       }));
       
       console.log(`Created ${allEdges.length} edges`);
