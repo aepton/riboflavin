@@ -14,11 +14,13 @@ A React-based note-taking application that allows you to create, connect, and or
 ## Getting Started
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -35,6 +37,7 @@ A React-based note-taking application that allows you to create, connect, and or
 ## Development
 
 This project is built with:
+
 - React
 - TypeScript
 - React Flow

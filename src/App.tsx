@@ -1,12 +1,13 @@
-import { Global } from '@emotion/react';
-import { ReactFlowProvider } from 'reactflow';
-import Flow from './components/Flow';
+import { Global } from "@emotion/react";
+import { ReactFlowProvider } from "reactflow";
+import Flow from "./components/Flow";
 
 const globalStyles = {
   body: {
     margin: 0,
     padding: 0,
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   },
 };
 
