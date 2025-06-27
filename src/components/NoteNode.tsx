@@ -109,11 +109,6 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }
   }, [data.isNew]);
 
-  // Debug: log when node is rendered
-  useEffect(() => {
-    console.log(`Node ${id} rendered with handles: top, right, bottom, left`);
-  }, [id]);
-
   // Adjust height when content changes
   useEffect(() => {
     adjustHeight();

@@ -3,998 +3,1018 @@
     {
       "id": "column-1",
       "title": "Michael Barbaro",
+      "notes": []
+    },
+    {
+      "id": "column-2",
+      "title": "Stephen Macedo",
+      "notes": []
+    },
+    {
+      "id": "column-3",
+      "title": "Frances Lee",
+      "notes": []
+    },
+    {
+      "id": "column-4",
+      "title": "",
+      "notes": []
+    },
+    {
+      "id": "column-5",
+      "title": "Michael Barbaro",
       "notes": [
         {
           "id": "note-1",
           "content": "From \u201cThe New York Times\u201c, I\u2019m Michael Barbaro. This is \u201cThe Daily\u201c.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-2",
           "content": "Five years ago, at the urging of federal officials, much of the United States locked down to stop the spread of COVID \u2014 a decision that, over time, polarized the country and changed the relationship between many Americans and their government. Now, two prominent political scientists are making the case that there\u2019s no clear evidence that those lockdowns saved lives and that it\u2019s time for a national reckoning about the decision-making that led to those lockdowns in the first place.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-3",
           "content": "Today, my conversation with Stephen Macedo and Frances Lee about their new book \u201cIn COVID\u2019s Wake\u201c, and what they say will be required for a better outcome when the next pandemic strikes.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-4",
           "content": "It\u2019s Thursday, March 20.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-5",
           "content": "Just to start, can I call you by your first names? Should I call you by your professional title? Is it OK to call you Steve and Frances?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-8",
           "content": "Of course, now that I\u2019ve called you by those names, I\u2019ve pressured you into the informality.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-10",
           "content": "We\u2019re actually not a show that often speaks to academics, if you listen to \u201cThe Daily\u201c. And that\u2019s nothing against academics. We usually talk to our colleagues.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-11",
           "content": "But you have produced a body of work here that feels important and it feels unique. You\u2019re both tenured professors at Princeton University. Steve, you spent a lot of your career researching democracy.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-12",
           "content": "Frances, your work is focused on policy-making. Your big deals in your fields. And so to start, I want to talk about why you undertook this project of examining the US response to COVID in a really rigorous way.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-18",
           "content": "Lack of skepticism from some.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-20",
           "content": "And Stephen, what was your experience of this pandemic? And how did that, in any way, contribute to your desire to excavate the entire thing?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-24",
           "content": "In your reconstruction of it, I found myself thinking, wow, I thought I knew the pandemic really because I lived through it. But I didn\u2019t know it as I thought I did. And I think the biggest way many people experienced the pandemic was through the mandates, the restrictions.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-25",
           "content": "One of the things that surprised me in your research, in your book, was that heading into the pandemic, you found that there was not a consensus that these restrictions, these mandates around things like school closures, lockdowns, stay-at-home orders, quarantining, masking, that they were the right way to try to fight a respiratory viral pandemic. That, instead, there was some real uncertainty about whether that made sense or that it could work at a large scale as public policy, and actually that there were a lot of doubts that it ever could.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-27",
           "content": "Let\u2019s just zero in on that word, because we\u2019re going to use it a lot I think, nonpharmaceutical interventions.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-29",
           "content": "Just define that.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-31",
           "content": "The big things we associate with the government\u2019s response to the pandemic.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-34",
           "content": "And what made them controversial? And just how controversial were they?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-38",
           "content": "Effectiveness in terms of actually stopping containing the spread of the virus?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-42",
           "content": "Right. And prompted by you two and what you wrote, I went in and looked at this study. What it says is that while there is, like you just said, low evidence that it was plausible that these kinds of interventions could help mitigate the spread of the virus. What do you make of that word, \u201cplausible?\u201d",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-45",
           "content": "You\u2019re citing this WHO study. But how widespread, how dominant, would you say, this skepticism of these kinds of interventions as effective, as worth the cost, as practical and scalable, how widely would you say that view was held before the pandemic?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-48",
           "content": "So given this skepticism in the world of public health toward these nonpharmaceutical interventions, or Steve as you said, basically writ large, the lockdown approach, before the pandemic, how and why did the US shift gears and end up recommending pretty much all the things that you\u2019re saying everybody previously thought wasn\u2019t such a good idea?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-50",
           "content": "Can I just pause? Because China\u2019s response, as I recall, was pretty heavily criticized at the very beginning as harsh. How does China\u2019s response to COVID, that lockdown approach that was so total, at least according to these recommendations, how did it become persuasive? Especially given that\u2019s a very unique system of government, totally authoritarian, with a big surveillance apparatus, and a much more compliant citizenry than most of the world.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-52",
           "content": "Literally, right.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-54",
           "content": "A democracy, we should say, not an authoritarian.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-56",
           "content": "The report heard around the world.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-72",
           "content": "Frances, do you think that the reality is that in the face of what felt terrifyingly like an existential threat to so much of our population, US government officials, as aware as they must have been of all this skepticism you two have found, that they just didn\u2019t trust Americans enough to really level with them from the start and say something like, look, these interventions, they are our best guess about what\u2019s going to slow this down, and save as many lives as possible, and get us through this pandemic in the best shape that we possibly can.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-73",
           "content": "And to say, essentially, this is a large-scale experiment. And we have to be honest, it\u2019s going to involve all these trade-offs economic, social, academic, psychological. It may hurt a lot of people in the name of saving an unknown number of people, but we think it\u2019s going to be worth it. Join us. I mean, that is admittedly, a hard message to ask people to join you.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-77",
           "content": "Is there any case to be made that with a new and deadly virus, that everyone was learning about in real time, that if government leaders thought that any of these measures had any chance of working or even just buying time until a vaccine was available, that as a result, it was worth a try? I mean, I guess to distill my question. Is a deep, singular focus on saving lives OK?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-79",
           "content": "Why not? Just explain that, because I think there will be some people listening who say, that\u2019s the only indices that matters in a pandemic.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-86",
           "content": "We\u2019ll be right back.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-87",
           "content": "The coronavirus pandemic has left a trail of destruction in the US and around the world.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-88",
           "content": "I\u2019ve never seen much death. So many of the patients are dying, despite our best efforts.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-89",
           "content": "I am fighting two wars. I\u2019m fighting a war against coronavirus. And I\u2019m fighting a war against stupidity. People are not listening to what we\u2019re saying.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-90",
           "content": "Protesters say the shutdown has lasted too long and inflicted too much pain, especially on small businesses.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-91",
           "content": "The cure cannot be worse than the disease. There are 30 million people that are out of work in this country. We have to go back to work.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-92",
           "content": "Open our country. Open us up. We need to work.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-93",
           "content": "Open up!",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-94",
           "content": "We are ordering you, end the shutdown now!",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-95",
           "content": "Open up! Open up! Open up!",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-96",
           "content": "Now, 36 states are seeing increases in new weekly infections this morning.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-97",
           "content": "The US just suffered the deadliest day of the summer so far.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-98",
           "content": "We want to reopen the schools. Everybody wants it. The moms want it. The dads want it. The kids want it. It\u2019s time to do it.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-99",
           "content": "Tonight, with the virus raging and hospitals on the brink, the president putting pressure on schools, today, threatening to cut off funding for districts that don\u2019t reopen in person.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-100",
           "content": "Many teachers across the country are pushing back on plans to bring students back into the classroom.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-101",
           "content": "This COVID-19 world we\u2019ve been living in has lasted a full six months.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-102",
           "content": "The official COVID-19 death toll in the US has now surpassed 200,000, the most of any nation.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-103",
           "content": "It\u2019s a little shocking to see many people not wearing protective masks, not staying 6 feet apart.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-104",
           "content": "It\u2019s a hoax! It\u2019s a hoax!",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-105",
           "content": "How can we coexist with anti-science people? What can we do to survive the ignorance?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-106",
           "content": "I just think we need to hunker down and get through this fall and winter, because it\u2019s not going to be easy.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-107",
           "content": "It\u2019s a hoax! It\u2019s a hoax! It\u2019s a hoax! It\u2019s a hoax!",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-108",
           "content": "Let\u2019s talk about what happens as the pandemic progresses and the impacts and the costs of these shutdowns, these quarantines, these stay-at-home orders that the government told us we needed, they begin to grow. You two posit that even as those costs are rising, the country\u2019s public health officials show very little tolerance for an open debate about whether this approach should change.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-109",
           "content": "And for you, this is encapsulated by what happens to three well-known scientists who decide to write what becomes known as the Great Barrington Declaration, which arrives in the fall of 2020, so about seven months into the pandemic. Can you lay out what that declaration was? And how the conversation in response to it unfolded?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-112",
           "content": "Right. Death rates among the elderly were orders of magnitude larger than the general population.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-114",
           "content": "And how did they suggest doing that?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-117",
           "content": "Just explain that.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-126",
           "content": "Frances, was there something to the backlash kind of on principle? Because I recall that there was a response from the scientific and public health community that basically amounted to this alternative vision, the Great Barrington Declaration, it\u2019s just not practical. How do you separate vulnerable people from the rest of society?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-127",
           "content": "Think about your immunocompromised grandmother. She lives on the third floor of a multigenerational household. How is she supposed to be protected when everybody else is suddenly liberated from their stay-at-home orders and bringing that virus home to then infect her, who is very, very vulnerable?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-129",
           "content": "The question of what the approach should be to COVID, of course, ends up in the hands of states and governors. And as all our listeners will remember, states take very divergent approaches. Talk to us about what you find in your research about that breakdown across the 50 states, especially on the metric of saving lives.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-131",
           "content": "Right.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-135",
           "content": "No difference?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-137",
           "content": "Can I ask you to linger on this period before the vaccines? Because from what you\u2019re saying, Frances, before the vaccines were introduced, states that had more and longer restrictive measures had the same, more or less, number of deaths as states that had less and shorter restrictive measures.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-139",
           "content": "Is there any evidence, Steve, that these restrictions slowed the spread of COVID across the states?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-141",
           "content": "Frances, how is it possible \u2014 I just want to make sure we can wrap our heads around, how it might be the case that longer, deeper restrictions didn\u2019t end up meaningfully changing outcomes? I\u2019m just imagining someone hearing that and thinking, I stayed home, I didn\u2019t get sick. And so why, in your estimation, by your analysis, didn\u2019t this save more lives?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-147",
           "content": "And ultimately, it\u2019s really the vaccine that starts to make the difference when it comes to death rates.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-149",
           "content": "And so if we go back to where we started this conversation about trade-offs, before the pandemic, you thoroughly described this scientific view that these kinds of interventions we\u2019ve been talking about the whole time, the lockdown approach, was difficult to implement and would come with heavy costs and uncertain benefits. And yet, the United States and dozens of other countries plowed ahead with the shutdown and lockdown approaches anyway, focusing on their theoretical life-saving benefits.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-150",
           "content": "Five years later, what your findings show is that the state-by-state data within the US hasn\u2019t definitively established those life-saving benefits. But what we do know is a lot about the costs. Talk about what you found when it comes to those costs.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-156",
           "content": "Right. Trillions of dollars in the United States.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-158",
           "content": "If we\u2019re putting this all together and summarizing what you found here about the lack of evidence of a life-saving benefit and the real clear evidence of extraordinary cost, from what you\u2019re saying, Frances, we\u2019re not able to say, at this point, that these extraordinary historic interventions, that they were ultimately worth it.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-160",
           "content": "I\u2019m curious about something. In the end, you\u2019re clearly saying that there needs to be a different kind of conversation about the measures that were taken. But are you saying that we shouldn\u2019t have done the things we did during COVID? Because those are two very distinct ways of thinking about this.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-163",
           "content": "And the risk of any kind of reckoning like this is that it results in people having even less faith in the government, and taking bits and pieces of what you find and weaponizing them. Do you worry that conspiracy theories will be fueled by what you\u2019re asking people to do here?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-166",
           "content": "A final question, and you\u2019re starting to hint at it here. Since we can\u2019t go back and redo our response to COVID, to the degree we can try to get it right next time, if there\u2019s a next time, what is your prescription for that, knowing what you now know and knowing how polarized this country remains over what happened?",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-172",
           "content": "That\u2019s a really, really fascinating thing to say aloud.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-176",
           "content": "It\u2019s an invitation to have a reckoning.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-178",
           "content": "Steve and Frances, thank you both very much for your time. We really appreciate it.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-181",
           "content": "We\u2019ll be right back.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-182",
           "content": "Here\u2019s what else you need to know today. On Wednesday, the Federal Reserve predicted that inflation would rise this year to 2.7 percent from 2.5 percent, and suggested that President Trump\u2019s tariffs on imported goods likely accounted for much of that increase. Still, the Fed said that it would neither raise nor cut the interest rate, its most powerful tool for influencing inflation, as it waits to see how Trump\u2019s policies affect the economy.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-183",
           "content": "And Ukrainian President Volodymyr Zelensky has agreed to accept Russia\u2019s offer of a mutual pause in attacks on energy targets as a step toward a broader ceasefire. The agreement came during a call between Zelensky and President Trump, their first conversation since a dramatic Oval Office confrontation last month.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-184",
           "content": "Today\u2019s episode was produced by Asthaa Chaturvedi and Caitlin O\u2019Keefe. It was edited by Larissa Anderson and Lisa Chow, fact-checked by Susan Lee, contains original music by Dan Powell, Marion Lozano, and Pat McCusker, and was engineered by Chris Wood. Our theme music is by Jim Brunberg and Ben Landsverk of Wonderly. Special thanks to David Leonhardt, Paula Szuchman, Nick Pitman, Celia Dugger, Michael Mason, Paige Cowett, and Jim Yardley.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-185",
           "content": "That\u2019s it for \u201cThe Daily\u201c. I\u2019m Michael Barbaro. See you tomorrow.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-186",
           "content": "March 20, 2025\nShare full article",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-187",
           "content": "356\nHosted by Michael Barbaro",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-188",
           "content": "Produced by Asthaa Chaturvedi and Caitlin O\u2019Keefe",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-189",
           "content": "Edited by Larissa Anderson and Lisa Chow",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-190",
           "content": "Original music by Dan PowellMarion Lozano and Pat McCusker",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-191",
           "content": "Engineered by Chris Wood",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-192",
           "content": "Listen and follow \u2018The Daily\u2019\nApple Podcasts | Spotify | Amazon Music | YouTube | iHeartRadio\nNever miss an episode of The Daily  We'll send you the latest episode as soon as it publishes. Get it sent to your inbox.\nFive years ago, at the urging of federal officials, much of the United States locked down to stop the spread of Covid. Over time, the action polarized the country and changed the relationship between many Americans and their government.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-193",
           "content": "Michael Barbaro speaks to Stephen Macedo and Frances Lee, two prominent political scientists who dispute the effectiveness of the lockdowns, to find out what they think will be required when the next pandemic strikes.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-194",
           "content": "Unlock full access to New York Times podcasts and explore everything from politics to pop culture. Subscribe today at nytimes.com/podcasts or on Apple Podcasts and Spotify.",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-195",
           "content": "On today\u2019s episode\nStephen Macedo and Frances Lee, authors of In Covid\u2019s Wake: How Our Politics Failed Us",
-          "columnId": "column-1"
+          "columnId": "column-5"
         },
         {
           "id": "note-196",
           "content": "ImageIn a park, people are sitting inside white circles.\nDomino Park in New York in 2020. According to several experts, a big lesson learned from Covid is that recommendations during any pandemic are necessarily based on emerging and incomplete information.Credit...Hilary Swift for The New York Times",
-          "columnId": "column-1"
+          "columnId": "column-5"
         }
       ]
     },
     {
-      "id": "column-2",
+      "id": "column-6",
       "title": "Stephen Macedo",
       "notes": [
         {
           "id": "note-6",
           "content": "Yes.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-9",
           "content": "Not at all.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-13",
           "content": "Maybe I\u2019ll just say a couple of words about that to start with. I actually had started to work on a larger project on several topics on which I thought progressives were not paying enough attention to arguments coming from the other side, and that included immigration, abortion, and then COVID as well. And as soon as I got deeply into it, it was clear that the COVID policy issues themselves, the COVID crisis itself was large enough.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-14",
           "content": "And moreover, that people were not engaging in critical reflection and the sort of reckoning we\u2019ve tried to do. This is meant to be, in part, a book about policy choices, policy deliberation, and in many ways, policy mistakes, perhaps, that were made during COVID. But there\u2019s also a larger institutional question in the background and principled question in the background, which is, how did the institutions function, which is supposed to be helping us to catch mistakes and correct our mistakes, to seek the truth on difficult matters, how did they function under COVID? And I mean, of course, journalism, science, and the academy more broadly.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-15",
           "content": "And so the biggest theme that runs through the book, I think, is that these, as we call them, truth-seeking institutions, did not function as well as they should have during COVID. That there was a premature policy consensus. There was an unwillingness to re-examine assumptions. And there was an intolerance of criticism and divergent points of view that emerged fairly quickly in the pandemic, and that hurt us, that hurt our policy responses, that hurt our ability to course correct over the course of the pandemic as we learned more and had greater reason to course correct.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-21",
           "content": "My experience was not unusual. I was in New Jersey, a blue state, and I went along with the messaging. I was busy with doing other things.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-22",
           "content": "Of course, we kept teaching online and doing our research online. But I didn\u2019t really investigate, skeptically, during the height of COVID itself in 2020-2021. I started working on this book in 2022.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-23",
           "content": "And frankly, have been kind of shocked on almost a daily basis in researching the book at the things I\u2019m coming across and discussing with Frances. For me, it\u2019s been a kind of voyage of discovery. And I\u2019ve been very surprised at what we\u2019ve uncovered.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-26",
           "content": "There were a number of pre-COVID pandemic planning documents anticipating a respiratory pandemic, such as COVID turned out to be. One of them was published just in the fall of 2019, shortly before the COVID pandemic broke out. That was by the World Health Organization. It surveyed the range of nonpharmaceutical interventions, social distancing measures, school closures.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-28",
           "content": "Yes.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-30",
           "content": "Yeah, so it\u2019s everything other than vaccines and drugs. The whole suite of measures from handwashing, mask wearing, personal hygiene, staying apart, closing schools, restricting businesses, restricting public gatherings, not letting people go to church, and so ons.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-32",
           "content": "Absolutely. Things that are often lumped under the word \u201clockdown.\u201d And so those measures had been contemplated before. They were investigated.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-33",
           "content": "That was the major subject of these pre-COVID pandemic plans. Obviously, getting a vaccine as soon as possible and administering it was something on which there was a consensus. But the controversial part of the policy was the nonpharmaceutical measures.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-35",
           "content": "They were quite controversial because one of the things that the plans emphasize is that they would be costly, that keeping children out of school would lead to learning losses and other detriments to health and well-being, including mental well-being, from children being isolated.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-36",
           "content": "Business closures, likewise, could have consequences in terms of human being for those who own businesses, who depend on that, businesses for livelihood. Economic loss can lead also to psychological loss and family conflicts, and so on.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-37",
           "content": "Isolating human beings, who are social creatures, will have a whole series of knock-on effects that the prepandemic planning documents discuss. And these matters had been studied. And they found that there was a lack of good evidence and absence of certainty around the effectiveness of these measures.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-39",
           "content": "Yes, especially reducing morbidity and mortality. That is to say, serious illness and death.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-46",
           "content": "Yeah, the World Health Organization was one study, but there was another one in 2019 by Johns Hopkins, which came to similarly skeptical conclusions about these various nonpharmaceutical interventions \u2014 school closures, mask wearing, and so on and so forth. Earlier, 2011, the UK government did a prepandemic planning document and, similarly, argued that in times of modern transportation around the world, these nonpharmaceutical interventions could not be counted on to significantly slow the spread of a virus.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-47",
           "content": "And so I would say that was the dominant view. There were, of course, mathematical modelers who were prominent in the George W. Bush administration. They were more optimistic, not based on huge amounts of data, but based on scientific modeling projections. They believed that these measures could work.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-49",
           "content": "One factor was the fact that China locked down, and the World Health Organization sent a team to China. And they issued a report after just spending a week there, and it was a fulsome endorsement of the Chinese approach. They said that China has shown the world the way to suppress the virus. Never been done before, but it\u2019s been done by China. And they endorsed the strategy without qualification for around the world.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-51",
           "content": "You\u2019re expressing some skepticism about the extent to which we should regard the Chinese approach as a model, given the features of its system and their inconsistency with Western civil liberties, freedom of dissent, and so on. And that\u2019s a perfectly good question. None of that is evident in the World Health Organization report. They don\u2019t emphasize those sorts of things at all. They pay no attention to the fact that Chinese had authoritarian powers to require people to be bolted into their apartments, in some cases.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-53",
           "content": "Yeah. And then Italy had the first national lockdown in the world.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-55",
           "content": "Democracy, right. They showed it was possible. I mean, Italy showed that a Western population was willing to go along with the national lockdown and that, I think, had a demonstration effect. Another factor was the report that came out of Imperial College London, the optimistic modeling projections about nonpharmaceutical interventions. That\u2019s Neil M. Ferguson. His report projected something like two million deaths in the United States by August 2020.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-57",
           "content": "The report heard around the world. One of the most influential, it looks like, reports that was ever issued. And it was that Anthony Fauci and Deborah Birx carried into Donald Trump\u2019s office, leading to a news conference on March 16, that recommended school closures and other measures.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-58",
           "content": "I\u2019m glad to see that you\u2019re practicing social distancing. That looks very nice. That\u2019s very good. I want to thank everybody for being here today.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-59",
           "content": "This afternoon, we\u2019re announcing new guidelines for every American to follow. Over the next 15 days, as we combat the virus, each and every one of us has a critical role to play. My administration is recommending that all Americans, including the young and healthy, work to engage in schooling from home when possible, avoid gathering in groups of more than 10 people, avoid discretionary travel, and avoid eating and drinking at bars, restaurants, and public food courts.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-60",
           "content": "This, what we\u2019re mentioning now, the guidelines, when you look at them carefully, I believe if the people in the United States take them seriously, because they were based on some rather serious consideration back and forth, some may look at them and say they\u2019re going to be really inconvenient for people. Some will look and say, maybe we\u2019ve gone a little bit too far. They were well thought out.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-61",
           "content": "Take a look at the guidelines. Read them carefully. And we hope that the people of the United States will take them very seriously, because they will fail if people don\u2019t adhere to them. Thank you.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-62",
           "content": "Good afternoon. This morning, I signed an executive order directing nearly all of our nine million residents to quite simply stay at home.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-63",
           "content": "That we direct a statewide order for people to stay at home.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-64",
           "content": "The breaking news, stay at home. That is the order tonight from four state governors, as the coronavirus pandemic spreads.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-65",
           "content": "I fully recognize that in some cases, I am choosing between saving people\u2019s lives and saving people\u2019s livelihoods.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-66",
           "content": "In California, the notoriously busy highways are nearly empty. The hustle and bustle of New York is at a standstill.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-67",
           "content": "More than half of the country\u2019s students have been sent home.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-68",
           "content": "Businesses across the country are forced to shut their doors.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-69",
           "content": "Estimates about a quarter of all restaurants to close as a result of this pandemic.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-70",
           "content": "The coronavirus now has one in four Americans living in lockdown.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-71",
           "content": "We are looking at a new war that no one has seen before.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-76",
           "content": "I mean, I think there was a general social fixation on the number of deaths, the spread of cases. We developed a kind of tunnel vision of the one indices that public health officials were focusing on, was sickness and death from COVID. And these other matters were not highlighted by political leaders or by public health officials.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-78",
           "content": "I don\u2019t see how it is if there are significant costs involved, including in the currency of life. These policy choices always involve a variety of values. And we have to not simply focus on the one indices of saving lives, I think, in so far as \u2014",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-80",
           "content": "Look, early on, I think that the initial lockdown orders and those conditions of uncertainty and so on, may have made some sense. But we learned things over the summer that should have helped inform the strategy and that should have at least been more vigorously debated. The success of the public health measures always depended upon public buy-in, public willingness to comply, public willingness to trust and to go along.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-81",
           "content": "And there wasn\u2019t enough public deliberation about these matters. Too much power was accorded to narrow experts in public health and epidemiology, in particular. There should have been a wider conversation simply involving many more people with broader expertise.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-82",
           "content": "But it also should have involved ordinary people in the public, who after all, were being the ones asked to make sacrifices in their own lives, to adopt policies which always involve trade-offs across values, risks. How much are we willing to give up to not visit an elderly relative in the hospital, to not have a funeral, to not be allowed to attend church on Sunday?",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-83",
           "content": "These sorts of public questions don\u2019t have scientific answers. They\u2019re value judgments about which ordinary people have a certain expertise about their own lives and what matters to them. And they should have been involved as well, in the deliberation about these measures.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-110",
           "content": "They were three scientists from Stanford University, Harvard University, and Oxford, well-known, well-established scientists with excellent publication records. They were concerned about the costs of the closures. They were concerned about the disproportionate burdens being borne by essential workers and schoolchildren, and they attempted to start a conversation.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-111",
           "content": "They were arguing that rather than keeping the whole of society closed, rather than keeping schools closed for children at very little risk from COVID, we should be focusing protection on the vulnerable parts of the population. And by October 4, when that document was published, we had good evidence to suggest, to know, that there was highly uneven vulnerability across the population, age being the principal principle factor.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-113",
           "content": "Much, much higher. And what they suggested was focusing protection on the vulnerable.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-118",
           "content": "When the Declaration came out a few days later, the Great Barrington people were charged with adopting a herd immunity strategy to let the virus rip through the population, and that it would cost hundreds of thousands of lives. We have now the email by Francis Collins, the head of the National Institutes of Health, in effect, Dr. Anthony Fauci\u2019s boss, he said in his email to Dr. Fauci and others, the document from the three fringe epidemiologists is getting a lot of attention, even a co-signature from a Nobel Prize winner. People were signing this declaration online. And he said, there needs to be a quick and devastating takedown.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-119",
           "content": "For those of you who don\u2019t know, the Great Barrington Declaration is a awful, awful idea.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-120",
           "content": "It\u2019s the fantasy of petulant children who just want this pandemic to be over.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-121",
           "content": "And it is appalling, really, that experts would even suggest something like this as a real plan.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-122",
           "content": "Critics, including the director general of the World Health Organization, call this plan a dangerous approach and not an option.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-123",
           "content": "You\u2019re essentially asking people to go to concentration camps. I mean, that\u2019s overstatement, I\u2019m sorry. But separating the families, it\u2019s just not workable.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-124",
           "content": "NIH director Francis Collins said this. Quote, \u201cWhat I worry about with this is it\u2019s being presented as if it\u2019s a major alternative view that\u2019s held by large numbers of experts in the scientific community. That is not true. This is a fringe component of epidemiology. This is not mainstream science. It is dangerous.\u201d",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-125",
           "content": "If you let infections rip, as it were, and say, let everybody get infected that\u2019s going to be able to be getting infected and then we\u2019ll have herd immunity, quite frankly, that is nonsense.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-140",
           "content": "There\u2019s some evidence that the nonpharmaceutical interventions of various sorts, the lockdown measures, school closures, et cetera, reduced somewhat the spread of the virus. But even the optimistic reports that emphasize that and call that success, do not show evidence of significantly reduced death. The virus evidently spread efficiently enough, so that even if the spread of infection could be reduced, say, 15 percent, that did not yield significant benefits in terms of death and disease.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-143",
           "content": "Yes. The lockdowns had lots of holes in them. The social distancing measures were very porous. A third of workers had to keep working as essential workers to keep the rest of us well-fed, the electricity on. So it really was not possible to lock down the entire economy or the workforce.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-154",
           "content": "I was just going to add one, which is the tremendous expenditures on COVID relief. Now, some of that was going to be necessary. But Frances has pointed out that the initial expenditures were equivalent to the New Deal.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-165",
           "content": "Right. It\u2019s very hard to say for sure what will succeed in raising trust in the institutions in our society that are in the business of pursuing the truth, science, science journalism, the academy, and so on. But we should try to behave in a more trustworthy fashion and hope that greater trust follows from that. We need a franker conversation about what happened and how we can do better the next time around.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-167",
           "content": "I guess I would say that we need to consider the costs, as well as the hoped for benefits of policies that are adopted, especially these kinds of nonpharmaceutical interventions, social distancing measures, and so on. And we need to have wider and more tolerant deliberation about these matters and not repose as much authority in narrow experts who have tunnel vision very often, who admitted after COVID to having tunnel vision. Francis Collins admitted, quite frankly, in July 2023, that public health officials, including himself, focused way too narrowly on a narrow set of public health outcomes.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-168",
           "content": "As a guy living inside the Beltway, feeling the sense of crisis, trying to decide what to do in some situation room in the White House with people who had data that was incomplete, we weren\u2019t really thinking about what that would mean to Wilk and his family in Minnesota, a thousand miles away from where the virus was hitting hard. We weren\u2019t really considering the consequences in communities that were not New York City or some other big city. If you\u2019re a public health person and you\u2019re trying to make a decision, you have this very narrow view of what the right decision is, and that is something that will save a life.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-169",
           "content": "It doesn\u2019t matter what else happens. You attach infinite value to stopping the disease and saving a life. You attach zero value to whether this actually totally disrupts people\u2019s lives, ruins the economy, and has many kids kept out of school in a way that they never quite recover from.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-170",
           "content": "Collateral damage.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-171",
           "content": "Yeah, collateral damage. This is a public health mindset. And I think a lot of us involved in trying to make those recommendations had that mindset, and that was really unfortunate. It\u2019s another mistake we made.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-175",
           "content": "Right. And in light of that quotation, how can we not? How can we not look back?",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-177",
           "content": "Right. How could we not have the reckoning, given what Francis Collins has said?",
-          "columnId": "column-2"
+          "columnId": "column-6"
         },
         {
           "id": "note-179",
           "content": "We appreciate the conversation.",
-          "columnId": "column-2"
+          "columnId": "column-6"
         }
       ]
     },
     {
-      "id": "column-3",
+      "id": "column-7",
       "title": "Frances Lee",
       "notes": [
         {
           "id": "note-7",
           "content": "Absolutely, please.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-16",
           "content": "I mean, this was, as was frequently said at the time, a whole of government, whole of society response. And it was undertaken without the normal deliberation that accompanies decision-making of that degree of consequence. And I mean, I remember when the pandemic began that I had some doubts as to whether these measures were going to succeed.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-17",
           "content": "I mean, it was just a normal kind of skepticism about whether government policy would work, which is sort of bedrock to political science. I mean, that is one of our main topics of inquiry, whether government policy works or whether it has unanticipated consequences. And I was struck at the lack of skepticism over the course of the pandemic about these measures. I mean, it was obvious that a large share of the workforce \u2014",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-19",
           "content": "Yes, right. In the quarters that I travel in among academics or on mainstream media, that\u2019s where there seemed to be little questioning. It was almost seen as wrong or immoral to raise questions about whether this was feasible for most of the population.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-40",
           "content": "I\u2019d just like to add on this 2019 World Health Organization study. That the study was to examine intervention by intervention, which of them have evidence of effectiveness against a respiratory pandemic. And all of the measures were rated as having very poor evidence. In other words, we don\u2019t know if these measures work.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-41",
           "content": "Four of them, they recommended not to use under any circumstances. Those four measures were quarantine of exposed persons, border closure, entry and exit screening, and contact tracing. There were no assurances that these measures would work. But we were assured that they would have costs.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-43",
           "content": "They had been suggested. That\u2019s the reason why they are being studied. And of course, we know at some level that viruses transmit from person to person. One can infer that separating people from one another, putting barriers between them, ought to make a difference. There\u2019s a logic there.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-44",
           "content": "But the question is whether that could be scaled up to society or whether it would be sustainable over the course of a pandemic, there was no body of evidence around that. And so when it became the mantra of the pandemic that we should follow the science, there just wasn\u2019t a body of scientific work that undergirded the response that directed us to conclude that these measures were likely to be effective.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-74",
           "content": "I think under the pressure of the crisis, with the public demanding action, with the sense of catastrophe unfolding, I think they indulged in a great deal of wishful thinking. And so when advocates of nonpharmaceutical interventions recommended these measures and we\u2019re optimistic about it, they heard what they wanted to hear. I mean, there was a sense that with the two weeks to slow the spread, that we get control of this thing, that it\u2019ll go up, there\u2019ll be a peak, and then it\u2019ll come down, we\u2019ll defeat it. This will be done in a few months.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-75",
           "content": "There was optimism that this could be over with in short order. But there just wasn\u2019t a lot of long-term thinking of any sort around this. And a great deal of hope that, long-term, these measures wouldn\u2019t be in place.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-84",
           "content": "I would also add on this point that it\u2019s not just that there were costs. It\u2019s that the costs were inequitably distributed, so that some would suffer to protect the lives of others. I mean, the pandemic restrictions did not protect essential workers from exposure to COVID. And so they were being asked to bear the societal burden of disease.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-85",
           "content": "I think we have to confront the nature of these restrictions, that it\u2019s not a matter of saving everyone\u2019s life. It was saving some. I mean, that was all they could have achieved is to save some. The question as to whether they saved any in that. As we look back, the places that imposed tougher restrictions did not do better.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-115",
           "content": "The Great Barrington Declaration is a strategic plan. I mean, it\u2019s one-page long. And it just lays out a different approach and then invites people to think carefully about how it might be implemented, how one might engage in the effort of protecting the vulnerable, like more COVID testing of people who interact with the elderly, more help, organized society-wide help of getting groceries and taking them to the elderly. Looking for ways to reduce the risk of those who are at most risk of severe outcomes.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-116",
           "content": "That was what they hoped to initiate with the Great Barrington Declaration, was then a discussion that might develop more fully paths to implementing this strategic plan. But instead, they were denounced. They were presented as if they wanted people to die. Their motives were profoundly questioned. And that happened also at the highest levels of the US scientific establishment.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-128",
           "content": "The question presupposes that the measures that we were taking were working. They were not protecting the essential workers. And if we\u2019re not going to be able to contain the virus, if it\u2019s going to continue to spread through society, if it\u2019s going to become endemic, then aiming at protecting those at most risk makes more sense. It\u2019s a matter of what you see as the future trajectory here.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-130",
           "content": "At the outset, states across the board implemented stay-at-home orders.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-132",
           "content": "Forty-three states put them in place. Of the seven states that did not, all but one had broad business closures. There was great unity of response across the country. And these measures were hugely popular. Something like 87 percent of Americans supported the measures at the time of their implementation.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-133",
           "content": "Where we began to see policy divergence is in the reopening process. Democratic-leaning states maintained these stay-at-home orders two and a half times longer than Republican-leaning states. Democratic-leaning states were slower to reopen schools, dramatically slower to reopen schools.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-134",
           "content": "They maintained more stringent restrictions in terms of business closures and which businesses could reopen, and when and on what timeline, and whether you\u2019d have to have outdoor dining or whether restaurants would be closed again in the winter of 2020. There were substantial policy differences between red states and blue states over the course of the pandemic. And at the time that the vaccine rollout began, there was no difference between red states and blue states in their cumulative COVID mortality over the course of the crisis.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-136",
           "content": "No difference. The difference begins to emerge in the post-vaccine period. And that\u2019s where you begin to see blue states faring better than red states. So that by the end of the time series we examine in our book, which stops in January \u201823, Republican states had 30 percent more COVID mortality than Democratic states.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-138",
           "content": "That\u2019s correct. This is what we can see as we look back. We can see that there was a great deal of variation in how states responded, but that variation doesn\u2019t correlate with variation in COVID outcomes as measured by mortality from the disease, as reported to the CDC. And we controlled for factors like the age structure of the state population, the percent with obesity, the percent who live in urban areas, and other demographic factors likely to affect states\u2019 vulnerability to the virus.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-142",
           "content": "Individuals of sufficient means to stay home can protect themselves individually. But what works for individuals may not work for society as a whole.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-144",
           "content": "That\u2019s right. Another explanation is, of course, that it matters greatly who is being infected. It was only highly lethal in certain populations. And so if you were not protecting those in nursing homes, but you were keeping the teenagers and the college students locked down, you\u2019re not going to achieve anything in terms of reducing COVID mortality.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-145",
           "content": "We also didn\u2019t know when the virus reached the United States. There\u2019s evidence from antibodies in blood banks that the virus was already here in December of 2019, so it had already been spreading for months before the first lockdowns occurred. And data from cell phone mobility shows that lockdowns begin to break down after just a few weeks. They\u2019re not sustainable for human beings either. Human beings could not comply over the long haul.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-146",
           "content": "There\u2019s evidence that these measures made a difference for transmission. But there\u2019s not evidence that these measures were effective at reducing COVID mortality. And so that\u2019s just where we are. We need to do more study to understand what happened during the pandemic. And so I think we need to confront our failures and our successes and learn from it.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-148",
           "content": "Our data are consistent with that interpretation, in that we begin to see a divergence after the vaccine rollout between states with high vaccine uptake and states with low vaccine uptake in their COVID mortality. At the aggregate level, states that had higher vaccine uptake do have better COVID outcomes in the period after vaccines were available.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-151",
           "content": "I mean, there are extraordinarily wide-ranging. I mean, this was a whole of society intervention and so the whole of society was affected. I mean, we can start by thinking about the cost to education.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-152",
           "content": "We saw unprecedented drops in student learning as gauged by long-standing indicators of student progress. Chronic absenteeism from school roughly doubled nationwide, still elevated. The gaps that emerged in learning outcomes between the better-off and the less-well-off students, they widened.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-153",
           "content": "And they haven\u2019t begun to close since the pandemic ended and since schools reopened. Those gaps are still wider than they were. Those who are academically lagging before the pandemic were much worse off after the pandemic. I mean, we can go through, it\u2019s a long list of costs.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-155",
           "content": "The 2020 COVID response was equivalent, as a share of GDP, to both the New Deal and the 2009 stimulus package combined.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-157",
           "content": "And then in 2021, we had another New Deal all over again. It\u2019s roughly equivalent in terms of the demand on the US Treasury to war mobilization in 1943. About 10 percent of the total cost went to health care. Most of it is going to sustaining businesses and individuals through the closures. That\u2019s the lion\u2019s share of COVID aid.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-159",
           "content": "I mean, that\u2019s where things stand. I think that\u2019s one of the reasons why there\u2019s a great deal of hesitance to look back at what was done and to take stock of it.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-161",
           "content": "I mean, that\u2019s a larger question than I think we are capable of settling. What we can point to is the shortcomings in deliberation, in considering the costs, and in the equivocal and skeptical nature of the evidence when these measures were undertaken, and the doubts about what difference they made based on the data that we have now. That\u2019s why we think a larger conversation is necessary.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-162",
           "content": "It\u2019s not for us to say. I mean, just the scale of the decisions we are talking about are society-wide. They are global. As I have reflected on the work that Steve and I were doing as we were writing, I\u2019m struck by the tragedy if these measures didn\u2019t work, what the costs were, what else we could have done had we been able to make those kinds of public investments in something that was effective for other needs that we have as a society. It is excruciating to think about, but I think we owe it to ourselves to do so.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-164",
           "content": "I think conspiracy theories are fueled by not asking these questions. I mean, obviously, there are many conspiracy theories around COVID. The Plandemic, governments took these actions in order to assert more control over us, I mean, that kind of discourse which exists. If government acknowledged these questions and tried to hash them out, yes, some faith might be lost, but also some faith would be gained.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-173",
           "content": "I mean, that quote is excruciating. It goes right back to what you were asking us to confront a few minutes ago. How can you tell us that all this bought us nothing, that it was futile?",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-174",
           "content": "I mean, it\u2019s extremely painful. And I think that\u2019s one of the reasons why there\u2019s a hesitation even to look back at all.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         },
         {
           "id": "note-180",
           "content": "Thank you.",
-          "columnId": "column-3"
+          "columnId": "column-7"
         }
       ]
     }
@@ -1006,7 +1026,7 @@
       "target": "note-2",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-2",
@@ -1014,7 +1034,7 @@
       "target": "note-3",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-3",
@@ -1022,7 +1042,7 @@
       "target": "note-4",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-4",
@@ -1030,7 +1050,7 @@
       "target": "note-5",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-5",
@@ -1038,7 +1058,7 @@
       "target": "note-6",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-6",
@@ -1046,7 +1066,7 @@
       "target": "note-7",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-7",
@@ -1054,7 +1074,7 @@
       "target": "note-8",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-8",
@@ -1062,7 +1082,7 @@
       "target": "note-9",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-9",
@@ -1070,7 +1090,7 @@
       "target": "note-10",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-10",
@@ -1078,7 +1098,7 @@
       "target": "note-11",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-11",
@@ -1086,7 +1106,7 @@
       "target": "note-12",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-12",
@@ -1094,7 +1114,7 @@
       "target": "note-13",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-13",
@@ -1102,7 +1122,7 @@
       "target": "note-14",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-14",
@@ -1118,7 +1138,7 @@
       "target": "note-16",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-16",
@@ -1126,7 +1146,7 @@
       "target": "note-17",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-17",
@@ -1134,7 +1154,7 @@
       "target": "note-18",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-18",
@@ -1142,7 +1162,7 @@
       "target": "note-19",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-19",
@@ -1150,7 +1170,7 @@
       "target": "note-20",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-20",
@@ -1158,7 +1178,7 @@
       "target": "note-21",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-21",
@@ -1166,7 +1186,7 @@
       "target": "note-22",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-22",
@@ -1174,7 +1194,7 @@
       "target": "note-23",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-23",
@@ -1182,7 +1202,7 @@
       "target": "note-24",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-24",
@@ -1190,7 +1210,7 @@
       "target": "note-25",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-25",
@@ -1214,7 +1234,7 @@
       "target": "note-28",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-28",
@@ -1222,7 +1242,7 @@
       "target": "note-29",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-29",
@@ -1238,7 +1258,7 @@
       "target": "note-31",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-31",
@@ -1246,7 +1266,7 @@
       "target": "note-32",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-32",
@@ -1254,7 +1274,7 @@
       "target": "note-33",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-33",
@@ -1262,7 +1282,7 @@
       "target": "note-34",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-34",
@@ -1270,7 +1290,7 @@
       "target": "note-35",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-35",
@@ -1286,7 +1306,7 @@
       "target": "note-37",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-37",
@@ -1294,7 +1314,7 @@
       "target": "note-38",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-38",
@@ -1302,7 +1322,7 @@
       "target": "note-39",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-39",
@@ -1318,7 +1338,7 @@
       "target": "note-41",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-41",
@@ -1326,7 +1346,7 @@
       "target": "note-42",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-42",
@@ -1334,7 +1354,7 @@
       "target": "note-43",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-43",
@@ -1342,7 +1362,7 @@
       "target": "note-44",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-44",
@@ -1350,7 +1370,7 @@
       "target": "note-45",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-45",
@@ -1358,7 +1378,7 @@
       "target": "note-46",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-46",
@@ -1366,7 +1386,7 @@
       "target": "note-47",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-47",
@@ -1374,7 +1394,7 @@
       "target": "note-48",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-48",
@@ -1382,7 +1402,7 @@
       "target": "note-49",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-49",
@@ -1406,7 +1426,7 @@
       "target": "note-52",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-52",
@@ -1414,7 +1434,7 @@
       "target": "note-53",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-53",
@@ -1422,7 +1442,7 @@
       "target": "note-54",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-54",
@@ -1430,7 +1450,7 @@
       "target": "note-55",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-55",
@@ -1454,7 +1474,7 @@
       "target": "note-58",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-58",
@@ -1462,7 +1482,7 @@
       "target": "note-59",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-59",
@@ -1470,7 +1490,7 @@
       "target": "note-60",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-60",
@@ -1478,7 +1498,7 @@
       "target": "note-61",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-61",
@@ -1486,7 +1506,7 @@
       "target": "note-62",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-62",
@@ -1494,7 +1514,7 @@
       "target": "note-63",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-63",
@@ -1502,7 +1522,7 @@
       "target": "note-64",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-64",
@@ -1542,7 +1562,7 @@
       "target": "note-69",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-69",
@@ -1550,7 +1570,7 @@
       "target": "note-70",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-70",
@@ -1558,7 +1578,7 @@
       "target": "note-71",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-71",
@@ -1574,7 +1594,7 @@
       "target": "note-73",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-73",
@@ -1582,7 +1602,7 @@
       "target": "note-74",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-74",
@@ -1598,7 +1618,7 @@
       "target": "note-76",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-76",
@@ -1614,7 +1634,7 @@
       "target": "note-78",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-78",
@@ -1630,7 +1650,7 @@
       "target": "note-80",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-80",
@@ -1646,7 +1666,7 @@
       "target": "note-82",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-82",
@@ -1654,7 +1674,7 @@
       "target": "note-83",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-83",
@@ -1662,7 +1682,7 @@
       "target": "note-84",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-84",
@@ -1670,7 +1690,7 @@
       "target": "note-85",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-85",
@@ -1678,7 +1698,7 @@
       "target": "note-86",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-86",
@@ -1694,7 +1714,7 @@
       "target": "note-88",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-88",
@@ -1702,7 +1722,7 @@
       "target": "note-89",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-89",
@@ -1710,7 +1730,7 @@
       "target": "note-90",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-90",
@@ -1718,7 +1738,7 @@
       "target": "note-91",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-91",
@@ -1726,7 +1746,7 @@
       "target": "note-92",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-92",
@@ -1734,7 +1754,7 @@
       "target": "note-93",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-93",
@@ -1750,7 +1770,7 @@
       "target": "note-95",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-95",
@@ -1758,7 +1778,7 @@
       "target": "note-96",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-96",
@@ -1766,7 +1786,7 @@
       "target": "note-97",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-97",
@@ -1774,7 +1794,7 @@
       "target": "note-98",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-98",
@@ -1782,7 +1802,7 @@
       "target": "note-99",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-99",
@@ -1798,7 +1818,7 @@
       "target": "note-101",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-101",
@@ -1806,7 +1826,7 @@
       "target": "note-102",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-102",
@@ -1822,7 +1842,7 @@
       "target": "note-104",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-104",
@@ -1838,7 +1858,7 @@
       "target": "note-106",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-106",
@@ -1846,7 +1866,7 @@
       "target": "note-107",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-107",
@@ -1870,7 +1890,7 @@
       "target": "note-110",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-110",
@@ -1886,7 +1906,7 @@
       "target": "note-112",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-112",
@@ -1894,7 +1914,7 @@
       "target": "note-113",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-113",
@@ -1902,7 +1922,7 @@
       "target": "note-114",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-114",
@@ -1910,7 +1930,7 @@
       "target": "note-115",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-115",
@@ -1918,7 +1938,7 @@
       "target": "note-116",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-116",
@@ -1934,7 +1954,7 @@
       "target": "note-118",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-118",
@@ -1942,7 +1962,7 @@
       "target": "note-119",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-119",
@@ -1950,7 +1970,7 @@
       "target": "note-120",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-120",
@@ -1966,7 +1986,7 @@
       "target": "note-122",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-122",
@@ -1974,7 +1994,7 @@
       "target": "note-123",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-123",
@@ -1982,7 +2002,7 @@
       "target": "note-124",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-124",
@@ -1998,7 +2018,7 @@
       "target": "note-126",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-126",
@@ -2006,7 +2026,7 @@
       "target": "note-127",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-127",
@@ -2014,7 +2034,7 @@
       "target": "note-128",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-128",
@@ -2022,7 +2042,7 @@
       "target": "note-129",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-129",
@@ -2030,7 +2050,7 @@
       "target": "note-130",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-130",
@@ -2038,7 +2058,7 @@
       "target": "note-131",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-131",
@@ -2046,7 +2066,7 @@
       "target": "note-132",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "ellipsis"
     },
     {
       "id": "edge-132",
@@ -2054,7 +2074,7 @@
       "target": "note-133",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-133",
@@ -2070,7 +2090,7 @@
       "target": "note-135",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-135",
@@ -2078,7 +2098,7 @@
       "target": "note-136",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-136",
@@ -2102,7 +2122,7 @@
       "target": "note-139",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-139",
@@ -2118,7 +2138,7 @@
       "target": "note-141",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-141",
@@ -2134,7 +2154,7 @@
       "target": "note-143",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-143",
@@ -2142,7 +2162,7 @@
       "target": "note-144",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-144",
@@ -2150,7 +2170,7 @@
       "target": "note-145",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-145",
@@ -2158,7 +2178,7 @@
       "target": "note-146",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-146",
@@ -2166,7 +2186,7 @@
       "target": "note-147",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-147",
@@ -2174,7 +2194,7 @@
       "target": "note-148",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-148",
@@ -2182,7 +2202,7 @@
       "target": "note-149",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-149",
@@ -2190,7 +2210,7 @@
       "target": "note-150",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-150",
@@ -2198,7 +2218,7 @@
       "target": "note-151",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-151",
@@ -2214,7 +2234,7 @@
       "target": "note-153",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-153",
@@ -2230,7 +2250,7 @@
       "target": "note-155",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-155",
@@ -2238,7 +2258,7 @@
       "target": "note-156",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-156",
@@ -2246,7 +2266,7 @@
       "target": "note-157",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-157",
@@ -2254,7 +2274,7 @@
       "target": "note-158",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-158",
@@ -2262,7 +2282,7 @@
       "target": "note-159",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-159",
@@ -2270,7 +2290,7 @@
       "target": "note-160",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-160",
@@ -2278,7 +2298,7 @@
       "target": "note-161",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "yes"
+      "type": "ellipsis"
     },
     {
       "id": "edge-161",
@@ -2286,7 +2306,7 @@
       "target": "note-162",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-162",
@@ -2294,7 +2314,7 @@
       "target": "note-163",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-163",
@@ -2310,7 +2330,7 @@
       "target": "note-165",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-165",
@@ -2326,7 +2346,7 @@
       "target": "note-167",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-167",
@@ -2342,7 +2362,7 @@
       "target": "note-169",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-169",
@@ -2350,7 +2370,7 @@
       "target": "note-170",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-170",
@@ -2358,7 +2378,7 @@
       "target": "note-171",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-171",
@@ -2374,7 +2394,7 @@
       "target": "note-173",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-173",
@@ -2390,7 +2410,7 @@
       "target": "note-175",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-175",
@@ -2406,7 +2426,7 @@
       "target": "note-177",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-177",
@@ -2414,7 +2434,7 @@
       "target": "note-178",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-178",
@@ -2422,7 +2442,7 @@
       "target": "note-179",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-179",
@@ -2438,7 +2458,7 @@
       "target": "note-181",
       "sourceHandle": "left",
       "targetHandle": "right",
-      "type": "yes"
+      "type": "no"
     },
     {
       "id": "edge-181",
@@ -2446,7 +2466,7 @@
       "target": "note-182",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-182",
@@ -2454,7 +2474,7 @@
       "target": "note-183",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "smoothstep"
     },
     {
       "id": "edge-183",
@@ -2462,7 +2482,7 @@
       "target": "note-184",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-184",
@@ -2470,7 +2490,7 @@
       "target": "note-185",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-185",
@@ -2486,7 +2506,7 @@
       "target": "note-187",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-187",
@@ -2502,7 +2522,7 @@
       "target": "note-189",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "no"
+      "type": "yes"
     },
     {
       "id": "edge-189",
@@ -2510,7 +2530,7 @@
       "target": "note-190",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-190",
@@ -2518,7 +2538,7 @@
       "target": "note-191",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "smoothstep"
     },
     {
       "id": "edge-191",
@@ -2526,7 +2546,7 @@
       "target": "note-192",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-192",
@@ -2542,7 +2562,7 @@
       "target": "note-194",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-194",
@@ -2558,7 +2578,7 @@
       "target": "note-196",
       "sourceHandle": "bottom",
       "targetHandle": "top",
-      "type": "yes"
+      "type": "ellipsis"
     }
   ]
 }

@@ -21,8 +21,10 @@ app.add_middleware(
 
 RAW_DIR = "../data/raw"
 PARSED_DIR = "../data/parsed"
+PUBLIC_DIR = "../public"  # Add public directory for static assets
 os.makedirs(RAW_DIR, exist_ok=True)
 os.makedirs(PARSED_DIR, exist_ok=True)
+os.makedirs(PUBLIC_DIR, exist_ok=True)
 
 class TextContent(BaseModel):
     content: str
@@ -71,7 +73,12 @@ def parse_daily_covids_wake_transcript():
     
     conversation_lines = lines[start_index:]
     
-    columns = []
+    columns = [
+        {'id': 'column-1', 'title': 'Michael Barbaro', 'notes': []},
+        {'id': 'column-2', 'title': 'Stephen Macedo', 'notes': []},
+        {'id': 'column-3', 'title': 'Frances Lee', 'notes': []},
+        {'id': 'column-4', 'title': '', 'notes': []},  # Empty fourth column
+    ]
     column_map = {}  # speaker name -> column
     notes = []
     note_id_counter = 1
@@ -340,22 +347,23 @@ def save_text(text_content: TextContent):
 
 @app.post("/api/parse-daily-covids-wake")
 def parse_daily_covids_wake():
-    """Parse the daily_covids_wake.txt file and return the structured data"""
+    """Parse the daily_covids_wake.txt file and save to both parsed and public directories"""
     try:
         parsed_data = parse_daily_covids_wake_transcript()
         
-        # Save parsed data
-        parsed_file = "../data/daily_covids_wake_parsed.json"
-        with open(parsed_file, 'w') as f:
-            json.dump(parsed_data, f, indent=2)
+        # Save to parsed directory (for backup)
+        parsed_file_path = os.path.join(PARSED_DIR, "daily_covids_wake_parsed.json")
+        with open(parsed_file_path, 'w', encoding='utf-8') as f:
+            json.dump(parsed_data, f, indent=2, ensure_ascii=False)
         
-        return {
-            "message": "Daily COVID's Wake transcript parsed successfully",
-            "parsed_file": parsed_file,
-            "parsed_data": parsed_data
-        }
+        # Save to public directory (for frontend static loading)
+        public_file_path = os.path.join(PUBLIC_DIR, "daily_covids_wake_parsed.json")
+        with open(public_file_path, 'w', encoding='utf-8') as f:
+            json.dump(parsed_data, f, indent=2, ensure_ascii=False)
+        
+        return {"message": "Data parsed and saved successfully", "data": parsed_data}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error parsing transcript: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/daily-covids-wake")
 def get_daily_covids_wake():

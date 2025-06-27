@@ -3,16 +3,13 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useMemo,
 } from "react";
 import ReactFlow, {
-  Controls,
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
   useReactFlow,
 } from "reactflow";
-import type { Edge } from "reactflow";
 import "reactflow/dist/style.css";
 import styled from "@emotion/styled";
 import { useNoteStore } from "../store/noteStore";
@@ -20,7 +17,7 @@ import NoteNode from "./NoteNode";
 
 // Import constants from store
 const COLUMN_WIDTH = 300;
-const COLUMN_GAP = 100;
+const COLUMN_SPACING = 100;
 
 // Add CSS for spinner animation
 const spinnerStyle = `
@@ -86,15 +83,7 @@ interface EdgeProps {
 }
 
 // Custom edge component that connects to the closest handles
-const CustomEdge = ({ sourceX, sourceY, targetX, targetY, id }: EdgeProps) => {
-  console.log("CustomEdge rendering:", {
-    id,
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
-
+const CustomEdge = ({ sourceX, sourceY, targetX, targetY }: EdgeProps) => {
   const path = `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`;
 
   return (
@@ -110,13 +99,6 @@ const CustomEdge = ({ sourceX, sourceY, targetX, targetY, id }: EdgeProps) => {
 
 // Custom edge component with ellipsis overlay
 const EllipsisEdge = ({ sourceX, sourceY, targetX, targetY }: EdgeProps) => {
-  console.log("EllipsisEdge rendering:", {
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
-
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
@@ -303,18 +285,6 @@ const edgeTypes = {
   bezier: CustomEdge,
 };
 
-// Debug function to log edge types
-const logEdgeTypes = (edges: Edge[]) => {
-  const typeCounts = edges.reduce((acc: Record<string, number>, edge) => {
-    if (edge.type) {
-      acc[edge.type] = (acc[edge.type] || 0) + 1;
-    }
-    return acc;
-  }, {});
-  console.log("Edge type counts:", typeCounts);
-  console.log("Available edge types:", Object.keys(edgeTypes));
-};
-
 const FlowComponent = () => {
   const {
     nodes: initialNodes,
@@ -353,12 +323,6 @@ const FlowComponent = () => {
     setNodes(initialNodes);
     // Add a small delay to ensure nodes are rendered before setting edges
     setTimeout(() => {
-      console.log("Setting edges:", initialEdges.length);
-      console.log("Edge types found:", [
-        ...new Set(initialEdges.map((edge) => edge.type)),
-      ]);
-      console.log("Available edge types:", Object.keys(edgeTypes));
-
       // Log any edges with unmapped types
       const unmappedTypes = initialEdges.filter(
         (edge) => edge.type && !(edge.type in edgeTypes),
@@ -368,7 +332,6 @@ const FlowComponent = () => {
       }
 
       setEdges(initialEdges);
-      logEdgeTypes(initialEdges);
     }, 100);
   }, [initialNodes, initialEdges, setNodes, setEdges]);
 
@@ -377,7 +340,7 @@ const FlowComponent = () => {
     if (reactFlowInstance && nodes.length > 0 && !isLoading) {
       // Set initial viewport to center the content
       const totalWidth =
-        columns.length * COLUMN_WIDTH + (columns.length - 1) * COLUMN_GAP;
+        columns.length * COLUMN_WIDTH + (columns.length - 1) * COLUMN_SPACING;
       const centerX = (window.innerWidth - totalWidth) / 2;
 
       reactFlowInstance.setViewport({
@@ -387,14 +350,6 @@ const FlowComponent = () => {
       });
     }
   }, [reactFlowInstance, nodes, columns, isLoading]);
-
-  // Ensure zoom level is always maintained at 1
-  useEffect(() => {
-    if (reactFlowInstance) {
-      const currentViewport = reactFlowInstance.getViewport();
-      reactFlowInstance.setViewport({ ...currentViewport, zoom: 1 });
-    }
-  }, [reactFlowInstance]);
 
   // Handle mouse wheel for vertical scrolling only
   const onWheel = useCallback(
@@ -508,10 +463,6 @@ const FlowComponent = () => {
     }
   }, [nodes, isAdmin]);
 
-  const columnTitles = useMemo(() => {
-    return columns.map((col) => col.title);
-  }, [columns]);
-
   return (
     <div style={{ width: "100vw", height: "100vh" }} className="flow-area">
       {/* Loading Indicator */}
@@ -577,30 +528,27 @@ const FlowComponent = () => {
         onError={(error) => {
           console.error("ReactFlow error:", error);
         }}
+        fitView={false}
+        attributionPosition="bottom-left"
       >
-        <Controls showInteractive={false} />
       </ReactFlow>
       {/* Column Headers */}
       <ColumnHeadersContainer>
-        {columnTitles.map((title, index) => {
-          // Calculate the viewport offset to align headers with columns
-          const totalWidth =
-            columns.length * COLUMN_WIDTH + (columns.length - 1) * COLUMN_GAP;
-          const centerX = (window.innerWidth - totalWidth) / 2;
-          const headerX =
-            centerX + index * (COLUMN_WIDTH + COLUMN_GAP) + COLUMN_WIDTH / 2;
-
+        {columns.map((column, index) => {
+          // Skip the fourth column (index 3) - don't display its header
+          if (index === 3) return null;
+          
           return (
-            <ColumnHeader
-              key={index}
-              style={{
-                position: "absolute",
-                top: "20px",
-                left: `${headerX}px`,
-                transform: "translateX(-50%)",
+            <ColumnHeader 
+              key={column.id} 
+              style={{ 
+                position: 'absolute',
+                top: '20px',
+                left: `${column.x + COLUMN_WIDTH / 2}px`,
+                transform: 'translateX(-50%)'
               }}
             >
-              {title}
+              {column.title}
             </ColumnHeader>
           );
         })}

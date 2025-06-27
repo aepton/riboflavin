@@ -90,6 +90,13 @@ const processDialogue = (
     colIdx++;
   });
 
+  // Apply centering offset to all columns
+  const totalWidth = newColumns.length * COLUMN_WIDTH + (newColumns.length - 1) * COLUMN_SPACING;
+  const centerX = (window.innerWidth - totalWidth) / 2;
+  newColumns.forEach((col, idx) => {
+    col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
+  });
+
   // Sequential vertical layout
   let currentY = 50;
   let nodeIdCounter = 1;
@@ -148,13 +155,26 @@ export const useNoteStore = create<NoteStore>((set) => ({
   addColumn: (speakerName?: string) =>
     set((state) => {
       const newColumnId = `column-${state.columns.length + 1}`;
+      const newColumns = [...state.columns];
+      
+      // Calculate the total width including the new column
+      const totalWidth = (newColumns.length + 1) * COLUMN_WIDTH + newColumns.length * COLUMN_SPACING;
+      const centerX = (window.innerWidth - totalWidth) / 2;
+      
+      // Update existing columns with new centering
+      newColumns.forEach((col, idx) => {
+        col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
+      });
+      
+      // Add new column
       const newColumn = {
         id: newColumnId,
         title: speakerName || `Column ${state.columns.length + 1}`,
-        x: state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING),
+        x: centerX + newColumns.length * (COLUMN_WIDTH + COLUMN_SPACING),
       };
+      
       return {
-        columns: [...state.columns, newColumn],
+        columns: [...newColumns, newColumn],
       };
     }),
 
@@ -274,7 +294,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
             break;
           }
         } catch (proxyError) {
-          console.log(`Proxy ${proxy} failed:`, proxyError);
+          console.error(`Proxy ${proxy} failed:`, proxyError);
           continue;
         }
       }
@@ -526,31 +546,12 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
   loadParsedTranscript: async () => {
     try {
-      console.log("Loading parsed transcript from API...");
-      // Try to load from backend API first
-      const response = await fetch(
-        "http://localhost:8000/api/daily-covids-wake",
-      );
+      // Load from public directory as static asset
+      const response = await fetch("/daily_covids_wake_parsed.json");
       if (!response.ok) {
-        throw new Error("Backend API not available");
+        throw new Error(`Failed to load static asset: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
-      console.log("API response received:", data);
-      console.log("Number of columns:", data.columns.length);
-      data.columns.forEach(
-        (
-          col: {
-            id: string;
-            title: string;
-            notes: { id: string; content: string; columnId: string }[];
-          },
-          idx: number,
-        ) => {
-          console.log(
-            `Column ${idx + 1}: ${col.title} has ${col.notes.length} notes`,
-          );
-        },
-      );
 
       // Process the data
       const newColumns: Column[] = data.columns.map(
@@ -561,11 +562,20 @@ export const useNoteStore = create<NoteStore>((set) => ({
             notes: { id: string; content: string; columnId: string }[];
           },
           idx: number,
-        ) => ({
-          id: col.id,
-          title: col.title,
-          x: idx * (COLUMN_WIDTH + COLUMN_SPACING),
-        }),
+        ) => {
+          // Calculate the total width of all columns
+          const totalWidth = data.columns.length * COLUMN_WIDTH + (data.columns.length - 1) * COLUMN_SPACING;
+          // Calculate the center offset to align with viewport centering
+          const centerX = (window.innerWidth - totalWidth) / 2;
+          // Position each column with the center offset
+          const columnX = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
+          
+          return {
+            id: col.id,
+            title: col.title,
+            x: columnX,
+          };
+        },
       );
 
       const nodeIdToColumnX: Record<string, number> = {};
@@ -593,8 +603,6 @@ export const useNoteStore = create<NoteStore>((set) => ({
         const bNum = parseInt(b.id.replace("note-", ""));
         return aNum - bNum;
       });
-
-      console.log(`Processing ${allNotes.length} notes in chronological order`);
 
       // Position all notes sequentially in chronological order
       let currentY = 100; // Start with space from top
@@ -637,7 +645,6 @@ export const useNoteStore = create<NoteStore>((set) => ({
           sourceHandle?: string;
           targetHandle?: string;
         }) => {
-          console.log("Processing edge:", edge);
           return {
             id: edge.id,
             source: edge.source,
@@ -651,18 +658,13 @@ export const useNoteStore = create<NoteStore>((set) => ({
         },
       );
 
-      console.log(`Created ${allEdges.length} edges`);
-      console.log("Sample edges:", allEdges.slice(0, 5));
-
       set({
         columns: newColumns,
         nodes: allNodes,
         edges: allEdges,
       });
-
-      console.log("Data loaded successfully");
     } catch (error) {
-      console.error("Failed to load parsed transcript from API:", error);
+      console.error("Failed to load parsed transcript from static asset:", error);
       throw error; // Re-throw the error to see what's happening
     }
   },
