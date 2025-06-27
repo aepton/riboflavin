@@ -99,6 +99,8 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     return edges.some((edge) => edge.target === id && edge.type === "no");
   };
 
+  console.log("TODO here: only generate handles (and of appropriate type) if an edge needs that handle");
+
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
       const timeoutId = setTimeout(() => {
