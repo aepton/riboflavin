@@ -1,5 +1,3 @@
-import React from "react";
-
 // Edge component props interface
 export interface EdgeProps {
   sourceX: number;
@@ -173,18 +171,4 @@ export const EdgeNo = ({ sourceX, sourceY, targetX, targetY }: EdgeProps) => {
       </text>
     </g>
   );
-};
-
-// Edge types configuration
-export const edgeTypes = {
-  articleLink: CustomEdge,
-  smoothstep: CustomEdge,
-  ellipsis: EllipsisEdge,
-  yes: EdgeYes,
-  no: EdgeNo,
-  default: CustomEdge, // Fallback for any unmapped types
-  // Add any other edge types that might come from the backend
-  straight: CustomEdge,
-  step: CustomEdge,
-  bezier: CustomEdge,
 };

@@ -8,7 +8,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { useNoteStore } from "../store/noteStore";
 import NoteNode from "./NoteNode";
-import { edgeTypes } from "./EdgeComponents";
+import { CustomEdge, EdgeNo, EdgeYes, EllipsisEdge } from "./EdgeComponents";
 import {
   Modal,
   ModalContent,
@@ -24,6 +24,19 @@ const COLUMN_WIDTH = 300;
 const nodeTypes = {
   note: NoteNode,
   noteNode: NoteNode,
+};
+
+const edgeTypes = {
+  articleLink: CustomEdge,
+  smoothstep: CustomEdge,
+  ellipsis: EllipsisEdge,
+  yes: EdgeYes,
+  no: EdgeNo,
+  default: CustomEdge, // Fallback for any unmapped types
+  // Add any other edge types that might come from the backend
+  straight: CustomEdge,
+  step: CustomEdge,
+  bezier: CustomEdge,
 };
 
 const FlowComponent = () => {
@@ -146,6 +159,7 @@ const FlowComponent = () => {
     if (!reactFlowInstance) return;
 
     const node = nodes.find((n) => n.id === nodeId);
+    console.log("node", node);
     if (!node) return;
 
     // Calculate the center position of the node
@@ -154,6 +168,7 @@ const FlowComponent = () => {
 
     // Get the flow container dimensions
     const flowContainer = reactFlowWrapper.current;
+    console.log("flowContainer", flowContainer);
     if (!flowContainer) return;
 
     const containerWidth = flowContainer.offsetWidth;
@@ -164,6 +179,11 @@ const FlowComponent = () => {
     const viewportY = nodeCenterY - containerHeight / 2;
 
     // Use setCenter to avoid zoom changes
+    console.log(
+      "setting center",
+      viewportX + containerWidth / 2,
+      viewportY + containerHeight / 2
+    );
     reactFlowInstance.setCenter(
       viewportX + containerWidth / 2,
       viewportY + containerHeight / 2,
@@ -176,6 +196,7 @@ const FlowComponent = () => {
       setShowModal(false);
       // Find the 35th node (index 34)
       const targetNode = nodes[34];
+      console.log("targetNode", targetNode, nodes);
       if (targetNode) {
         setTimeout(() => scrollToNode(targetNode.id), 100);
       }
@@ -241,6 +262,7 @@ const FlowComponent = () => {
       {nodes.length > 1 && columns.length > 1 && (
         <>
           <ReactFlow
+            ref={reactFlowWrapper}
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -259,7 +281,7 @@ const FlowComponent = () => {
             onError={(error) => {
               console.error("ReactFlow error:", error);
             }}
-            attributionPosition="bottom-left"
+            attributionPosition="bottom-right"
           ></ReactFlow>
           {/* Column Headers */}
           <ColumnHeadersContainer>
