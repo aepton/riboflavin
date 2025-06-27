@@ -12,7 +12,6 @@ import NoteNode from "./NoteNode";
 
 // Import constants from store
 const COLUMN_WIDTH = 300;
-const COLUMN_SPACING = 100;
 
 // Add CSS for spinner animation
 const spinnerStyle = `
@@ -265,6 +264,7 @@ const ColumnHeadersContainer = styled.div`
 
 const nodeTypes = {
   note: NoteNode,
+  noteNode: NoteNode,
 };
 
 const edgeTypes = {
@@ -318,33 +318,21 @@ const FlowComponent = () => {
     setNodes(initialNodes);
     // Add a small delay to ensure nodes are rendered before setting edges
     setTimeout(() => {
-      // Log any edges with unmapped types
-      const unmappedTypes = initialEdges.filter(
-        (edge) => edge.type && !(edge.type in edgeTypes)
-      );
-      if (unmappedTypes.length > 0) {
-        console.warn("Edges with unmapped types:", unmappedTypes);
-      }
-
       setEdges(initialEdges);
     }, 100);
-  }, [initialNodes, initialEdges, setNodes, setEdges]);
+  }, [initialNodes, initialEdges, setNodes, setEdges, columns]);
 
   // Set initial viewport position after nodes are loaded
   useEffect(() => {
     if (reactFlowInstance && nodes.length > 0 && !isLoading) {
-      // Set initial viewport to center the content
-      const totalWidth =
-        columns.length * COLUMN_WIDTH + (columns.length - 1) * COLUMN_SPACING;
-      const centerX = (window.innerWidth - totalWidth) / 2;
-
+      // Set initial viewport to show the columns starting from the left margin
       reactFlowInstance.setViewport({
-        x: centerX,
+        x: -25, // Small offset to ensure first column is fully visible
         y: 0,
         zoom: 1,
       });
     }
-  }, [reactFlowInstance, nodes, columns, isLoading]);
+  }, [reactFlowInstance, nodes, isLoading]);
 
   // Handle mouse wheel for vertical scrolling only
   const onWheel = useCallback(
@@ -504,49 +492,52 @@ const FlowComponent = () => {
           </ModalContent>
         </Modal>
       )}
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-        minZoom={1}
-        maxZoom={1}
-        zoomOnScroll={false}
-        zoomOnPinch={false}
-        zoomOnDoubleClick={false}
-        panOnScroll={false}
-        panOnDrag={true}
-        style={{ background: "#f8fafc" }}
-        onError={(error) => {
-          console.error("ReactFlow error:", error);
-        }}
-        fitView={false}
-        attributionPosition="bottom-left"
-      ></ReactFlow>
-      {/* Column Headers */}
-      <ColumnHeadersContainer>
-        {columns.map((column, index) => {
-          // Skip the fourth column (index 3) - don't display its header
-          if (index === 3) return null;
+      {nodes.length > 1 && columns.length > 1 && (
+        <>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+            minZoom={1}
+            maxZoom={1}
+            zoomOnScroll={false}
+            zoomOnPinch={false}
+            zoomOnDoubleClick={false}
+            panOnScroll={false}
+            panOnDrag={true}
+            style={{ background: "#f8fafc" }}
+            onError={(error) => {
+              console.error("ReactFlow error:", error);
+            }}
+            attributionPosition="bottom-left"
+          ></ReactFlow>
+          {/* Column Headers */}
+          <ColumnHeadersContainer>
+            {columns.map((column) => {
+              // Only show headers for columns that have titles
+              if (!column.title || column.title.trim() === "") return null;
 
-          return (
-            <ColumnHeader
-              key={column.id}
-              style={{
-                position: "absolute",
-                top: "20px",
-                left: `${column.x + COLUMN_WIDTH / 2}px`,
-                transform: "translateX(-50%)",
-              }}
-            >
-              {column.title}
-            </ColumnHeader>
-          );
-        })}
-      </ColumnHeadersContainer>
+              return (
+                <ColumnHeader
+                  key={column.id}
+                  style={{
+                    position: "absolute",
+                    top: "20px",
+                    left: `${column.x + COLUMN_WIDTH / 2}px`,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  {column.title}
+                </ColumnHeader>
+              );
+            })}
+          </ColumnHeadersContainer>
+        </>
+      )}
     </div>
   );
 };

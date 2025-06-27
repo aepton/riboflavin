@@ -79,7 +79,11 @@ def parse_daily_covids_wake_transcript():
         {'id': 'column-3', 'title': 'Frances Lee', 'notes': []},
         {'id': 'column-4', 'title': '', 'notes': []},  # Empty fourth column
     ]
-    column_map = {}  # speaker name -> column
+    column_map = {
+        'Michael Barbaro': columns[0],
+        'Stephen Macedo': columns[1], 
+        'Frances Lee': columns[2]
+    }  # speaker name -> column
     notes = []
     note_id_counter = 1
     current_speaker = None
@@ -160,7 +164,7 @@ def parse_daily_covids_wake_transcript():
         same_speaker = source_note['columnId'] == target_note['columnId']
         
         # Randomly choose between standard, ellipsis, yes, and no edge types
-        edge_type = random.choice(['smoothstep', 'ellipsis', 'yes', 'no'])
+        edge_type = 'smoothstep' # random.choice(['smoothstep', 'ellipsis', 'yes', 'no'])
         
         # Smart handle selection based on speaker relationship and positions
         if same_speaker:

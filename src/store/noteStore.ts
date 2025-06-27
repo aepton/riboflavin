@@ -7,6 +7,32 @@ interface Column {
   x: number;
 }
 
+interface NoteData {
+  id: string;
+  content: string;
+  columnId: string;
+}
+
+interface ColumnData {
+  id: string;
+  title: string;
+  notes: NoteData[];
+}
+
+interface EdgeData {
+  id: string;
+  source: string;
+  target: string;
+  type?: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+}
+
+interface ParsedTranscriptData {
+  columns: ColumnData[];
+  edges?: EdgeData[];
+}
+
 interface NoteStore {
   nodes: Node[];
   edges: Edge[];
@@ -22,7 +48,7 @@ interface NoteStore {
 }
 
 const COLUMN_WIDTH = 300;
-const COLUMN_SPACING = 100;
+const COLUMN_SPACING = 50;
 const NOTE_WIDTH = 280;
 const NOTE_SPACING = 40;
 
@@ -85,17 +111,9 @@ const processDialogue = (
     newColumns.push({
       id: `column-${colIdx + 1}`,
       title: speaker,
-      x: colIdx * (COLUMN_WIDTH + COLUMN_SPACING),
+      x: 50 + colIdx * (COLUMN_WIDTH + COLUMN_SPACING),
     });
     colIdx++;
-  });
-
-  // Apply centering offset to all columns
-  const totalWidth =
-    newColumns.length * COLUMN_WIDTH + (newColumns.length - 1) * COLUMN_SPACING;
-  const centerX = (window.innerWidth - totalWidth) / 2;
-  newColumns.forEach((col, idx) => {
-    col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
   });
 
   // Sequential vertical layout
@@ -156,28 +174,14 @@ export const useNoteStore = create<NoteStore>((set) => ({
   addColumn: (speakerName?: string) =>
     set((state) => {
       const newColumnId = `column-${state.columns.length + 1}`;
-      const newColumns = [...state.columns];
-
-      // Calculate the total width including the new column
-      const totalWidth =
-        (newColumns.length + 1) * COLUMN_WIDTH +
-        newColumns.length * COLUMN_SPACING;
-      const centerX = (window.innerWidth - totalWidth) / 2;
-
-      // Update existing columns with new centering
-      newColumns.forEach((col, idx) => {
-        col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
-      });
-
-      // Add new column
       const newColumn = {
         id: newColumnId,
         title: speakerName || `Column ${state.columns.length + 1}`,
-        x: centerX + newColumns.length * (COLUMN_WIDTH + COLUMN_SPACING),
+        x: 50 + state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING),
       };
 
       return {
-        columns: [...newColumns, newColumn],
+        columns: [...state.columns, newColumn],
       };
     }),
 
@@ -556,26 +560,37 @@ export const useNoteStore = create<NoteStore>((set) => ({
           `Failed to load static asset: ${response.status} ${response.statusText}`
         );
       }
-      const data = await response.json();
+      const data: ParsedTranscriptData = await response.json();
 
-      // Process the data
-      const newColumns: Column[] = data.columns.map(
+      // Process the data - filter out empty columns and duplicates
+      const uniqueColumns = new Map<
+        string,
+        { id: string; title: string; notes: NoteData[] }
+      >();
+      data.columns.forEach((col: ColumnData) => {
+        if (col.title && col.title.trim() !== "") {
+          // Use title as key to prevent duplicates
+          if (!uniqueColumns.has(col.title)) {
+            uniqueColumns.set(col.title, col);
+          } else {
+            // Merge notes from duplicate columns
+            const existing = uniqueColumns.get(col.title)!;
+            existing.notes = [...existing.notes, ...col.notes];
+          }
+        }
+      });
+
+      const newColumns: Column[] = Array.from(uniqueColumns.values()).map(
         (
           col: {
             id: string;
             title: string;
-            notes: { id: string; content: string; columnId: string }[];
+            notes: NoteData[];
           },
           idx: number
         ) => {
-          // Calculate the total width of all columns
-          const totalWidth =
-            data.columns.length * COLUMN_WIDTH +
-            (data.columns.length - 1) * COLUMN_SPACING;
-          // Calculate the center offset to align with viewport centering
-          const centerX = (window.innerWidth - totalWidth) / 2;
-          // Position each column with the center offset
-          const columnX = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
+          // Start columns from a fixed left margin (50px) and space them out
+          const columnX = 50 + idx * (COLUMN_WIDTH + COLUMN_SPACING);
 
           return {
             id: col.id,
@@ -590,19 +605,30 @@ export const useNoteStore = create<NoteStore>((set) => ({
         nodeIdToColumnX[col.id] = col.x;
       });
 
-      // Collect all notes from all columns and sort them by ID to get chronological order
-      const allNotes: { id: string; content: string; columnId: string }[] = [];
-      data.columns.forEach(
-        (col: {
-          notes: { id: string; content: string; columnId: string }[];
-        }) => {
-          col.notes.forEach(
-            (note: { id: string; content: string; columnId: string }) => {
-              allNotes.push(note);
-            }
+      // Create a mapping from original column IDs to new column positions
+      const originalToNewColumnMap: Record<string, string> = {};
+      data.columns.forEach((originalCol: ColumnData) => {
+        if (originalCol.title && originalCol.title.trim() !== "") {
+          // Find the new column with the same title
+          const newColumn = newColumns.find(
+            (col) => col.title === originalCol.title
           );
+          if (newColumn) {
+            originalToNewColumnMap[originalCol.id] = newColumn.id;
+          }
         }
-      );
+      });
+
+      // Collect all notes from all columns and sort them by ID to get chronological order
+      const allNotes: NoteData[] = [];
+      data.columns.forEach((col: ColumnData) => {
+        // Only include notes from columns that have titles (skip empty columns)
+        if (col.title && col.title.trim() !== "") {
+          col.notes.forEach((note: NoteData) => {
+            allNotes.push(note);
+          });
+        }
+      });
 
       // Sort notes by their ID to get chronological order (note-1, note-2, note-3, etc.)
       allNotes.sort((a, b) => {
@@ -611,63 +637,81 @@ export const useNoteStore = create<NoteStore>((set) => ({
         return aNum - bNum;
       });
 
-      // Position all notes sequentially in chronological order
-      let currentY = 100; // Start with space from top
-      const allNodes: Node[] = [];
+      // Position nodes sequentially across all columns to maintain conversation flow
+      const nodes: Node[] = [];
+      let currentY = 100; // Start position
+      const NODE_SPACING = 40; // Spacing between nodes
 
-      allNotes.forEach((note) => {
-        // Better height estimation based on content length and line breaks
+      allNotes.forEach((note, globalIndex) => {
+        const originalColumnId = note.columnId;
+        const newColumnId = originalToNewColumnMap[originalColumnId];
+        const columnX = nodeIdToColumnX[newColumnId];
+
+        if (columnX === undefined) {
+          console.warn(
+            `No column found for note ${note.id} with columnId ${originalColumnId}`
+          );
+          return;
+        }
+
+        const calculatedX = columnX + COLUMN_WIDTH / 2 - NOTE_WIDTH / 2;
+
+        // Calculate estimated height based on content length and line breaks
         const contentLength = note.content.length;
         const lineBreaks = (note.content.match(/\n/g) || []).length;
         const estimatedLines = Math.max(
           1,
           Math.ceil(contentLength / 50) + lineBreaks
         );
-        const estimatedHeight = Math.max(140, estimatedLines * 28 + 60);
+        const estimatedHeight = Math.max(104, estimatedLines * 21 + 60); // 104px min (80px + 24px padding)
 
-        const node: Node = {
+        // Position node at current Y, then update Y for next node
+        const y = currentY;
+
+        console.log(`Node ${note.id} positioning:`, {
+          nodeId: note.id,
+          originalColumnId,
+          newColumnId,
+          columnX,
+          calculatedX,
+          y,
+          globalIndex,
+          estimatedHeight,
+          contentLength,
+          estimatedLines,
+        });
+
+        nodes.push({
           id: note.id,
-          type: "note",
-          position: {
-            x: nodeIdToColumnX[note.columnId] + (COLUMN_WIDTH - NOTE_WIDTH) / 2,
-            y: currentY,
-          },
+          type: "noteNode",
+          position: { x: calculatedX, y },
           data: {
             content: note.content,
-            columnId: note.columnId,
-            isNew: false,
+            columnId: newColumnId,
           },
-        };
-        allNodes.push(node);
-        currentY += estimatedHeight + NOTE_SPACING;
+        });
+
+        // Update Y position for next node
+        currentY += estimatedHeight + NODE_SPACING;
       });
 
       // Edges
-      const allEdges: Edge[] = (data.edges || []).map(
-        (edge: {
-          id: string;
-          source: string;
-          target: string;
-          type?: string;
-          sourceHandle?: string;
-          targetHandle?: string;
-        }) => {
-          return {
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            type: edge.type || "smoothstep", // Use the type from backend, fallback to smoothstep
-            sourceHandle: edge.sourceHandle || "right",
-            targetHandle: edge.targetHandle || "left",
-            // Ensure edges are drawn between nodes with proper routing
-            style: { zIndex: 1 }, // Ensure edges are drawn behind nodes
-          };
-        }
-      );
+      const allEdges: Edge[] = (data.edges || []).map((edge: EdgeData) => {
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: edge.type || "smoothstep", // Use the type from backend, fallback to smoothstep
+          sourceHandle: edge.sourceHandle || "right",
+          targetHandle: edge.targetHandle || "left",
+          // Ensure edges are drawn between nodes with proper routing
+          style: { zIndex: 1 }, // Ensure edges are drawn behind nodes
+        };
+      });
 
       set({
         columns: newColumns,
-        nodes: allNodes,
+        nodes: nodes,
         edges: allEdges,
       });
     } catch (error) {
