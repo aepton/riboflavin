@@ -146,14 +146,40 @@ def parse_daily_covids_wake_transcript():
     # Create sequential edges between notes
     edges = []
     for i in range(len(notes) - 1):
-        # Randomly choose between standard and ellipsis edge types
-        edge_type = random.choice(['smoothstep', 'ellipsis'])
+        source_note = notes[i]
+        target_note = notes[i + 1]
+        
+        # Determine if nodes are from the same speaker
+        same_speaker = source_note['columnId'] == target_note['columnId']
+        
+        # Randomly choose between standard, ellipsis, yes, and no edge types
+        edge_type = random.choice(['smoothstep', 'ellipsis', 'yes', 'no'])
+        
+        # Smart handle selection based on speaker relationship and positions
+        if same_speaker:
+            # Same speaker: use bottom of source, top of target (vertical flow)
+            source_handle = 'bottom'
+            target_handle = 'top'
+        else:
+            # Different speakers: determine best handles based on relative positions
+            source_column_idx = int(source_note['columnId'].replace('column-', '')) - 1
+            target_column_idx = int(target_note['columnId'].replace('column-', '')) - 1
+            
+            if source_column_idx < target_column_idx:
+                # Source is to the left of target: right → left
+                source_handle = 'right'
+                target_handle = 'left'
+            else:
+                # Source is to the right of target: left → right
+                source_handle = 'left'
+                target_handle = 'right'
+        
         edges.append({
             'id': f'edge-{i + 1}',
-            'source': notes[i]['id'],
-            'target': notes[i + 1]['id'],
-            'sourceHandle': 'right',  # Connect from right handle of source
-            'targetHandle': 'left',   # Connect to left handle of target
+            'source': source_note['id'],
+            'target': target_note['id'],
+            'sourceHandle': source_handle,
+            'targetHandle': target_handle,
             'type': edge_type
         })
 

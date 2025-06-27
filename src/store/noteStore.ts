@@ -524,16 +524,22 @@ export const useNoteStore = create<NoteStore>((set) => ({
       });
       
       // Edges
-      const allEdges: Edge[] = (data.edges || []).map((edge: any) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        type: edge.type || 'smoothstep', // Use the type from backend, fallback to smoothstep
-        sourceHandle: edge.sourceHandle,
-        targetHandle: edge.targetHandle,
-      }));
+      const allEdges: Edge[] = (data.edges || []).map((edge: any) => {
+        console.log('Processing edge:', edge);
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: edge.type || 'smoothstep', // Use the type from backend, fallback to smoothstep
+          sourceHandle: edge.sourceHandle || 'right',
+          targetHandle: edge.targetHandle || 'left',
+          // Ensure edges are drawn between nodes with proper routing
+          style: { zIndex: 1 }, // Ensure edges are drawn behind nodes
+        };
+      });
       
       console.log(`Created ${allEdges.length} edges`);
+      console.log('Sample edges:', allEdges.slice(0, 5));
       
       set({
         columns: newColumns,

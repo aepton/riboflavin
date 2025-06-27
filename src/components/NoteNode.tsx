@@ -3,9 +3,17 @@ import { Handle, Position } from 'reactflow';
 import styled from '@emotion/styled';
 import { useNoteStore } from '../store/noteStore';
 
-const NoteContainer = styled.div<{ isFocused: boolean; isLinked: boolean }>`
+const NoteContainer = styled.div<{ isFocused: boolean; isLinked: boolean; hasYesEdge: boolean; hasNoEdge: boolean }>`
   background: ${props => props.isLinked ? '#f5f5f5' : 'white'};
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${props => {
+    if (props.hasYesEdge) return '#10b981';
+    if (props.hasNoEdge) return '#ef4444';
+    return '#e0e0e0';
+  }};
+  border-width: ${props => {
+    if (props.hasYesEdge || props.hasNoEdge) return '2px';
+    return '1px';
+  }};
   border-radius: 8px;
   padding: 12px;
   width: 280px;
@@ -47,7 +55,6 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
   const { updateNote, addNote, nodes, columns, edges } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [showHandles, setShowHandles] = useState(false);
 
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
@@ -71,6 +78,15 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     );
   }, [nodes, edges, id]);
 
+  // Check for incoming edge types
+  const hasYesEdge = useCallback(() => {
+    return edges.some(edge => edge.target === id && edge.type === 'yes');
+  }, [edges, id]);
+
+  const hasNoEdge = useCallback(() => {
+    return edges.some(edge => edge.target === id && edge.type === 'no');
+  }, [edges, id]);
+
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
       const timeoutId = setTimeout(() => {
@@ -80,6 +96,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
       return () => clearTimeout(timeoutId);
     }
   }, [data.isNew]);
+
+  // Debug: log when node is rendered
+  useEffect(() => {
+    console.log(`Node ${id} rendered with handles: top, right, bottom, left`);
+  }, [id]);
 
   // Adjust height when content changes
   useEffect(() => {
@@ -112,44 +133,37 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     setIsFocused(false);
   }, []);
 
-  const handleMouseEnter = useCallback(() => {
-    setShowHandles(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setShowHandles(false);
-  }, []);
-
   return (
     <NoteContainer 
       isFocused={isFocused} 
       isLinked={isLinked()}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      hasYesEdge={hasYesEdge()}
+      hasNoEdge={hasNoEdge()}
+      data-id={id}
     >
       <Handle 
         id="top" 
         type="target" 
         position={Position.Top} 
-        style={{ opacity: showHandles ? 0.8 : 0, transition: 'opacity 0.2s ease' }} 
+        style={{ opacity: 0, width: '8px', height: '8px' }} 
       />
       <Handle 
         id="right" 
         type="source" 
         position={Position.Right} 
-        style={{ opacity: showHandles ? 0.8 : 0, transition: 'opacity 0.2s ease' }} 
+        style={{ opacity: 0, width: '8px', height: '8px' }} 
       />
       <Handle 
         id="bottom" 
-        type="target" 
+        type="source" 
         position={Position.Bottom} 
-        style={{ opacity: showHandles ? 0.8 : 0, transition: 'opacity 0.2s ease' }} 
+        style={{ opacity: 0, width: '8px', height: '8px' }} 
       />
       <Handle 
         id="left" 
-        type="source" 
+        type="target" 
         position={Position.Left} 
-        style={{ opacity: showHandles ? 0.8 : 0, transition: 'opacity 0.2s ease' }} 
+        style={{ opacity: 0, width: '8px', height: '8px' }} 
       />
       <TextArea
         ref={textareaRef}

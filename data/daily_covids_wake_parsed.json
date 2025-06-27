@@ -1004,33 +1004,33 @@
       "id": "edge-1",
       "source": "note-1",
       "target": "note-2",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-2",
       "source": "note-2",
       "target": "note-3",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-3",
       "source": "note-3",
       "target": "note-4",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-4",
       "source": "note-4",
       "target": "note-5",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-5",
@@ -1038,7 +1038,7 @@
       "target": "note-6",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-6",
@@ -1052,9 +1052,9 @@
       "id": "edge-7",
       "source": "note-7",
       "target": "note-8",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-8",
@@ -1062,31 +1062,31 @@
       "target": "note-9",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-9",
       "source": "note-9",
       "target": "note-10",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-10",
       "source": "note-10",
       "target": "note-11",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-11",
       "source": "note-11",
       "target": "note-12",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-12",
@@ -1100,17 +1100,17 @@
       "id": "edge-13",
       "source": "note-13",
       "target": "note-14",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-14",
       "source": "note-14",
       "target": "note-15",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-15",
@@ -1124,16 +1124,16 @@
       "id": "edge-16",
       "source": "note-16",
       "target": "note-17",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-17",
       "source": "note-17",
       "target": "note-18",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
@@ -1142,14 +1142,14 @@
       "target": "note-19",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-19",
       "source": "note-19",
       "target": "note-20",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
@@ -1164,33 +1164,33 @@
       "id": "edge-21",
       "source": "note-21",
       "target": "note-22",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-22",
       "source": "note-22",
       "target": "note-23",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-23",
       "source": "note-23",
       "target": "note-24",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "ellipsis"
     },
     {
       "id": "edge-24",
       "source": "note-24",
       "target": "note-25",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-25",
@@ -1198,15 +1198,15 @@
       "target": "note-26",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-26",
       "source": "note-26",
       "target": "note-27",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-27",
@@ -1214,15 +1214,15 @@
       "target": "note-28",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-28",
       "source": "note-28",
       "target": "note-29",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-29",
@@ -1230,15 +1230,15 @@
       "target": "note-30",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-30",
       "source": "note-30",
       "target": "note-31",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-31",
@@ -1252,17 +1252,17 @@
       "id": "edge-32",
       "source": "note-32",
       "target": "note-33",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-33",
       "source": "note-33",
       "target": "note-34",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-34",
@@ -1270,30 +1270,30 @@
       "target": "note-35",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-35",
       "source": "note-35",
       "target": "note-36",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-36",
       "source": "note-36",
       "target": "note-37",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-37",
       "source": "note-37",
       "target": "note-38",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -1302,7 +1302,7 @@
       "target": "note-39",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-39",
@@ -1310,23 +1310,23 @@
       "target": "note-40",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-40",
       "source": "note-40",
       "target": "note-41",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-41",
       "source": "note-41",
       "target": "note-42",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-42",
@@ -1334,23 +1334,23 @@
       "target": "note-43",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-43",
       "source": "note-43",
       "target": "note-44",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-44",
       "source": "note-44",
       "target": "note-45",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-45",
@@ -1358,23 +1358,23 @@
       "target": "note-46",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-46",
       "source": "note-46",
       "target": "note-47",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-47",
       "source": "note-47",
       "target": "note-48",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-48",
@@ -1388,9 +1388,9 @@
       "id": "edge-49",
       "source": "note-49",
       "target": "note-50",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-50",
@@ -1398,15 +1398,15 @@
       "target": "note-51",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-51",
       "source": "note-51",
       "target": "note-52",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-52",
@@ -1414,15 +1414,15 @@
       "target": "note-53",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-53",
       "source": "note-53",
       "target": "note-54",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-54",
@@ -1430,14 +1430,14 @@
       "target": "note-55",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-55",
       "source": "note-55",
       "target": "note-56",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -1446,135 +1446,135 @@
       "target": "note-57",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-57",
       "source": "note-57",
       "target": "note-58",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-58",
       "source": "note-58",
       "target": "note-59",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-59",
       "source": "note-59",
       "target": "note-60",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-60",
       "source": "note-60",
       "target": "note-61",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-61",
       "source": "note-61",
       "target": "note-62",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-62",
       "source": "note-62",
       "target": "note-63",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-63",
       "source": "note-63",
       "target": "note-64",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-64",
       "source": "note-64",
       "target": "note-65",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-65",
       "source": "note-65",
       "target": "note-66",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-66",
       "source": "note-66",
       "target": "note-67",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-67",
       "source": "note-67",
       "target": "note-68",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-68",
       "source": "note-68",
       "target": "note-69",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-69",
       "source": "note-69",
       "target": "note-70",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-70",
       "source": "note-70",
       "target": "note-71",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-71",
       "source": "note-71",
       "target": "note-72",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
       "id": "edge-72",
       "source": "note-72",
       "target": "note-73",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-73",
@@ -1582,31 +1582,31 @@
       "target": "note-74",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-74",
       "source": "note-74",
       "target": "note-75",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-75",
       "source": "note-75",
       "target": "note-76",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-76",
       "source": "note-76",
       "target": "note-77",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-77",
@@ -1614,14 +1614,14 @@
       "target": "note-78",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-78",
       "source": "note-78",
       "target": "note-79",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -1630,31 +1630,31 @@
       "target": "note-80",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-80",
       "source": "note-80",
       "target": "note-81",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-81",
       "source": "note-81",
       "target": "note-82",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-82",
       "source": "note-82",
       "target": "note-83",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-83",
@@ -1662,207 +1662,207 @@
       "target": "note-84",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-84",
       "source": "note-84",
       "target": "note-85",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-85",
       "source": "note-85",
       "target": "note-86",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-86",
       "source": "note-86",
       "target": "note-87",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-87",
       "source": "note-87",
       "target": "note-88",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-88",
       "source": "note-88",
       "target": "note-89",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-89",
       "source": "note-89",
       "target": "note-90",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-90",
       "source": "note-90",
       "target": "note-91",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-91",
       "source": "note-91",
       "target": "note-92",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-92",
       "source": "note-92",
       "target": "note-93",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-93",
       "source": "note-93",
       "target": "note-94",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-94",
       "source": "note-94",
       "target": "note-95",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-95",
       "source": "note-95",
       "target": "note-96",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-96",
       "source": "note-96",
       "target": "note-97",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-97",
       "source": "note-97",
       "target": "note-98",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-98",
       "source": "note-98",
       "target": "note-99",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-99",
       "source": "note-99",
       "target": "note-100",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-100",
       "source": "note-100",
       "target": "note-101",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-101",
       "source": "note-101",
       "target": "note-102",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-102",
       "source": "note-102",
       "target": "note-103",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-103",
       "source": "note-103",
       "target": "note-104",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-104",
       "source": "note-104",
       "target": "note-105",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-105",
       "source": "note-105",
       "target": "note-106",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-106",
       "source": "note-106",
       "target": "note-107",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-107",
       "source": "note-107",
       "target": "note-108",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-108",
       "source": "note-108",
       "target": "note-109",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-109",
@@ -1876,17 +1876,17 @@
       "id": "edge-110",
       "source": "note-110",
       "target": "note-111",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-111",
       "source": "note-111",
       "target": "note-112",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-112",
@@ -1894,15 +1894,15 @@
       "target": "note-113",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-113",
       "source": "note-113",
       "target": "note-114",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-114",
@@ -1910,22 +1910,22 @@
       "target": "note-115",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-115",
       "source": "note-115",
       "target": "note-116",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-116",
       "source": "note-116",
       "target": "note-117",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -1934,78 +1934,78 @@
       "target": "note-118",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-118",
       "source": "note-118",
       "target": "note-119",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-119",
       "source": "note-119",
       "target": "note-120",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-120",
       "source": "note-120",
       "target": "note-121",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-121",
       "source": "note-121",
       "target": "note-122",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-122",
       "source": "note-122",
       "target": "note-123",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-123",
       "source": "note-123",
       "target": "note-124",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-124",
       "source": "note-124",
       "target": "note-125",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-125",
       "source": "note-125",
       "target": "note-126",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-126",
       "source": "note-126",
       "target": "note-127",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
@@ -2014,15 +2014,15 @@
       "target": "note-128",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-128",
       "source": "note-128",
       "target": "note-129",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-129",
@@ -2030,15 +2030,15 @@
       "target": "note-130",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "no"
     },
     {
       "id": "edge-130",
       "source": "note-130",
       "target": "note-131",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-131",
@@ -2046,31 +2046,31 @@
       "target": "note-132",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-132",
       "source": "note-132",
       "target": "note-133",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-133",
       "source": "note-133",
       "target": "note-134",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-134",
       "source": "note-134",
       "target": "note-135",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "ellipsis"
     },
     {
       "id": "edge-135",
@@ -2084,9 +2084,9 @@
       "id": "edge-136",
       "source": "note-136",
       "target": "note-137",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-137",
@@ -2094,15 +2094,15 @@
       "target": "note-138",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-138",
       "source": "note-138",
       "target": "note-139",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-139",
@@ -2110,15 +2110,15 @@
       "target": "note-140",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-140",
       "source": "note-140",
       "target": "note-141",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-141",
@@ -2132,8 +2132,8 @@
       "id": "edge-142",
       "source": "note-142",
       "target": "note-143",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
@@ -2148,24 +2148,24 @@
       "id": "edge-144",
       "source": "note-144",
       "target": "note-145",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-145",
       "source": "note-145",
       "target": "note-146",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-146",
       "source": "note-146",
       "target": "note-147",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
@@ -2174,22 +2174,22 @@
       "target": "note-148",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "no"
     },
     {
       "id": "edge-148",
       "source": "note-148",
       "target": "note-149",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-149",
       "source": "note-149",
       "target": "note-150",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
@@ -2198,31 +2198,31 @@
       "target": "note-151",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-151",
       "source": "note-151",
       "target": "note-152",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-152",
       "source": "note-152",
       "target": "note-153",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-153",
       "source": "note-153",
       "target": "note-154",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-154",
@@ -2230,14 +2230,14 @@
       "target": "note-155",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-155",
       "source": "note-155",
       "target": "note-156",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
@@ -2246,15 +2246,15 @@
       "target": "note-157",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-157",
       "source": "note-157",
       "target": "note-158",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-158",
@@ -2262,14 +2262,14 @@
       "target": "note-159",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-159",
       "source": "note-159",
       "target": "note-160",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -2278,22 +2278,22 @@
       "target": "note-161",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "yes"
     },
     {
       "id": "edge-161",
       "source": "note-161",
       "target": "note-162",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-162",
       "source": "note-162",
       "target": "note-163",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -2302,23 +2302,23 @@
       "target": "note-164",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "yes"
     },
     {
       "id": "edge-164",
       "source": "note-164",
       "target": "note-165",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "ellipsis"
     },
     {
       "id": "edge-165",
       "source": "note-165",
       "target": "note-166",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "no"
     },
     {
       "id": "edge-166",
@@ -2326,46 +2326,46 @@
       "target": "note-167",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "smoothstep"
+      "type": "ellipsis"
     },
     {
       "id": "edge-167",
       "source": "note-167",
       "target": "note-168",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-168",
       "source": "note-168",
       "target": "note-169",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-169",
       "source": "note-169",
       "target": "note-170",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-170",
       "source": "note-170",
       "target": "note-171",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-171",
       "source": "note-171",
       "target": "note-172",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "ellipsis"
     },
     {
@@ -2380,25 +2380,25 @@
       "id": "edge-173",
       "source": "note-173",
       "target": "note-174",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-174",
       "source": "note-174",
       "target": "note-175",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "left",
+      "targetHandle": "right",
       "type": "smoothstep"
     },
     {
       "id": "edge-175",
       "source": "note-175",
       "target": "note-176",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-176",
@@ -2406,15 +2406,15 @@
       "target": "note-177",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-177",
       "source": "note-177",
       "target": "note-178",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-178",
@@ -2422,7 +2422,7 @@
       "target": "note-179",
       "sourceHandle": "right",
       "targetHandle": "left",
-      "type": "ellipsis"
+      "type": "smoothstep"
     },
     {
       "id": "edge-179",
@@ -2436,129 +2436,129 @@
       "id": "edge-180",
       "source": "note-180",
       "target": "note-181",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "yes"
     },
     {
       "id": "edge-181",
       "source": "note-181",
       "target": "note-182",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-182",
       "source": "note-182",
       "target": "note-183",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-183",
       "source": "note-183",
       "target": "note-184",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-184",
       "source": "note-184",
       "target": "note-185",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-185",
       "source": "note-185",
       "target": "note-186",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-186",
       "source": "note-186",
       "target": "note-187",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-187",
       "source": "note-187",
       "target": "note-188",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "ellipsis"
     },
     {
       "id": "edge-188",
       "source": "note-188",
       "target": "note-189",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-189",
       "source": "note-189",
       "target": "note-190",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-190",
       "source": "note-190",
       "target": "note-191",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     },
     {
       "id": "edge-191",
       "source": "note-191",
       "target": "note-192",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-192",
       "source": "note-192",
       "target": "note-193",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "ellipsis"
     },
     {
       "id": "edge-193",
       "source": "note-193",
       "target": "note-194",
-      "sourceHandle": "right",
-      "targetHandle": "left",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
       "type": "smoothstep"
     },
     {
       "id": "edge-194",
       "source": "note-194",
       "target": "note-195",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "ellipsis"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "no"
     },
     {
       "id": "edge-195",
       "source": "note-195",
       "target": "note-196",
-      "sourceHandle": "right",
-      "targetHandle": "left",
-      "type": "smoothstep"
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "yes"
     }
   ]
 }
