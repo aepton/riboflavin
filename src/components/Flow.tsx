@@ -1,9 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
   useReactFlow,
+  type Node,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useNoteStore } from "../store/noteStore";
@@ -15,28 +22,17 @@ import {
   ModalText,
   ColumnHeader,
   ColumnHeadersContainer,
+  NoteModal,
+  NoteModalContent,
+  NoteModalTitle,
+  NoteModalTextarea,
+  NoteModalSelect,
+  NoteModalButton,
+  NoteModalCancelButton,
 } from "./FlowStyles";
 
 // Import constants from store
 const COLUMN_WIDTH = 300;
-
-const nodeTypes = {
-  note: NoteNode,
-  noteNode: NoteNode,
-};
-
-const edgeTypes = {
-  articleLink: CustomEdge,
-  smoothstep: CustomEdge,
-  ellipsis: EllipsisEdge,
-  yes: EdgeYes,
-  no: EdgeNo,
-  default: CustomEdge, // Fallback for any unmapped types
-  // Add any other edge types that might come from the backend
-  straight: CustomEdge,
-  step: CustomEdge,
-  bezier: CustomEdge,
-};
 
 const FlowComponent = () => {
   const {
@@ -44,6 +40,8 @@ const FlowComponent = () => {
     edges: initialEdges,
     columns,
     loadParsedTranscript,
+    addNoteToFourthColumn,
+    lastUsedEdgeType,
   } = useNoteStore();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -53,9 +51,34 @@ const FlowComponent = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [modalText, setModalText] = useState("");
 
+  // Note creation modal state
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [noteContent, setNoteContent] = useState("");
+  const [selectedEdgeType, setSelectedEdgeType] = useState("smoothstep");
+  const [selectedNodeId, setSelectedNodeId] = useState("");
+
+  // Filter state
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
   // Check for admin parameter
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get("admin") === "true";
+
+  const handleNoteClick = useCallback(
+    (nodeId: string, content: string, columnId: string) => {
+      console.log("Note click callback received:", {
+        nodeId,
+        content,
+        columnId,
+      });
+      setSelectedNodeId(nodeId);
+      setNoteContent("");
+      setSelectedEdgeType(lastUsedEdgeType);
+      setShowNoteModal(true);
+    },
+    [lastUsedEdgeType]
+  );
 
   // Load parsed transcript immediately on mount
   useEffect(() => {
@@ -224,6 +247,23 @@ const FlowComponent = () => {
     }
   }, [onKeyDown]);
 
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-filter-dropdown]')) {
+        setShowFilterDropdown(false);
+      }
+    };
+
+    if (showFilterDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showFilterDropdown]);
+
   const scrollToNode = (nodeId: string) => {
     if (!reactFlowInstance) return;
 
@@ -287,6 +327,246 @@ const FlowComponent = () => {
     }
   }, [showModal]);
 
+  // Test global click listener
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      console.log("Global click detected:", e.target);
+      
+      // Check if the click is on a note element
+      const target = e.target as HTMLElement;
+      console.log("Click target element:", target);
+      console.log("Click target tagName:", target.tagName);
+      console.log("Click target className:", target.className);
+      console.log("Click target attributes:", target.attributes);
+      
+      const noteContainer = target.closest("[data-id]");
+      console.log("Closest data-id element:", noteContainer);
+      
+      if (noteContainer) {
+        console.log(
+          "Note element clicked via document listener:",
+          noteContainer
+        );
+        const nodeId = noteContainer.getAttribute("data-id");
+        console.log("Node ID from document listener:", nodeId);
+        
+        if (nodeId) {
+          const node = nodes.find((n) => n.id === nodeId);
+          if (node && node.data) {
+            const { columnId, content } = node.data;
+            console.log("Node data from document listener:", {
+              nodeId,
+              columnId,
+              content,
+            });
+            
+            if (
+              columnId === "column-1" ||
+              columnId === "column-2" ||
+              columnId === "column-3"
+            ) {
+              console.log(
+                "First three speaker node clicked via document listener"
+              );
+              handleNoteClick(nodeId, content, columnId);
+            }
+          }
+        }
+      } else {
+        console.log("No note container found for this click");
+      }
+    };
+
+    document.addEventListener("click", handleGlobalClick);
+    return () => {
+      document.removeEventListener("click", handleGlobalClick);
+    };
+  }, [nodes, handleNoteClick]);
+
+  // Listen for note clicks from the first three speakers
+  useEffect(() => {
+    const handleNoteClickEvent = (event: CustomEvent) => {
+      console.log("Note click event received:", event.detail);
+      const { nodeId, content, columnId } = event.detail;
+      setSelectedNodeId(nodeId);
+      setNoteContent("");
+      setSelectedEdgeType("smoothstep");
+      setShowNoteModal(true);
+    };
+
+    console.log("Setting up note click listener");
+
+    // Add the event listener with a slight delay to ensure it's properly set up
+    const timeoutId = setTimeout(() => {
+      document.addEventListener(
+        "noteClick",
+        handleNoteClickEvent as EventListener
+      );
+      console.log("Note click listener added");
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      console.log("Cleaning up note click listener");
+      document.removeEventListener(
+        "noteClick",
+        handleNoteClickEvent as EventListener
+      );
+    };
+  }, []);
+
+  const handleNoteModalSubmit = () => {
+    if (noteContent.trim() && selectedNodeId) {
+      addNoteToFourthColumn(
+        noteContent.trim(),
+        selectedNodeId,
+        selectedEdgeType
+      );
+      setShowNoteModal(false);
+      setNoteContent("");
+      setSelectedNodeId("");
+    }
+  };
+
+  const handleNoteModalCancel = () => {
+    setShowNoteModal(false);
+    setNoteContent("");
+    setSelectedNodeId("");
+  };
+
+  const handleNoteModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      handleNoteModalSubmit();
+    } else if (e.key === "Enter" && !e.shiftKey) {
+      // Enter key (without shift) saves and closes the modal
+      e.preventDefault();
+      handleNoteModalSubmit();
+    } else if (e.key === "Escape") {
+      handleNoteModalCancel();
+    }
+  };
+
+  const handleSaveData = async () => {
+    try {
+      // Prepare the data in the same format as the original
+      const saveData = {
+        columns: columns.map(column => ({
+          id: column.id,
+          title: column.title,
+          notes: nodes
+            .filter(node => node.data.columnId === column.id)
+            .map(node => ({
+              id: node.id,
+              content: node.data.content
+            }))
+        })),
+        edges: edges.map(edge => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: edge.type || "smoothstep",
+          sourceHandle: edge.sourceHandle,
+          targetHandle: edge.targetHandle
+        }))
+      };
+
+      const response = await fetch("http://localhost:8000/api/save-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saveData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Data saved successfully:", result.message);
+      alert("Data saved successfully!");
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert("Error saving data. Please check the console for details.");
+    }
+  };
+
+  // Filter nodes and edges based on active filter
+  const filteredNodes = useMemo(() => {
+    if (!activeFilter) return nodes;
+    
+    // Find all nodes that have edges of the specified type
+    const nodesWithFilteredEdges = new Set<string>();
+    
+    edges.forEach(edge => {
+      if (edge.type === activeFilter) {
+        nodesWithFilteredEdges.add(edge.source);
+        nodesWithFilteredEdges.add(edge.target);
+      }
+    });
+    
+    return nodes.filter(node => nodesWithFilteredEdges.has(node.id));
+  }, [nodes, edges, activeFilter]);
+
+  const filteredEdges = useMemo(() => {
+    if (!activeFilter) return edges;
+    return edges.filter(edge => edge.type === activeFilter);
+  }, [edges, activeFilter]);
+
+  const handleFilterToggle = (filterType: string) => {
+    if (activeFilter === filterType) {
+      setActiveFilter(null); // Clear filter
+    } else {
+      setActiveFilter(filterType); // Set new filter
+    }
+    setShowFilterDropdown(false);
+  };
+
+  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    console.log("Node clicked via ReactFlow:", node);
+    const { id, data } = node;
+    
+    if (data && data.columnId) {
+      const { columnId, content } = data;
+      console.log("Node data from ReactFlow click:", { id, columnId, content });
+      
+      // Only allow clicking on notes from the first three speakers when admin=true
+      if (
+        isAdmin &&
+        (columnId === "column-1" ||
+        columnId === "column-2" ||
+        columnId === "column-3")
+      ) {
+        console.log("First three speaker node clicked via ReactFlow");
+        handleNoteClick(id, content, columnId);
+      }
+    }
+  }, [handleNoteClick, isAdmin]);
+
+  const nodeTypes = useMemo(
+    () => ({
+      note: NoteNode,
+      noteNode: NoteNode,
+    }),
+    []
+  );
+
+  const edgeTypes = useMemo(
+    () => ({
+      articleLink: CustomEdge,
+      smoothstep: CustomEdge,
+      ellipsis: EllipsisEdge,
+      yes: EdgeYes,
+      no: EdgeNo,
+      default: CustomEdge, // Fallback for any unmapped types
+      // Add any other edge types that might come from the backend
+      straight: CustomEdge,
+      step: CustomEdge,
+      bezier: CustomEdge,
+    }),
+    []
+  );
+
   return (
     <div style={{ width: "100vw", height: "100vh" }} className="flow-area">
       {/* Loading Indicator */}
@@ -321,6 +601,217 @@ const FlowComponent = () => {
           </div>
         </div>
       )}
+      
+      {/* Save Button - Only visible when admin=true */}
+      {isAdmin && !isLoading && (
+        <button
+          onClick={handleSaveData}
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#10b981",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "600",
+            zIndex: 100,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#059669";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "#10b981";
+          }}
+        >
+          Save Data
+        </button>
+      )}
+      
+      {/* Filter Button - Visible to all users */}
+      {!isLoading && (
+        <div style={{ position: "absolute", top: isAdmin ? "80px" : "20px", right: "20px", zIndex: 100 }} data-filter-dropdown>
+          <button
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            style={{
+              padding: "0.75rem 1rem",
+              backgroundColor: activeFilter ? "#3b82f6" : "#6b7280",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "600",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = activeFilter ? "#2563eb" : "#4b5563";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = activeFilter ? "#3b82f6" : "#6b7280";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>🔍</span>
+            Filter
+            {activeFilter && (
+              <span style={{ fontSize: "12px", opacity: 0.8 }}>
+                ({activeFilter})
+              </span>
+            )}
+          </button>
+          
+          {/* Filter Dropdown */}
+          {showFilterDropdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                marginTop: "4px",
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "6px",
+                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                padding: "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+                minWidth: "120px",
+              }}
+            >
+              <button
+                onClick={() => handleFilterToggle("yes")}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  backgroundColor: activeFilter === "yes" ? "#10b981" : "transparent",
+                  color: activeFilter === "yes" ? "white" : "#374151",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeFilter !== "yes") {
+                    e.currentTarget.style.backgroundColor = "#f3f4f6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeFilter !== "yes") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>✓</span>
+                Yes
+              </button>
+              
+              <button
+                onClick={() => handleFilterToggle("no")}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  backgroundColor: activeFilter === "no" ? "#ef4444" : "transparent",
+                  color: activeFilter === "no" ? "white" : "#374151",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeFilter !== "no") {
+                    e.currentTarget.style.backgroundColor = "#f3f4f6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeFilter !== "no") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>✗</span>
+                No
+              </button>
+              
+              <button
+                onClick={() => handleFilterToggle("ellipsis")}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  backgroundColor: activeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
+                  color: activeFilter === "ellipsis" ? "white" : "#374151",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeFilter !== "ellipsis") {
+                    e.currentTarget.style.backgroundColor = "#f3f4f6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeFilter !== "ellipsis") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>⋯</span>
+                Ellipsis
+              </button>
+              
+              {/* Clear Filter Option */}
+              {activeFilter && (
+                <>
+                  <div style={{ height: "1px", backgroundColor: "#e5e7eb", margin: "0.25rem 0" }} />
+                  <button
+                    onClick={() => handleFilterToggle(activeFilter)}
+                    style={{
+                      padding: "0.5rem 0.75rem",
+                      backgroundColor: "transparent",
+                      color: "#6b7280",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f3f4f6";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                  >
+                    <span style={{ fontSize: "16px" }}>✕</span>
+                    Clear Filter
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      
       {showModal && (
         <Modal onKeyDown={handleModalKeyDown} tabIndex={0}>
           <ModalContent>
@@ -350,12 +841,48 @@ const FlowComponent = () => {
           </ModalContent>
         </Modal>
       )}
+      {showNoteModal && (
+        <NoteModal>
+          <NoteModalContent onKeyDown={handleNoteModalKeyDown}>
+            <NoteModalTitle>Add Note to Fourth Column</NoteModalTitle>
+            <NoteModalTextarea
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleNoteModalSubmit();
+                }
+              }}
+              placeholder="Enter your note content..."
+              autoFocus
+            />
+            <NoteModalSelect
+              value={selectedEdgeType}
+              onChange={(e) => setSelectedEdgeType(e.target.value)}
+            >
+              <option value="smoothstep">Smooth Step</option>
+              <option value="ellipsis">Ellipsis (...)</option>
+              <option value="yes">Yes (✓)</option>
+              <option value="no">No (✗)</option>
+            </NoteModalSelect>
+            <div>
+              <NoteModalButton onClick={handleNoteModalSubmit}>
+                Add Note
+              </NoteModalButton>
+              <NoteModalCancelButton onClick={handleNoteModalCancel}>
+                Cancel
+              </NoteModalCancelButton>
+            </div>
+          </NoteModalContent>
+        </NoteModal>
+      )}
       {nodes.length > 1 && columns.length > 1 && (
         <>
           <ReactFlow
             ref={reactFlowWrapper}
-            nodes={nodes}
-            edges={edges}
+            nodes={filteredNodes}
+            edges={filteredEdges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
@@ -368,11 +895,16 @@ const FlowComponent = () => {
             zoomOnDoubleClick={false}
             panOnScroll={false}
             panOnDrag={true}
+            nodesDraggable={false}
+            nodesConnectable={false}
+            elementsSelectable={true}
+            selectNodesOnDrag={false}
             style={{ background: "#f8fafc" }}
             onError={(error) => {
               console.error("ReactFlow error:", error);
             }}
             attributionPosition="bottom-right"
+            onNodeClick={handleNodeClick}
           ></ReactFlow>
           {/* Column Headers */}
           <ColumnHeadersContainer>

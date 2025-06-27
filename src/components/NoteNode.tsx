@@ -8,6 +8,8 @@ const NoteContainer = styled.div<{
   isLinked: boolean;
   hasYesEdge: boolean;
   hasNoEdge: boolean;
+  isClickable?: boolean;
+  "data-id"?: string;
 }>`
   background: ${(props) => (props.isLinked ? "#f5f5f5" : "white")};
   border: 1px solid
@@ -28,6 +30,7 @@ const NoteContainer = styled.div<{
     props.isFocused ? "0 0 0 2px #000000" : "0 2px 4px rgba(0,0,0,0.05)"};
   transition: all 0.2s ease;
   position: relative;
+  cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
 `;
 
 const TextArea = styled.textarea`
@@ -65,6 +68,21 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
 
+  // Check if this note is from one of the first three speakers (columns 1-3)
+  const isFromFirstThreeSpeakers =
+    data.columnId === "column-1" ||
+    data.columnId === "column-2" ||
+    data.columnId === "column-3";
+
+  console.log("NoteNode rendering:", {
+    id,
+    columnId: data.columnId,
+    isFromFirstThreeSpeakers,
+  });
+
+  // Debug: log all column IDs to see what we actually have
+  console.log("All column IDs in this note:", data.columnId);
+
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
@@ -99,7 +117,9 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     return edges.some((edge) => edge.target === id && edge.type === "no");
   };
 
-  console.log("TODO here: only generate handles (and of appropriate type) if an edge needs that handle");
+  console.log(
+    "TODO here: only generate handles (and of appropriate type) if an edge needs that handle"
+  );
 
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
@@ -150,13 +170,41 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     setIsFocused(false);
   }, []);
 
+  const handleNoteClick = useCallback(() => {
+    if (isFromFirstThreeSpeakers) {
+      console.log("Note clicked, dispatching event");
+      const event = new CustomEvent("noteClick", {
+        detail: {
+          nodeId: id,
+          content: data.content,
+          columnId: data.columnId,
+        },
+      });
+      document.dispatchEvent(event);
+    }
+  }, [isFromFirstThreeSpeakers, id, data.content, data.columnId]);
+
   return (
-    <NoteContainer
-      isFocused={isFocused}
-      isLinked={isLinked()}
-      hasYesEdge={hasYesEdge()}
-      hasNoEdge={hasNoEdge()}
+    <div
       data-id={id}
+      onClick={handleNoteClick}
+      style={{
+        background: isLinked() ? "#f5f5f5" : "white",
+        border: `1px solid ${
+          hasYesEdge() ? "#10b981" : hasNoEdge() ? "#ef4444" : "#e0e0e0"
+        }`,
+        borderWidth: hasYesEdge() || hasNoEdge() ? "2px" : "1px",
+        borderRadius: "8px",
+        padding: "12px",
+        width: "280px",
+        minHeight: "80px",
+        boxShadow: isFocused 
+          ? "0 0 0 2px #000000" 
+          : "0 2px 4px rgba(0,0,0,0.05)",
+        transition: "all 0.2s ease",
+        position: "relative",
+        cursor: isFromFirstThreeSpeakers ? "pointer" : "default",
+      }}
     >
       <Handle
         id="top"
@@ -191,7 +239,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         onBlur={handleBlur}
         placeholder="Type your note here..."
       />
-    </NoteContainer>
+    </div>
   );
 });
 
