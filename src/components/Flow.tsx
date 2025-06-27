@@ -13,7 +13,6 @@ import {
   Modal,
   ModalContent,
   ModalText,
-  ModalInput,
   ColumnHeader,
   ColumnHeadersContainer,
 } from "./FlowStyles";
@@ -144,6 +143,65 @@ const FlowComponent = () => {
     [reactFlowInstance, nodes]
   );
 
+  // Handle keyboard scrolling
+  const onKeyDown = useCallback(
+    (event: Event) => {
+      const keyboardEvent = event as KeyboardEvent;
+      if (
+        keyboardEvent.key === "ArrowUp" ||
+        keyboardEvent.key === "ArrowDown"
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const { x, y } = reactFlowInstance.getViewport();
+        const scrollAmount = 100; // Pixels to scroll per key press
+
+        // Calculate bounds to prevent scrolling notes off screen
+        const flowArea = document.querySelector(".flow-area");
+        const flowHeight = flowArea?.clientHeight || window.innerHeight;
+
+        // Get the highest and lowest node positions
+        const nodePositions = nodes.map((node) => node.position.y);
+        const minNodeY = Math.min(...nodePositions);
+        const maxNodeY = Math.max(...nodePositions);
+
+        // Estimate the height of the highest and lowest nodes
+        const highestNode = nodes.find((node) => node.position.y === maxNodeY);
+
+        let highestNodeHeight = 140; // Default height
+
+        if (highestNode) {
+          const contentLength = highestNode.data.content.length;
+          const estimatedLines = Math.ceil(contentLength / 50);
+          highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
+        }
+
+        // Calculate bounds
+        const topBound = -minNodeY + 50; // Keep some padding at top
+        const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
+
+        // Calculate new Y position based on arrow key
+        let newY = y;
+        if (keyboardEvent.key === "ArrowUp") {
+          newY = y + scrollAmount; // Scroll up
+        } else if (keyboardEvent.key === "ArrowDown") {
+          newY = y - scrollAmount; // Scroll down
+        }
+
+        // Clamp to bounds
+        const clampedY = Math.max(bottomBound, Math.min(topBound, newY));
+
+        reactFlowInstance.setViewport({
+          x: x, // Keep x position unchanged
+          y: clampedY,
+          zoom: 1, // Always keep zoom at 1
+        });
+      }
+    },
+    [reactFlowInstance, nodes]
+  );
+
   // Add wheel event listener to the entire flow area
   useEffect(() => {
     const flowArea = document.querySelector(".flow-area");
@@ -154,6 +212,17 @@ const FlowComponent = () => {
       };
     }
   }, [onWheel]);
+
+  // Add keyboard event listener to the entire flow area
+  useEffect(() => {
+    const flowArea = document.querySelector(".flow-area");
+    if (flowArea) {
+      flowArea.addEventListener("keydown", onKeyDown, { passive: false });
+      return () => {
+        flowArea.removeEventListener("keydown", onKeyDown);
+      };
+    }
+  }, [onKeyDown]);
 
   const scrollToNode = (nodeId: string) => {
     if (!reactFlowInstance) return;
@@ -208,6 +277,16 @@ const FlowComponent = () => {
     }
   }, [nodes, isAdmin]);
 
+  // Focus the modal when it appears
+  useEffect(() => {
+    if (showModal) {
+      const modal = document.querySelector('[tabindex="0"]') as HTMLElement;
+      if (modal) {
+        modal.focus();
+      }
+    }
+  }, [showModal]);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }} className="flow-area">
       {/* Loading Indicator */}
@@ -243,14 +322,31 @@ const FlowComponent = () => {
         </div>
       )}
       {showModal && (
-        <Modal>
+        <Modal onKeyDown={handleModalKeyDown} tabIndex={0}>
           <ModalContent>
             <ModalText>{modalText}</ModalText>
-            <ModalInput
-              placeholder="Press Enter to continue..."
-              onKeyDown={handleModalKeyDown}
-              autoFocus
-            />
+            <button
+              onClick={() => {
+                setShowModal(false);
+                // Find the 35th node (index 34)
+                const targetNode = nodes[34];
+                if (targetNode) {
+                  setTimeout(() => scrollToNode(targetNode.id), 100);
+                }
+              }}
+              style={{
+                marginTop: "1rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#3b82f6",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              Continue
+            </button>
           </ModalContent>
         </Modal>
       )}
