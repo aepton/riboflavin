@@ -159,33 +159,28 @@ const FlowComponent = () => {
     if (!reactFlowInstance) return;
 
     const node = nodes.find((n) => n.id === nodeId);
-    console.log("node", node);
     if (!node) return;
 
     // Calculate the center position of the node
-    const nodeCenterX = node.position.x + 200; // Half of node width
     const nodeCenterY = node.position.y + 100; // Half of node height
 
     // Get the flow container dimensions
     const flowContainer = reactFlowWrapper.current;
-    console.log("flowContainer", flowContainer);
     if (!flowContainer) return;
 
     const containerWidth = flowContainer.offsetWidth;
     const containerHeight = flowContainer.offsetHeight;
 
+    // Get current viewport position to maintain x position
+    const currentViewport = reactFlowInstance.getViewport();
+    const currentX = currentViewport.x;
+
     // Calculate the viewport center that would center the target node
-    const viewportX = nodeCenterX - containerWidth / 2;
     const viewportY = nodeCenterY - containerHeight / 2;
 
-    // Use setCenter to avoid zoom changes
-    console.log(
-      "setting center",
-      viewportX + containerWidth / 2,
-      viewportY + containerHeight / 2
-    );
+    // Use setCenter to avoid zoom changes, keeping current x position
     reactFlowInstance.setCenter(
-      viewportX + containerWidth / 2,
+      currentX + containerWidth / 2,
       viewportY + containerHeight / 2,
       { duration: 800 }
     );
