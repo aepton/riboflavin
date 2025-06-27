@@ -119,7 +119,7 @@ async function main() {
         {
           speaker: "BENICIO DEL TORO",
           text: "You know, it was a decision made between the director and myself because it's correct. I died on page 37 out of, like, 98 pages.",
-        },
+        }
       );
     }
 
@@ -130,7 +130,7 @@ async function main() {
       __dirname,
       "..",
       "data",
-      "article-dialogue.json",
+      "article-dialogue.json"
     );
     fs.writeFileSync(dataPath, JSON.stringify(dialogue, null, 2));
 
@@ -138,7 +138,7 @@ async function main() {
     console.log("Sample entries:");
     dialogue.slice(0, 3).forEach((entry, index) => {
       console.log(
-        `${index + 1}. ${entry.speaker}: ${entry.text.substring(0, 100)}...`,
+        `${index + 1}. ${entry.speaker}: ${entry.text.substring(0, 100)}...`
       );
     });
   } catch (error) {

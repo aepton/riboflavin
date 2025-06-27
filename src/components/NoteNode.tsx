@@ -78,7 +78,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     const focusedNode = nodes.find(
       (node) =>
         document.activeElement ===
-        document.querySelector(`[data-id="${node.id}"] textarea`),
+        document.querySelector(`[data-id="${node.id}"] textarea`)
     );
 
     if (!focusedNode) return false;
@@ -86,7 +86,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     return edges.some(
       (edge) =>
         (edge.source === focusedNode.id && edge.target === id) ||
-        (edge.source === id && edge.target === focusedNode.id),
+        (edge.source === id && edge.target === focusedNode.id)
     );
   }, [nodes, edges, id]);
 
@@ -119,7 +119,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
       updateNote(id, e.target.value);
       adjustHeight();
     },
-    [id, updateNote, adjustHeight],
+    [id, updateNote, adjustHeight]
   );
 
   const handleKeyDown = useCallback(
@@ -129,7 +129,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         const nextId = addNote(data.columnId);
         setTimeout(() => {
           const nextTextarea = document.querySelector(
-            `[data-id="${nextId}"] textarea`,
+            `[data-id="${nextId}"] textarea`
           ) as HTMLTextAreaElement;
           if (nextTextarea) {
             nextTextarea.focus();
@@ -137,7 +137,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         }, 0);
       }
     },
-    [addNote, data.columnId],
+    [addNote, data.columnId]
   );
 
   const handleFocus = useCallback(() => {

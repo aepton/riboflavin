@@ -46,7 +46,7 @@ const initialNode: Node = {
 // Helper function to process dialogue and create columns/notes
 const processDialogue = (
   dialogue: { speaker: string; text: string }[],
-  set: (state: Partial<NoteStore>) => void,
+  set: (state: Partial<NoteStore>) => void
 ) => {
   // Map to normalize speakers: last name(s) -> full name
   const speakerFullNameMap = new Map<string, string>();
@@ -91,7 +91,8 @@ const processDialogue = (
   });
 
   // Apply centering offset to all columns
-  const totalWidth = newColumns.length * COLUMN_WIDTH + (newColumns.length - 1) * COLUMN_SPACING;
+  const totalWidth =
+    newColumns.length * COLUMN_WIDTH + (newColumns.length - 1) * COLUMN_SPACING;
   const centerX = (window.innerWidth - totalWidth) / 2;
   newColumns.forEach((col, idx) => {
     col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
@@ -156,23 +157,25 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set((state) => {
       const newColumnId = `column-${state.columns.length + 1}`;
       const newColumns = [...state.columns];
-      
+
       // Calculate the total width including the new column
-      const totalWidth = (newColumns.length + 1) * COLUMN_WIDTH + newColumns.length * COLUMN_SPACING;
+      const totalWidth =
+        (newColumns.length + 1) * COLUMN_WIDTH +
+        newColumns.length * COLUMN_SPACING;
       const centerX = (window.innerWidth - totalWidth) / 2;
-      
+
       // Update existing columns with new centering
       newColumns.forEach((col, idx) => {
         col.x = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
       });
-      
+
       // Add new column
       const newColumn = {
         id: newColumnId,
         title: speakerName || `Column ${state.columns.length + 1}`,
         x: centerX + newColumns.length * (COLUMN_WIDTH + COLUMN_SPACING),
       };
-      
+
       return {
         columns: [...newColumns, newColumn],
       };
@@ -191,7 +194,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
       // Calculate the height of the highest note to determine next position
       const highestNode = state.nodes.find(
-        (node) => node.position.y === highestY,
+        (node) => node.position.y === highestY
       );
       let nextY = 50; // Default starting position
 
@@ -231,7 +234,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
       const newNodes = state.nodes.map((node) =>
         node.id === id
           ? { ...node, data: { ...node.data, content, isNew: false } }
-          : node,
+          : node
       );
       return {
         nodes: newNodes,
@@ -256,7 +259,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set((state) => ({
       nodes: state.nodes.filter((node) => node.id !== id),
       edges: state.edges.filter(
-        (edge) => edge.source !== id && edge.target !== id,
+        (edge) => edge.source !== id && edge.target !== id
       ),
     })),
 
@@ -318,7 +321,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
       if (!transcriptSection) {
         console.error(
-          "Could not find transcript section, trying to parse entire article",
+          "Could not find transcript section, trying to parse entire article"
         );
         // Fallback: try to parse the entire article content
         const articleContent =
@@ -549,7 +552,9 @@ export const useNoteStore = create<NoteStore>((set) => ({
       // Load from public directory as static asset
       const response = await fetch("/daily_covids_wake_parsed.json");
       if (!response.ok) {
-        throw new Error(`Failed to load static asset: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to load static asset: ${response.status} ${response.statusText}`
+        );
       }
       const data = await response.json();
 
@@ -561,21 +566,23 @@ export const useNoteStore = create<NoteStore>((set) => ({
             title: string;
             notes: { id: string; content: string; columnId: string }[];
           },
-          idx: number,
+          idx: number
         ) => {
           // Calculate the total width of all columns
-          const totalWidth = data.columns.length * COLUMN_WIDTH + (data.columns.length - 1) * COLUMN_SPACING;
+          const totalWidth =
+            data.columns.length * COLUMN_WIDTH +
+            (data.columns.length - 1) * COLUMN_SPACING;
           // Calculate the center offset to align with viewport centering
           const centerX = (window.innerWidth - totalWidth) / 2;
           // Position each column with the center offset
           const columnX = centerX + idx * (COLUMN_WIDTH + COLUMN_SPACING);
-          
+
           return {
             id: col.id,
             title: col.title,
             x: columnX,
           };
-        },
+        }
       );
 
       const nodeIdToColumnX: Record<string, number> = {};
@@ -592,9 +599,9 @@ export const useNoteStore = create<NoteStore>((set) => ({
           col.notes.forEach(
             (note: { id: string; content: string; columnId: string }) => {
               allNotes.push(note);
-            },
+            }
           );
-        },
+        }
       );
 
       // Sort notes by their ID to get chronological order (note-1, note-2, note-3, etc.)
@@ -614,7 +621,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
         const lineBreaks = (note.content.match(/\n/g) || []).length;
         const estimatedLines = Math.max(
           1,
-          Math.ceil(contentLength / 50) + lineBreaks,
+          Math.ceil(contentLength / 50) + lineBreaks
         );
         const estimatedHeight = Math.max(140, estimatedLines * 28 + 60);
 
@@ -655,7 +662,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
             // Ensure edges are drawn between nodes with proper routing
             style: { zIndex: 1 }, // Ensure edges are drawn behind nodes
           };
-        },
+        }
       );
 
       set({
@@ -664,7 +671,10 @@ export const useNoteStore = create<NoteStore>((set) => ({
         edges: allEdges,
       });
     } catch (error) {
-      console.error("Failed to load parsed transcript from static asset:", error);
+      console.error(
+        "Failed to load parsed transcript from static asset:",
+        error
+      );
       throw error; // Re-throw the error to see what's happening
     }
   },

@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -325,7 +320,7 @@ const FlowComponent = () => {
     setTimeout(() => {
       // Log any edges with unmapped types
       const unmappedTypes = initialEdges.filter(
-        (edge) => edge.type && !(edge.type in edgeTypes),
+        (edge) => edge.type && !(edge.type in edgeTypes)
       );
       if (unmappedTypes.length > 0) {
         console.warn("Edges with unmapped types:", unmappedTypes);
@@ -399,7 +394,7 @@ const FlowComponent = () => {
         });
       }
     },
-    [reactFlowInstance, nodes],
+    [reactFlowInstance, nodes]
   );
 
   // Add wheel event listener to the entire flow area
@@ -438,7 +433,7 @@ const FlowComponent = () => {
     reactFlowInstance.setCenter(
       viewportX + containerWidth / 2,
       viewportY + containerHeight / 2,
-      { duration: 800 },
+      { duration: 800 }
     );
   };
 
@@ -457,7 +452,7 @@ const FlowComponent = () => {
   useEffect(() => {
     if (!isAdmin && nodes.length > 0) {
       setModalText(
-        "Welcome to the transcript viewer. Press Enter to scroll to the 35th note.",
+        "Welcome to the transcript viewer. Press Enter to scroll to the 35th note."
       );
       setShowModal(true);
     }
@@ -530,22 +525,21 @@ const FlowComponent = () => {
         }}
         fitView={false}
         attributionPosition="bottom-left"
-      >
-      </ReactFlow>
+      ></ReactFlow>
       {/* Column Headers */}
       <ColumnHeadersContainer>
         {columns.map((column, index) => {
           // Skip the fourth column (index 3) - don't display its header
           if (index === 3) return null;
-          
+
           return (
-            <ColumnHeader 
-              key={column.id} 
-              style={{ 
-                position: 'absolute',
-                top: '20px',
+            <ColumnHeader
+              key={column.id}
+              style={{
+                position: "absolute",
+                top: "20px",
                 left: `${column.x + COLUMN_WIDTH / 2}px`,
-                transform: 'translateX(-50%)'
+                transform: "translateX(-50%)",
               }}
             >
               {column.title}
