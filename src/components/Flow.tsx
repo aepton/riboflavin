@@ -568,7 +568,7 @@ const FlowComponent = () => {
   );
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }} className="flow-area">
+    <div style={{ width: "100vw", height: "100vh", background: "#ffffff" }} className="flow-area">
       {/* Loading Indicator */}
       {isLoading && (
         <div
@@ -583,6 +583,7 @@ const FlowComponent = () => {
             alignItems: "center",
             justifyContent: "center",
             zIndex: 50,
+            backdropFilter: "blur(4px)",
           }}
         >
           <div style={{ textAlign: "center" }}>
@@ -597,7 +598,7 @@ const FlowComponent = () => {
                 margin: "0 auto 16px",
               }}
             ></div>
-            <p style={{ color: "#666" }}>Loading transcript data...</p>
+            <p style={{ color: "#6b7280", fontSize: "16px", fontWeight: "500" }}>Loading transcript data...</p>
           </div>
         </div>
       )}
@@ -614,18 +615,23 @@ const FlowComponent = () => {
             backgroundColor: "#10b981",
             color: "white",
             border: "none",
-            borderRadius: "6px",
+            borderRadius: "8px",
             cursor: "pointer",
             fontSize: "14px",
             fontWeight: "600",
             zIndex: 100,
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+            transition: "all 0.2s ease",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#059669";
+            e.currentTarget.style.transform = "translateY(-1px)";
+            e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "#10b981";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
           }}
         >
           Save Data
@@ -642,20 +648,25 @@ const FlowComponent = () => {
               backgroundColor: activeFilter ? "#3b82f6" : "#6b7280",
               color: "white",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "8px",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
+              transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = activeFilter ? "#2563eb" : "#4b5563";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = activeFilter ? "#3b82f6" : "#6b7280";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
             }}
           >
             <span style={{ fontSize: "16px" }}>🔍</span>
@@ -677,8 +688,8 @@ const FlowComponent = () => {
                 marginTop: "4px",
                 backgroundColor: "white",
                 border: "1px solid #e5e7eb",
-                borderRadius: "6px",
-                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                borderRadius: "8px",
+                boxShadow: "0 10px 15px rgba(0,0,0,0.1)",
                 padding: "0.5rem",
                 display: "flex",
                 flexDirection: "column",
@@ -693,13 +704,14 @@ const FlowComponent = () => {
                   backgroundColor: activeFilter === "yes" ? "#10b981" : "transparent",
                   color: activeFilter === "yes" ? "white" : "#374151",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "14px",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.5rem",
                   transition: "all 0.2s",
+                  fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
                   if (activeFilter !== "yes") {
@@ -723,13 +735,14 @@ const FlowComponent = () => {
                   backgroundColor: activeFilter === "no" ? "#ef4444" : "transparent",
                   color: activeFilter === "no" ? "white" : "#374151",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "14px",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.5rem",
                   transition: "all 0.2s",
+                  fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
                   if (activeFilter !== "no") {
@@ -753,13 +766,14 @@ const FlowComponent = () => {
                   backgroundColor: activeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
                   color: activeFilter === "ellipsis" ? "white" : "#374151",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "14px",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.5rem",
                   transition: "all 0.2s",
+                  fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
                   if (activeFilter !== "ellipsis") {
@@ -787,13 +801,14 @@ const FlowComponent = () => {
                       backgroundColor: "transparent",
                       color: "#6b7280",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       cursor: "pointer",
                       fontSize: "14px",
                       display: "flex",
                       alignItems: "center",
                       gap: "0.5rem",
                       transition: "all 0.2s",
+                      fontWeight: "500",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = "#f3f4f6";
@@ -826,14 +841,26 @@ const FlowComponent = () => {
                 }
               }}
               style={{
-                marginTop: "1rem",
-                padding: "0.5rem 1rem",
+                marginTop: "1.5rem",
+                padding: "0.75rem 1.5rem",
                 backgroundColor: "#3b82f6",
                 color: "white",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "8px",
                 cursor: "pointer",
                 fontSize: "14px",
+                fontWeight: "600",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#2563eb";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#3b82f6";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
               Continue

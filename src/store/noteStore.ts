@@ -53,7 +53,7 @@ interface NoteStore {
 const COLUMN_WIDTH = 300;
 const COLUMN_SPACING = 50;
 const NOTE_WIDTH = 280;
-const NOTE_SPACING = 40;
+const NOTE_SPACING = 120;
 
 // Create initial column and node
 const initialColumn = {
@@ -253,7 +253,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
       // Position nodes sequentially across all columns to maintain conversation flow
       const nodes: Node[] = [];
       let currentY = 100; // Start position
-      const NODE_SPACING = 60; // Spacing between nodes
+      const NODE_SPACING = 120; // Increased to account for edge symbols and arrows
 
       allNotes.forEach((note) => {
         const originalColumnId = note.columnId;

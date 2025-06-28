@@ -3,6 +3,46 @@ import { Handle, Position } from "reactflow";
 import styled from "@emotion/styled";
 import { useNoteStore } from "../store/noteStore";
 
+// Design System Colors
+const colors = {
+  // Edge colors - cohesive palette
+  edgeYes: "#10b981", // Emerald green
+  edgeNo: "#ef4444", // Red
+  edgeEllipsis: "#8b5cf6", // Purple
+  edgeDefault: "#6b7280", // Gray
+  
+  // Neutral colors
+  white: "#ffffff",
+  gray50: "#f9fafb",
+  gray100: "#f3f4f6",
+  gray200: "#e5e7eb",
+  gray300: "#d1d5db",
+  gray400: "#9ca3af",
+  gray500: "#6b7280",
+  gray600: "#4b5563",
+  gray700: "#374151",
+  gray800: "#1f2937",
+  gray900: "#111827",
+  
+  // Background colors
+  background: "#ffffff",
+  surface: "#f9fafb",
+  
+  // Text colors
+  textPrimary: "#111827",
+  textSecondary: "#6b7280",
+  textMuted: "#9ca3af",
+  
+  // Border colors
+  border: "#e5e7eb",
+  borderFocus: "#3b82f6",
+  
+  // Shadow
+  shadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+  shadowMd: "0 4px 6px rgba(0, 0, 0, 0.05)",
+  shadowLg: "0 10px 15px rgba(0, 0, 0, 0.1)",
+};
+
 const NoteContainer = styled.div<{
   isFocused: boolean;
   isLinked: boolean;
@@ -11,26 +51,33 @@ const NoteContainer = styled.div<{
   isClickable?: boolean;
   "data-id"?: string;
 }>`
-  background: ${(props) => (props.isLinked ? "#f5f5f5" : "white")};
+  background: ${(props) => (props.isLinked ? colors.gray50 : colors.white)};
   border: 1px solid
     ${(props) => {
-      if (props.hasYesEdge) return "#10b981";
-      if (props.hasNoEdge) return "#ef4444";
-      return "#e0e0e0";
+      if (props.hasYesEdge) return colors.edgeYes;
+      if (props.hasNoEdge) return colors.edgeNo;
+      return colors.border;
     }};
   border-width: ${(props) => {
     if (props.hasYesEdge || props.hasNoEdge) return "2px";
     return "1px";
   }};
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 1rem;
   width: 280px;
   min-height: 80px;
   box-shadow: ${(props) =>
-    props.isFocused ? "0 0 0 2px #000000" : "0 2px 4px rgba(0,0,0,0.05)"};
+    props.isFocused ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}` : colors.shadow};
   transition: all 0.2s ease;
   position: relative;
   cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
+  
+  &:hover {
+    ${(props) => props.isClickable && `
+      transform: translateY(-1px);
+      box-shadow: ${colors.shadowLg};
+    `}
+  }
 `;
 
 const TextArea = styled.textarea`
@@ -41,8 +88,8 @@ const TextArea = styled.textarea`
   outline: none;
   font-family: inherit;
   font-size: 14px;
-  line-height: 1.5;
-  color: #333;
+  line-height: 1.6;
+  color: ${colors.textPrimary};
   background: transparent;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
@@ -51,6 +98,10 @@ const TextArea = styled.textarea`
 
   &:focus {
     outline: none;
+  }
+  
+  &::placeholder {
+    color: ${colors.textMuted};
   }
 `;
 
@@ -189,18 +240,18 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
       data-id={id}
       onClick={handleNoteClick}
       style={{
-        background: isLinked() ? "#f5f5f5" : "white",
+        background: isLinked() ? colors.gray50 : colors.white,
         border: `1px solid ${
-          hasYesEdge() ? "#10b981" : hasNoEdge() ? "#ef4444" : "#e0e0e0"
+          hasYesEdge() ? colors.edgeYes : hasNoEdge() ? colors.edgeNo : colors.border
         }`,
         borderWidth: hasYesEdge() || hasNoEdge() ? "2px" : "1px",
-        borderRadius: "8px",
-        padding: "12px",
+        borderRadius: "12px",
+        padding: "1rem",
         width: "280px",
         minHeight: "80px",
         boxShadow: isFocused 
-          ? "0 0 0 2px #000000" 
-          : "0 2px 4px rgba(0,0,0,0.05)",
+          ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}` 
+          : colors.shadow,
         transition: "all 0.2s ease",
         position: "relative",
         cursor: isFromFirstThreeSpeakers ? "pointer" : "default",
