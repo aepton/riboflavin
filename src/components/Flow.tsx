@@ -134,55 +134,9 @@ const FlowComponent = () => {
     }
   }, [reactFlowInstance, nodes, isLoading]);
 
-  // Handle mouse wheel for vertical scrolling only
-  const onWheel = useCallback(
-    (event: Event) => {
-      const wheelEvent = event as WheelEvent;
-      event.preventDefault();
-      event.stopPropagation();
 
-      const { deltaY } = wheelEvent;
 
-      // Only respond to vertical scrolling, completely ignore horizontal scrolling
-      if (Math.abs(deltaY) > 0) {
-        const { x, y } = reactFlowInstance.getViewport();
 
-        // Calculate bounds to prevent scrolling notes off screen
-        const flowArea = document.querySelector(".flow-area");
-        const flowHeight = flowArea?.clientHeight || window.innerHeight;
-
-        // Get the highest and lowest node positions
-        const nodePositions = nodes.map((node) => node.position.y);
-        const minNodeY = Math.min(...nodePositions);
-        const maxNodeY = Math.max(...nodePositions);
-
-        // Estimate the height of the highest and lowest nodes
-        const highestNode = nodes.find((node) => node.position.y === maxNodeY);
-        let highestNodeHeight = 140; // Default height
-
-        if (highestNode) {
-          const contentLength = highestNode.data.content.length;
-          const estimatedLines = Math.ceil(contentLength / 50);
-          highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
-        }
-
-        // Calculate bounds
-        const topBound = -minNodeY + 50; // Keep some padding at top
-        const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
-
-        // Only allow vertical scrolling, keep x position and zoom fixed
-        const newY = y - deltaY;
-        const clampedY = Math.max(bottomBound, Math.min(topBound, newY));
-
-        reactFlowInstance.setViewport({
-          x: x, // Keep x position unchanged
-          y: clampedY,
-          zoom: 1, // Always keep zoom at 1
-        });
-      }
-    },
-    [reactFlowInstance, nodes]
-  );
 
   // Handle keyboard scrolling
   const onKeyDown = useCallback(
@@ -216,16 +170,7 @@ const FlowComponent = () => {
     [reactFlowInstance]
   );
 
-  // Add wheel event listener to the entire flow area
-  useEffect(() => {
-    const flowArea = document.querySelector(".flow-area");
-    if (flowArea) {
-      flowArea.addEventListener("wheel", onWheel, { passive: false });
-      return () => {
-        flowArea.removeEventListener("wheel", onWheel);
-      };
-    }
-  }, [onWheel]);
+
 
   // Add keyboard event listener to the entire flow area
   useEffect(() => {
@@ -297,15 +242,15 @@ const FlowComponent = () => {
     }
   };
 
-  // Show modal only if not admin
+  // Show modal only if not admin - only on initial load
   useEffect(() => {
-    if (!isAdmin && nodes.length > 0) {
+    if (!isAdmin && nodes.length > 0 && !isLoading) {
       setModalText(
         "Welcome to the transcript viewer. Press Enter to scroll to the 35th note."
       );
       setShowModal(true);
     }
-  }, [nodes, isAdmin]);
+  }, [isAdmin, isLoading]); // Remove nodes dependency to prevent modal from showing on filter changes
 
   // Focus the modal when it appears
   useEffect(() => {
@@ -439,6 +384,109 @@ const FlowComponent = () => {
     if (!activeFilter) return edges;
     return edges.filter(edge => edge.type === activeFilter);
   }, [edges, activeFilter]);
+
+  // Recalculate viewport when filter changes - using same logic as scroll wheel handler
+  useEffect(() => {
+    if (reactFlowInstance && filteredNodes.length > 0) {
+      // Use the same bounds calculation as the scroll wheel handler
+      const flowArea = document.querySelector(".flow-area");
+      const flowHeight = flowArea?.clientHeight || window.innerHeight;
+
+      // Get the highest and lowest node positions from filtered nodes
+      const nodePositions = filteredNodes.map((node) => node.position.y);
+      const minNodeY = Math.min(...nodePositions);
+      const maxNodeY = Math.max(...nodePositions);
+
+      // Estimate the height of the highest node (same logic as scroll wheel)
+      const highestNode = filteredNodes.find((node) => node.position.y === maxNodeY);
+      let highestNodeHeight = 140; // Default height
+
+      if (highestNode) {
+        const contentLength = highestNode.data.content.length;
+        const estimatedLines = Math.ceil(contentLength / 50);
+        highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
+      }
+
+      // Calculate bounds using same logic as scroll wheel handler
+      const topBound = -minNodeY + 50; // Keep some padding at top
+      const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
+
+      // Set viewport to show all filtered nodes with proper bounds
+      const currentViewport = reactFlowInstance.getViewport();
+      
+      reactFlowInstance.setViewport({
+        x: currentViewport.x, // Keep x position unchanged
+        y: Math.max(bottomBound, Math.min(topBound, currentViewport.y)), // Clamp to bounds like scroll wheel
+        zoom: 1,
+      });
+    }
+  }, [reactFlowInstance, filteredNodes, activeFilter]);
+
+  // Handle mouse wheel for vertical scrolling only - using filtered nodes when filter is active
+  const onWheel = useCallback(
+    (event: Event) => {
+      const wheelEvent = event as WheelEvent;
+      event.preventDefault();
+      event.stopPropagation();
+
+      const { deltaY } = wheelEvent;
+
+      // Only respond to vertical scrolling, completely ignore horizontal scrolling
+      if (Math.abs(deltaY) > 0) {
+        const { x, y } = reactFlowInstance.getViewport();
+
+        // Calculate bounds to prevent scrolling notes off screen
+        const flowArea = document.querySelector(".flow-area");
+        const flowHeight = flowArea?.clientHeight || window.innerHeight;
+
+        // Use filtered nodes when filter is active, otherwise use all nodes
+        const nodesToUse = activeFilter ? filteredNodes : nodes;
+        
+        if (nodesToUse.length === 0) return;
+
+        // Get the highest and lowest node positions
+        const nodePositions = nodesToUse.map((node) => node.position.y);
+        const minNodeY = Math.min(...nodePositions);
+        const maxNodeY = Math.max(...nodePositions);
+
+        // Estimate the height of the highest and lowest nodes
+        const highestNode = nodesToUse.find((node) => node.position.y === maxNodeY);
+        let highestNodeHeight = 140; // Default height
+
+        if (highestNode) {
+          const contentLength = highestNode.data.content.length;
+          const estimatedLines = Math.ceil(contentLength / 50);
+          highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
+        }
+
+        // Calculate bounds
+        const topBound = -minNodeY + 50; // Keep some padding at top
+        const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
+
+        // Only allow vertical scrolling, keep x position and zoom fixed
+        const newY = y - deltaY;
+        const clampedY = Math.max(bottomBound, Math.min(topBound, newY));
+
+        reactFlowInstance.setViewport({
+          x: x, // Keep x position unchanged
+          y: clampedY,
+          zoom: 1, // Always keep zoom at 1
+        });
+      }
+    },
+    [reactFlowInstance, nodes, filteredNodes, activeFilter]
+  );
+
+  // Add wheel event listener to the entire flow area
+  useEffect(() => {
+    const flowArea = document.querySelector(".flow-area");
+    if (flowArea) {
+      flowArea.addEventListener("wheel", onWheel, { passive: false });
+      return () => {
+        flowArea.removeEventListener("wheel", onWheel);
+      };
+    }
+  }, [onWheel]);
 
   const handleFilterToggle = (filterType: string) => {
     if (activeFilter === filterType) {

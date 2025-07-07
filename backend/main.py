@@ -200,12 +200,14 @@ def save_data(request: SaveDataRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=8000)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
+    """
     parsed_data = parse_daily_covids_wake_transcript()
     
     # Save to public directory (for frontend static loading)
     public_file_path = os.path.join(PUBLIC_DIR, "daily_covids_wake_parsed.json")
     with open(public_file_path, 'w', encoding='utf-8') as f:
         json.dump(parsed_data, f, indent=2, ensure_ascii=False)
+    """

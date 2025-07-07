@@ -115,7 +115,7 @@ interface NoteNodeProps {
 }
 
 const NoteNode = memo(({ data, id }: NoteNodeProps) => {
-  const { updateNote, addNote } = useNoteStore();
+  const { updateNote, addNote, edges } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -124,6 +124,19 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     data.columnId === "column-1" ||
     data.columnId === "column-2" ||
     data.columnId === "column-3";
+
+  // Determine edge types for border coloring - only consider incoming edges (target)
+  const edgeTypes = useMemo(() => {
+    const incomingEdges = edges.filter(
+      (edge: any) => edge.target === id
+    );
+    return incomingEdges.map((edge: any) => edge.type);
+  }, [edges, id]);
+
+  const hasYesEdge = edgeTypes.includes("yes");
+  const hasNoEdge = edgeTypes.includes("no");
+  const hasEllipsisEdge = edgeTypes.includes("ellipsis");
+  const isLinked = edgeTypes.length > 0;
 
 
 
@@ -201,14 +214,26 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }
   }, [isFromFirstThreeSpeakers, id, data.content, data.columnId]);
 
+    // Determine border color based on edge types
+  const getBorderColor = () => {
+    if (hasYesEdge) return colors.edgeYes;
+    if (hasNoEdge) return colors.edgeNo;
+    if (hasEllipsisEdge) return colors.edgeEllipsis;
+    return colors.border;
+  };
+
+  const getBorderWidth = () => {
+    if (hasYesEdge || hasNoEdge || hasEllipsisEdge) return "2px";
+    return "1px";
+  };
+
   return (
     <div
       data-id={id}
       onClick={handleNoteClick}
       style={{
-        background: colors.white,
-        border: `1px solid ${colors.border}`,
-        borderWidth: "1px",
+        background: isLinked ? colors.gray50 : colors.white,
+        border: `${getBorderWidth()} solid ${getBorderColor()}`,
         borderRadius: "12px",
         padding: "1rem",
         width: "280px",
@@ -220,7 +245,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         position: "relative",
         cursor: isFromFirstThreeSpeakers ? "pointer" : "default",
       }}
-          >
+    >
         <Handle
           id="top"
           type="target"
@@ -228,9 +253,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           style={{ 
             width: "8px", 
             height: "8px",
-            background: colors.border,
-            border: `2px solid ${colors.white}`,
-            top: "-4px"
+            background: "transparent",
+            border: "none",
+            top: "-4px",
+            opacity: 0,
+            pointerEvents: "none"
           }}
         />
         <Handle
@@ -240,9 +267,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           style={{ 
             width: "8px", 
             height: "8px",
-            background: colors.border,
-            border: `2px solid ${colors.white}`,
-            right: "-4px"
+            background: "transparent",
+            border: "none",
+            right: "-4px",
+            opacity: 0,
+            pointerEvents: "none"
           }}
         />
         <Handle
@@ -252,9 +281,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           style={{ 
             width: "8px", 
             height: "8px",
-            background: colors.border,
-            border: `2px solid ${colors.white}`,
-            bottom: "-4px"
+            background: "transparent",
+            border: "none",
+            bottom: "-4px",
+            opacity: 0,
+            pointerEvents: "none"
           }}
         />
         <Handle
@@ -264,9 +295,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           style={{ 
             width: "8px", 
             height: "8px",
-            background: colors.border,
-            border: `2px solid ${colors.white}`,
-            left: "-4px"
+            background: "transparent",
+            border: "none",
+            left: "-4px",
+            opacity: 0,
+            pointerEvents: "none"
           }}
         />
         <TextArea
