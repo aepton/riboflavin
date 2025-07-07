@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, memo } from "react";
+import { useCallback, useEffect, useRef, useState, memo, useMemo } from "react";
 import { Handle, Position } from "reactflow";
 import styled from "@emotion/styled";
 import { useNoteStore } from "../store/noteStore";
@@ -115,7 +115,7 @@ interface NoteNodeProps {
 }
 
 const NoteNode = memo(({ data, id }: NoteNodeProps) => {
-  const { updateNote, addNote, nodes, edges } = useNoteStore();
+  const { updateNote, addNote } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -125,14 +125,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     data.columnId === "column-2" ||
     data.columnId === "column-3";
 
-  console.log("NoteNode rendering:", {
-    id,
-    columnId: data.columnId,
-    isFromFirstThreeSpeakers,
-  });
 
-  // Debug: log all column IDs to see what we actually have
-  console.log("All column IDs in this note:", data.columnId);
 
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
@@ -142,35 +135,9 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }
   }, []);
 
-  // Check if this note is linked to the currently focused note
-  const isLinked = useCallback(() => {
-    const focusedNode = nodes.find(
-      (node) =>
-        document.activeElement ===
-        document.querySelector(`[data-id="${node.id}"] textarea`)
-    );
 
-    if (!focusedNode) return false;
 
-    return edges.some(
-      (edge) =>
-        (edge.source === focusedNode.id && edge.target === id) ||
-        (edge.source === id && edge.target === focusedNode.id)
-    );
-  }, [nodes, edges, id]);
 
-  // Check if this node is the target of any edgeYes or edgeNo edges
-  const hasYesEdge = () => {
-    return edges.some((edge) => edge.target === id && edge.type === "yes");
-  };
-
-  const hasNoEdge = () => {
-    return edges.some((edge) => edge.target === id && edge.type === "no");
-  };
-
-  console.log(
-    "TODO here: only generate handles (and of appropriate type) if an edge needs that handle"
-  );
 
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
@@ -223,7 +190,6 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
 
   const handleNoteClick = useCallback(() => {
     if (isFromFirstThreeSpeakers) {
-      console.log("Note clicked, dispatching event");
       const event = new CustomEvent("noteClick", {
         detail: {
           nodeId: id,
@@ -240,11 +206,9 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
       data-id={id}
       onClick={handleNoteClick}
       style={{
-        background: isLinked() ? colors.gray50 : colors.white,
-        border: `1px solid ${
-          hasYesEdge() ? colors.edgeYes : hasNoEdge() ? colors.edgeNo : colors.border
-        }`,
-        borderWidth: hasYesEdge() || hasNoEdge() ? "2px" : "1px",
+        background: colors.white,
+        border: `1px solid ${colors.border}`,
+        borderWidth: "1px",
         borderRadius: "12px",
         padding: "1rem",
         width: "280px",
@@ -256,32 +220,56 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         position: "relative",
         cursor: isFromFirstThreeSpeakers ? "pointer" : "default",
       }}
-    >
-      <Handle
-        id="top"
-        type="target"
-        position={Position.Top}
-        style={{ opacity: 0, width: "8px", height: "8px" }}
-      />
-      <Handle
-        id="right"
-        type="source"
-        position={Position.Right}
-        style={{ opacity: 0, width: "8px", height: "8px" }}
-      />
-      <Handle
-        id="bottom"
-        type="source"
-        position={Position.Bottom}
-        style={{ opacity: 0, width: "8px", height: "8px" }}
-      />
-      <Handle
-        id="left"
-        type="target"
-        position={Position.Left}
-        style={{ opacity: 0, width: "8px", height: "8px" }}
-      />
-      <TextArea
+          >
+        <Handle
+          id="top"
+          type="target"
+          position={Position.Top}
+          style={{ 
+            width: "8px", 
+            height: "8px",
+            background: colors.border,
+            border: `2px solid ${colors.white}`,
+            top: "-4px"
+          }}
+        />
+        <Handle
+          id="right"
+          type="source"
+          position={Position.Right}
+          style={{ 
+            width: "8px", 
+            height: "8px",
+            background: colors.border,
+            border: `2px solid ${colors.white}`,
+            right: "-4px"
+          }}
+        />
+        <Handle
+          id="bottom"
+          type="source"
+          position={Position.Bottom}
+          style={{ 
+            width: "8px", 
+            height: "8px",
+            background: colors.border,
+            border: `2px solid ${colors.white}`,
+            bottom: "-4px"
+          }}
+        />
+        <Handle
+          id="left"
+          type="target"
+          position={Position.Left}
+          style={{ 
+            width: "8px", 
+            height: "8px",
+            background: colors.border,
+            border: `2px solid ${colors.white}`,
+            left: "-4px"
+          }}
+        />
+        <TextArea
         ref={textareaRef}
         value={data.content}
         onChange={handleChange}

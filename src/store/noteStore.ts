@@ -295,7 +295,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
         currentY += estimatedHeight + NODE_SPACING;
       });
 
-      // Edges
+      // Edges - restore handle specifications for proper routing
       const allEdges: Edge[] = (data.edges || []).map((edge: EdgeData) => {
         return {
           id: edge.id,
@@ -304,7 +304,6 @@ export const useNoteStore = create<NoteStore>((set) => ({
           type: edge.type || "smoothstep", // Use the type from backend, fallback to smoothstep
           sourceHandle: edge.sourceHandle || "right",
           targetHandle: edge.targetHandle || "left",
-          // Ensure edges are drawn between nodes with proper routing
           style: { zIndex: 1 }, // Ensure edges are drawn behind nodes
         };
       });
@@ -351,11 +350,12 @@ export const useNoteStore = create<NoteStore>((set) => ({
         return state;
       }
 
-      // Find all existing reply notes for this source note
+      // Find all existing reply notes for this specific source note (only in column-4)
       const existingReplies = state.nodes.filter((node) => {
-        return state.edges.some(
-          (edge) => edge.source === sourceId && edge.target === node.id
-        );
+        return node.data.columnId === "column-4" && 
+               state.edges.some(
+                 (edge) => edge.source === sourceId && edge.target === node.id
+               );
       });
 
       // Calculate the height of the source note
@@ -367,11 +367,14 @@ export const useNoteStore = create<NoteStore>((set) => ({
       );
       const sourceEstimatedHeight = Math.max(104, sourceEstimatedLines * 21 + 60);
 
-      // Position the new reply note
+      // Position the new reply note - align with source note's center
       let newNoteY: number;
       if (existingReplies.length === 0) {
-        // First reply: position at the same Y coordinate as the source note
-        newNoteY = sourceNode.position.y;
+        // First reply: position to align with the source note's center
+        // Calculate the center of the source note
+        const sourceCenterY = sourceNode.position.y + sourceEstimatedHeight / 2;
+        // Position the new note so its center aligns with the source note's center
+        newNoteY = sourceCenterY - 52; // 52 is half of the minimum note height (104/2)
       } else {
         // Subsequent replies: position below the last reply
         const lastReply = existingReplies.reduce((latest, current) => 
@@ -387,7 +390,8 @@ export const useNoteStore = create<NoteStore>((set) => ({
         );
         const lastReplyEstimatedHeight = Math.max(104, lastReplyEstimatedLines * 21 + 60);
         
-        newNoteY = lastReply.position.y + lastReplyEstimatedHeight + NOTE_SPACING;
+        // Use a smaller spacing for replies to keep them closer together
+        newNoteY = lastReply.position.y + lastReplyEstimatedHeight + 20;
       }
 
       const newNoteId = `note-${Date.now()}`;

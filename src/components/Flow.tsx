@@ -34,6 +34,25 @@ import {
 // Import constants from store
 const COLUMN_WIDTH = 300;
 
+// Static node and edge types - defined outside component to prevent recreation
+const nodeTypes = {
+  note: NoteNode,
+  noteNode: NoteNode,
+};
+
+const edgeTypes = {
+  articleLink: CustomEdge,
+  smoothstep: CustomEdge,
+  ellipsis: EllipsisEdge,
+  yes: EdgeYes,
+  no: EdgeNo,
+  default: CustomEdge, // Fallback for any unmapped types
+  // Add any other edge types that might come from the backend
+  straight: CustomEdge,
+  step: CustomEdge,
+  bezier: CustomEdge,
+};
+
 const FlowComponent = () => {
   const {
     nodes: initialNodes,
@@ -67,11 +86,6 @@ const FlowComponent = () => {
 
   const handleNoteClick = useCallback(
     (nodeId: string, content: string, columnId: string) => {
-      console.log("Note click callback received:", {
-        nodeId,
-        content,
-        columnId,
-      });
       setSelectedNodeId(nodeId);
       setNoteContent("");
       setSelectedEdgeType(lastUsedEdgeType);
@@ -95,13 +109,18 @@ const FlowComponent = () => {
     loadData();
   }, [loadParsedTranscript]);
 
+  // Only update nodes and edges when they actually change
   useEffect(() => {
-    setNodes(initialNodes);
-    // Add a small delay to ensure nodes are rendered before setting edges
-    setTimeout(() => {
+    if (initialNodes.length > 0) {
+      setNodes(initialNodes);
+    }
+  }, [initialNodes, setNodes]);
+
+  useEffect(() => {
+    if (initialEdges.length > 0) {
       setEdges(initialEdges);
-    }, 100);
-  }, [initialNodes, initialEdges, setNodes, setEdges, columns]);
+    }
+  }, [initialEdges, setEdges]);
 
   // Set initial viewport position after nodes are loaded
   useEffect(() => {
@@ -139,7 +158,6 @@ const FlowComponent = () => {
 
         // Estimate the height of the highest and lowest nodes
         const highestNode = nodes.find((node) => node.position.y === maxNodeY);
-
         let highestNodeHeight = 140; // Default height
 
         if (highestNode) {
@@ -180,30 +198,6 @@ const FlowComponent = () => {
         const { x, y } = reactFlowInstance.getViewport();
         const scrollAmount = 100; // Pixels to scroll per key press
 
-        // Calculate bounds to prevent scrolling notes off screen
-        const flowArea = document.querySelector(".flow-area");
-        const flowHeight = flowArea?.clientHeight || window.innerHeight;
-
-        // Get the highest and lowest node positions
-        const nodePositions = nodes.map((node) => node.position.y);
-        const minNodeY = Math.min(...nodePositions);
-        const maxNodeY = Math.max(...nodePositions);
-
-        // Estimate the height of the highest and lowest nodes
-        const highestNode = nodes.find((node) => node.position.y === maxNodeY);
-
-        let highestNodeHeight = 140; // Default height
-
-        if (highestNode) {
-          const contentLength = highestNode.data.content.length;
-          const estimatedLines = Math.ceil(contentLength / 50);
-          highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
-        }
-
-        // Calculate bounds
-        const topBound = -minNodeY + 50; // Keep some padding at top
-        const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
-
         // Calculate new Y position based on arrow key
         let newY = y;
         if (keyboardEvent.key === "ArrowUp") {
@@ -212,17 +206,14 @@ const FlowComponent = () => {
           newY = y - scrollAmount; // Scroll down
         }
 
-        // Clamp to bounds
-        const clampedY = Math.max(bottomBound, Math.min(topBound, newY));
-
         reactFlowInstance.setViewport({
           x: x, // Keep x position unchanged
-          y: clampedY,
+          y: newY,
           zoom: 1, // Always keep zoom at 1
         });
       }
     },
-    [reactFlowInstance, nodes]
+    [reactFlowInstance]
   );
 
   // Add wheel event listener to the entire flow area
@@ -300,7 +291,6 @@ const FlowComponent = () => {
       setShowModal(false);
       // Find the 35th node (index 34)
       const targetNode = nodes[34];
-      console.log("targetNode", targetNode, nodes);
       if (targetNode) {
         setTimeout(() => scrollToNode(targetNode.id), 100);
       }
@@ -327,66 +317,11 @@ const FlowComponent = () => {
     }
   }, [showModal]);
 
-  // Test global click listener
-  useEffect(() => {
-    const handleGlobalClick = (e: MouseEvent) => {
-      console.log("Global click detected:", e.target);
-      
-      // Check if the click is on a note element
-      const target = e.target as HTMLElement;
-      console.log("Click target element:", target);
-      console.log("Click target tagName:", target.tagName);
-      console.log("Click target className:", target.className);
-      console.log("Click target attributes:", target.attributes);
-      
-      const noteContainer = target.closest("[data-id]");
-      console.log("Closest data-id element:", noteContainer);
-      
-      if (noteContainer) {
-        console.log(
-          "Note element clicked via document listener:",
-          noteContainer
-        );
-        const nodeId = noteContainer.getAttribute("data-id");
-        console.log("Node ID from document listener:", nodeId);
-        
-        if (nodeId) {
-          const node = nodes.find((n) => n.id === nodeId);
-          if (node && node.data) {
-            const { columnId, content } = node.data;
-            console.log("Node data from document listener:", {
-              nodeId,
-              columnId,
-              content,
-            });
-            
-            if (
-              columnId === "column-1" ||
-              columnId === "column-2" ||
-              columnId === "column-3"
-            ) {
-              console.log(
-                "First three speaker node clicked via document listener"
-              );
-              handleNoteClick(nodeId, content, columnId);
-            }
-          }
-        }
-      } else {
-        console.log("No note container found for this click");
-      }
-    };
 
-    document.addEventListener("click", handleGlobalClick);
-    return () => {
-      document.removeEventListener("click", handleGlobalClick);
-    };
-  }, [nodes, handleNoteClick]);
 
   // Listen for note clicks from the first three speakers
   useEffect(() => {
     const handleNoteClickEvent = (event: CustomEvent) => {
-      console.log("Note click event received:", event.detail);
       const { nodeId, content, columnId } = event.detail;
       setSelectedNodeId(nodeId);
       setNoteContent("");
@@ -394,20 +329,12 @@ const FlowComponent = () => {
       setShowNoteModal(true);
     };
 
-    console.log("Setting up note click listener");
-
-    // Add the event listener with a slight delay to ensure it's properly set up
-    const timeoutId = setTimeout(() => {
-      document.addEventListener(
-        "noteClick",
-        handleNoteClickEvent as EventListener
-      );
-      console.log("Note click listener added");
-    }, 100);
+    document.addEventListener(
+      "noteClick",
+      handleNoteClickEvent as EventListener
+    );
 
     return () => {
-      clearTimeout(timeoutId);
-      console.log("Cleaning up note click listener");
       document.removeEventListener(
         "noteClick",
         handleNoteClickEvent as EventListener
@@ -523,12 +450,10 @@ const FlowComponent = () => {
   };
 
   const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    console.log("Node clicked via ReactFlow:", node);
     const { id, data } = node;
     
     if (data && data.columnId) {
       const { columnId, content } = data;
-      console.log("Node data from ReactFlow click:", { id, columnId, content });
       
       // Only allow clicking on notes from the first three speakers when admin=true
       if (
@@ -537,35 +462,14 @@ const FlowComponent = () => {
         columnId === "column-2" ||
         columnId === "column-3")
       ) {
-        console.log("First three speaker node clicked via ReactFlow");
         handleNoteClick(id, content, columnId);
       }
     }
   }, [handleNoteClick, isAdmin]);
 
-  const nodeTypes = useMemo(
-    () => ({
-      note: NoteNode,
-      noteNode: NoteNode,
-    }),
-    []
-  );
 
-  const edgeTypes = useMemo(
-    () => ({
-      articleLink: CustomEdge,
-      smoothstep: CustomEdge,
-      ellipsis: EllipsisEdge,
-      yes: EdgeYes,
-      no: EdgeNo,
-      default: CustomEdge, // Fallback for any unmapped types
-      // Add any other edge types that might come from the backend
-      straight: CustomEdge,
-      step: CustomEdge,
-      bezier: CustomEdge,
-    }),
-    []
-  );
+
+
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#ffffff" }} className="flow-area">
@@ -878,6 +782,7 @@ const FlowComponent = () => {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
+                  e.stopPropagation();
                   handleNoteModalSubmit();
                 }
               }}
@@ -904,8 +809,9 @@ const FlowComponent = () => {
           </NoteModalContent>
         </NoteModal>
       )}
-      {nodes.length > 1 && columns.length > 1 && (
+            {nodes.length > 1 && columns.length > 1 && (
         <>
+
           <ReactFlow
             ref={reactFlowWrapper}
             nodes={filteredNodes}
@@ -928,7 +834,10 @@ const FlowComponent = () => {
             selectNodesOnDrag={false}
             style={{ background: "#f8fafc" }}
             onError={(error) => {
-              console.error("ReactFlow error:", error);
+              // Only log non-008 errors to reduce noise
+              if (!String(error).includes('008')) {
+                console.error("ReactFlow error:", error);
+              }
             }}
             attributionPosition="bottom-right"
             onNodeClick={handleNodeClick}
