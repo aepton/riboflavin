@@ -134,10 +134,6 @@ const FlowComponent = () => {
     }
   }, [reactFlowInstance, nodes, isLoading]);
 
-
-
-
-
   // Handle keyboard scrolling
   const onKeyDown = useCallback(
     (event: Event) => {
@@ -170,8 +166,6 @@ const FlowComponent = () => {
     [reactFlowInstance]
   );
 
-
-
   // Add keyboard event listener to the entire flow area
   useEffect(() => {
     const flowArea = document.querySelector(".flow-area");
@@ -187,15 +181,15 @@ const FlowComponent = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('[data-filter-dropdown]')) {
+      if (!target.closest("[data-filter-dropdown]")) {
         setShowFilterDropdown(false);
       }
     };
 
     if (showFilterDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [showFilterDropdown]);
@@ -262,8 +256,6 @@ const FlowComponent = () => {
     }
   }, [showModal]);
 
-
-
   // Listen for note clicks from the first three speakers
   useEffect(() => {
     const handleNoteClickEvent = (event: CustomEvent) => {
@@ -322,24 +314,24 @@ const FlowComponent = () => {
     try {
       // Prepare the data in the same format as the original
       const saveData = {
-        columns: columns.map(column => ({
+        columns: columns.map((column) => ({
           id: column.id,
           title: column.title,
           notes: nodes
-            .filter(node => node.data.columnId === column.id)
-            .map(node => ({
+            .filter((node) => node.data.columnId === column.id)
+            .map((node) => ({
               id: node.id,
-              content: node.data.content
-            }))
+              content: node.data.content,
+            })),
         })),
-        edges: edges.map(edge => ({
+        edges: edges.map((edge) => ({
           id: edge.id,
           source: edge.source,
           target: edge.target,
           type: edge.type || "smoothstep",
           sourceHandle: edge.sourceHandle,
-          targetHandle: edge.targetHandle
-        }))
+          targetHandle: edge.targetHandle,
+        })),
       };
 
       const response = await fetch("http://localhost:8000/api/save-data", {
@@ -366,23 +358,23 @@ const FlowComponent = () => {
   // Filter nodes and edges based on active filter
   const filteredNodes = useMemo(() => {
     if (!activeFilter) return nodes;
-    
+
     // Find all nodes that have edges of the specified type
     const nodesWithFilteredEdges = new Set<string>();
-    
-    edges.forEach(edge => {
+
+    edges.forEach((edge) => {
       if (edge.type === activeFilter) {
         nodesWithFilteredEdges.add(edge.source);
         nodesWithFilteredEdges.add(edge.target);
       }
     });
-    
-    return nodes.filter(node => nodesWithFilteredEdges.has(node.id));
+
+    return nodes.filter((node) => nodesWithFilteredEdges.has(node.id));
   }, [nodes, edges, activeFilter]);
 
   const filteredEdges = useMemo(() => {
     if (!activeFilter) return edges;
-    return edges.filter(edge => edge.type === activeFilter);
+    return edges.filter((edge) => edge.type === activeFilter);
   }, [edges, activeFilter]);
 
   // Recalculate viewport when filter changes - using same logic as scroll wheel handler
@@ -398,7 +390,9 @@ const FlowComponent = () => {
       const maxNodeY = Math.max(...nodePositions);
 
       // Estimate the height of the highest node (same logic as scroll wheel)
-      const highestNode = filteredNodes.find((node) => node.position.y === maxNodeY);
+      const highestNode = filteredNodes.find(
+        (node) => node.position.y === maxNodeY
+      );
       let highestNodeHeight = 140; // Default height
 
       if (highestNode) {
@@ -413,7 +407,7 @@ const FlowComponent = () => {
 
       // Set viewport to show all filtered nodes with proper bounds
       const currentViewport = reactFlowInstance.getViewport();
-      
+
       reactFlowInstance.setViewport({
         x: currentViewport.x, // Keep x position unchanged
         y: Math.max(bottomBound, Math.min(topBound, currentViewport.y)), // Clamp to bounds like scroll wheel
@@ -441,7 +435,7 @@ const FlowComponent = () => {
 
         // Use filtered nodes when filter is active, otherwise use all nodes
         const nodesToUse = activeFilter ? filteredNodes : nodes;
-        
+
         if (nodesToUse.length === 0) return;
 
         // Get the highest and lowest node positions
@@ -450,7 +444,9 @@ const FlowComponent = () => {
         const maxNodeY = Math.max(...nodePositions);
 
         // Estimate the height of the highest and lowest nodes
-        const highestNode = nodesToUse.find((node) => node.position.y === maxNodeY);
+        const highestNode = nodesToUse.find(
+          (node) => node.position.y === maxNodeY
+        );
         let highestNodeHeight = 140; // Default height
 
         if (highestNode) {
@@ -497,30 +493,32 @@ const FlowComponent = () => {
     setShowFilterDropdown(false);
   };
 
-  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    const { id, data } = node;
-    
-    if (data && data.columnId) {
-      const { columnId, content } = data;
-      
-      // Only allow clicking on notes from the first three speakers when admin=true
-      if (
-        isAdmin &&
-        (columnId === "column-1" ||
-        columnId === "column-2" ||
-        columnId === "column-3")
-      ) {
-        handleNoteClick(id, content, columnId);
+  const handleNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      const { id, data } = node;
+
+      if (data && data.columnId) {
+        const { columnId, content } = data;
+
+        // Only allow clicking on notes from the first three speakers when admin=true
+        if (
+          isAdmin &&
+          (columnId === "column-1" ||
+            columnId === "column-2" ||
+            columnId === "column-3")
+        ) {
+          handleNoteClick(id, content, columnId);
+        }
       }
-    }
-  }, [handleNoteClick, isAdmin]);
-
-
-
-
+    },
+    [handleNoteClick, isAdmin]
+  );
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#ffffff" }} className="flow-area">
+    <div
+      style={{ width: "100vw", height: "100vh", background: "#ffffff" }}
+      className="flow-area"
+    >
       {/* Loading Indicator */}
       {isLoading && (
         <div
@@ -550,11 +548,15 @@ const FlowComponent = () => {
                 margin: "0 auto 16px",
               }}
             ></div>
-            <p style={{ color: "#6b7280", fontSize: "16px", fontWeight: "500" }}>Loading transcript data...</p>
+            <p
+              style={{ color: "#6b7280", fontSize: "16px", fontWeight: "500" }}
+            >
+              Loading transcript data...
+            </p>
           </div>
         </div>
       )}
-      
+
       {/* Save Button - Only visible when admin=true */}
       {isAdmin && !isLoading && (
         <button
@@ -589,10 +591,18 @@ const FlowComponent = () => {
           Save Data
         </button>
       )}
-      
+
       {/* Filter Button - Visible to all users */}
       {!isLoading && (
-        <div style={{ position: "absolute", top: isAdmin ? "80px" : "20px", right: "20px", zIndex: 100 }} data-filter-dropdown>
+        <div
+          style={{
+            position: "absolute",
+            top: isAdmin ? "80px" : "20px",
+            right: "20px",
+            zIndex: 100,
+          }}
+          data-filter-dropdown
+        >
           <button
             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
             style={{
@@ -611,12 +621,16 @@ const FlowComponent = () => {
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = activeFilter ? "#2563eb" : "#4b5563";
+              e.currentTarget.style.backgroundColor = activeFilter
+                ? "#2563eb"
+                : "#4b5563";
               e.currentTarget.style.transform = "translateY(-1px)";
               e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeFilter ? "#3b82f6" : "#6b7280";
+              e.currentTarget.style.backgroundColor = activeFilter
+                ? "#3b82f6"
+                : "#6b7280";
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
             }}
@@ -629,7 +643,7 @@ const FlowComponent = () => {
               </span>
             )}
           </button>
-          
+
           {/* Filter Dropdown */}
           {showFilterDropdown && (
             <div
@@ -653,7 +667,8 @@ const FlowComponent = () => {
                 onClick={() => handleFilterToggle("yes")}
                 style={{
                   padding: "0.5rem 0.75rem",
-                  backgroundColor: activeFilter === "yes" ? "#10b981" : "transparent",
+                  backgroundColor:
+                    activeFilter === "yes" ? "#10b981" : "transparent",
                   color: activeFilter === "yes" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
@@ -679,12 +694,13 @@ const FlowComponent = () => {
                 <span style={{ fontSize: "16px" }}>✓</span>
                 Yes
               </button>
-              
+
               <button
                 onClick={() => handleFilterToggle("no")}
                 style={{
                   padding: "0.5rem 0.75rem",
-                  backgroundColor: activeFilter === "no" ? "#ef4444" : "transparent",
+                  backgroundColor:
+                    activeFilter === "no" ? "#ef4444" : "transparent",
                   color: activeFilter === "no" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
@@ -710,12 +726,13 @@ const FlowComponent = () => {
                 <span style={{ fontSize: "16px" }}>✗</span>
                 No
               </button>
-              
+
               <button
                 onClick={() => handleFilterToggle("ellipsis")}
                 style={{
                   padding: "0.5rem 0.75rem",
-                  backgroundColor: activeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
+                  backgroundColor:
+                    activeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
                   color: activeFilter === "ellipsis" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
@@ -741,11 +758,17 @@ const FlowComponent = () => {
                 <span style={{ fontSize: "16px" }}>⋯</span>
                 Ellipsis
               </button>
-              
+
               {/* Clear Filter Option */}
               {activeFilter && (
                 <>
-                  <div style={{ height: "1px", backgroundColor: "#e5e7eb", margin: "0.25rem 0" }} />
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#e5e7eb",
+                      margin: "0.25rem 0",
+                    }}
+                  />
                   <button
                     onClick={() => handleFilterToggle(activeFilter)}
                     style={{
@@ -778,7 +801,7 @@ const FlowComponent = () => {
           )}
         </div>
       )}
-      
+
       {showModal && (
         <Modal onKeyDown={handleModalKeyDown} tabIndex={0}>
           <ModalContent>
@@ -834,7 +857,7 @@ const FlowComponent = () => {
                   handleNoteModalSubmit();
                 }
               }}
-              placeholder="Enter your note content..."
+              placeholder="Enter your note content... (supports markdown formatting)"
               autoFocus
             />
             <NoteModalSelect
@@ -857,9 +880,8 @@ const FlowComponent = () => {
           </NoteModalContent>
         </NoteModal>
       )}
-            {nodes.length > 1 && columns.length > 1 && (
+      {nodes.length > 1 && columns.length > 1 && (
         <>
-
           <ReactFlow
             ref={reactFlowWrapper}
             nodes={filteredNodes}
@@ -883,7 +905,7 @@ const FlowComponent = () => {
             style={{ background: "#f8fafc" }}
             onError={(error) => {
               // Only log non-008 errors to reduce noise
-              if (!String(error).includes('008')) {
+              if (!String(error).includes("008")) {
                 console.error("ReactFlow error:", error);
               }
             }}

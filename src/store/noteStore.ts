@@ -352,20 +352,26 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
       // Find all existing reply notes for this specific source note (only in column-4)
       const existingReplies = state.nodes.filter((node) => {
-        return node.data.columnId === "column-4" && 
-               state.edges.some(
-                 (edge) => edge.source === sourceId && edge.target === node.id
-               );
+        return (
+          node.data.columnId === "column-4" &&
+          state.edges.some(
+            (edge) => edge.source === sourceId && edge.target === node.id
+          )
+        );
       });
 
       // Calculate the height of the source note
       const sourceContentLength = sourceNode.data.content.length;
-      const sourceLineBreaks = (sourceNode.data.content.match(/\n/g) || []).length;
+      const sourceLineBreaks = (sourceNode.data.content.match(/\n/g) || [])
+        .length;
       const sourceEstimatedLines = Math.max(
         1,
         Math.ceil(sourceContentLength / 40) + sourceLineBreaks
       );
-      const sourceEstimatedHeight = Math.max(104, sourceEstimatedLines * 21 + 60);
+      const sourceEstimatedHeight = Math.max(
+        104,
+        sourceEstimatedLines * 21 + 60
+      );
 
       // Position the new reply note - align with source note's center
       let newNoteY: number;
@@ -377,19 +383,23 @@ export const useNoteStore = create<NoteStore>((set) => ({
         newNoteY = sourceCenterY - 52; // 52 is half of the minimum note height (104/2)
       } else {
         // Subsequent replies: position below the last reply
-        const lastReply = existingReplies.reduce((latest, current) => 
+        const lastReply = existingReplies.reduce((latest, current) =>
           current.position.y > latest.position.y ? current : latest
         );
-        
+
         // Calculate height of the last reply
         const lastReplyContentLength = lastReply.data.content.length;
-        const lastReplyLineBreaks = (lastReply.data.content.match(/\n/g) || []).length;
+        const lastReplyLineBreaks = (lastReply.data.content.match(/\n/g) || [])
+          .length;
         const lastReplyEstimatedLines = Math.max(
           1,
           Math.ceil(lastReplyContentLength / 40) + lastReplyLineBreaks
         );
-        const lastReplyEstimatedHeight = Math.max(104, lastReplyEstimatedLines * 21 + 60);
-        
+        const lastReplyEstimatedHeight = Math.max(
+          104,
+          lastReplyEstimatedLines * 21 + 60
+        );
+
         // Use a smaller spacing for replies to keep them closer together
         newNoteY = lastReply.position.y + lastReplyEstimatedHeight + 20;
       }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, memo, useMemo } from "react";
 import { Handle, Position } from "reactflow";
 import styled from "@emotion/styled";
+import ReactMarkdown from "react-markdown";
 import { useNoteStore } from "../store/noteStore";
 
 // Design System Colors
@@ -10,7 +11,7 @@ const colors = {
   edgeNo: "#ef4444", // Red
   edgeEllipsis: "#8b5cf6", // Purple
   edgeDefault: "#6b7280", // Gray
-  
+
   // Neutral colors
   white: "#ffffff",
   gray50: "#f9fafb",
@@ -23,20 +24,20 @@ const colors = {
   gray700: "#374151",
   gray800: "#1f2937",
   gray900: "#111827",
-  
+
   // Background colors
   background: "#ffffff",
   surface: "#f9fafb",
-  
+
   // Text colors
   textPrimary: "#111827",
   textSecondary: "#6b7280",
   textMuted: "#9ca3af",
-  
+
   // Border colors
   border: "#e5e7eb",
   borderFocus: "#3b82f6",
-  
+
   // Shadow
   shadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   shadowMd: "0 4px 6px rgba(0, 0, 0, 0.05)",
@@ -67,13 +68,17 @@ const NoteContainer = styled.div<{
   width: 280px;
   min-height: 80px;
   box-shadow: ${(props) =>
-    props.isFocused ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}` : colors.shadow};
+    props.isFocused
+      ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}`
+      : colors.shadow};
   transition: all 0.2s ease;
   position: relative;
   cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
-  
+
   &:hover {
-    ${(props) => props.isClickable && `
+    ${(props) =>
+      props.isClickable &&
+      `
       transform: translateY(-1px);
       box-shadow: ${colors.shadowLg};
     `}
@@ -99,9 +104,114 @@ const TextArea = styled.textarea`
   &:focus {
     outline: none;
   }
-  
+
   &::placeholder {
     color: ${colors.textMuted};
+  }
+`;
+
+const MarkdownContent = styled.div`
+  width: 100%;
+  min-height: 60px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: ${colors.textPrimary};
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  /* Markdown styling */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0.5rem 0 0.25rem 0;
+    font-weight: 600;
+    color: ${colors.textPrimary};
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+  h2 {
+    font-size: 1.125rem;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0.25rem 0;
+  }
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  em,
+  i {
+    font-style: italic;
+  }
+
+  code {
+    background: ${colors.gray100};
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    font-family:
+      "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+      "Courier New", monospace;
+    font-size: 0.875em;
+  }
+
+  pre {
+    background: ${colors.gray100};
+    padding: 0.75rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  blockquote {
+    border-left: 3px solid ${colors.gray300};
+    margin: 0.5rem 0;
+    padding-left: 0.75rem;
+    color: ${colors.textSecondary};
+  }
+
+  ul,
+  ol {
+    margin: 0.25rem 0;
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin: 0.125rem 0;
+  }
+
+  a {
+    color: ${colors.edgeYes};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid ${colors.gray200};
+    margin: 0.5rem 0;
   }
 `;
 
@@ -118,6 +228,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
   const { updateNote, addNote, edges } = useNoteStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Check if this note is from one of the first three speakers (columns 1-3)
   const isFromFirstThreeSpeakers =
@@ -127,9 +238,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
 
   // Determine edge types for border coloring - only consider incoming edges (target)
   const edgeTypes = useMemo(() => {
-    const incomingEdges = edges.filter(
-      (edge: any) => edge.target === id
-    );
+    const incomingEdges = edges.filter((edge: any) => edge.target === id);
     return incomingEdges.map((edge: any) => edge.type);
   }, [edges, id]);
 
@@ -137,8 +246,6 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
   const hasNoEdge = edgeTypes.includes("no");
   const hasEllipsisEdge = edgeTypes.includes("ellipsis");
   const isLinked = edgeTypes.length > 0;
-
-
 
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
@@ -148,15 +255,12 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }
   }, []);
 
-
-
-
-
   useEffect(() => {
     if (data.isNew && textareaRef.current) {
       const timeoutId = setTimeout(() => {
         textareaRef.current?.focus();
         setIsFocused(true);
+        setIsEditing(true);
       }, 50);
       return () => clearTimeout(timeoutId);
     }
@@ -199,6 +303,19 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
+    // Switch to view mode after a short delay to allow for clicking on the content
+    setTimeout(() => {
+      if (!isFocused) {
+        setIsEditing(false);
+      }
+    }, 100);
+  }, [isFocused]);
+
+  const handleDoubleClick = useCallback(() => {
+    setIsEditing(true);
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 0);
   }, []);
 
   const handleNoteClick = useCallback(() => {
@@ -214,7 +331,7 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }
   }, [isFromFirstThreeSpeakers, id, data.content, data.columnId]);
 
-    // Determine border color based on edge types
+  // Determine border color based on edge types
   const getBorderColor = () => {
     if (hasYesEdge) return colors.edgeYes;
     if (hasNoEdge) return colors.edgeNo;
@@ -238,79 +355,91 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
         padding: "1rem",
         width: "280px",
         minHeight: "80px",
-        boxShadow: isFocused 
-          ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}` 
+        boxShadow: isFocused
+          ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}`
           : colors.shadow,
         transition: "all 0.2s ease",
         position: "relative",
         cursor: isFromFirstThreeSpeakers ? "pointer" : "default",
       }}
     >
-        <Handle
-          id="top"
-          type="target"
-          position={Position.Top}
-          style={{ 
-            width: "8px", 
-            height: "8px",
-            background: "transparent",
-            border: "none",
-            top: "-4px",
-            opacity: 0,
-            pointerEvents: "none"
-          }}
-        />
-        <Handle
-          id="right"
-          type="source"
-          position={Position.Right}
-          style={{ 
-            width: "8px", 
-            height: "8px",
-            background: "transparent",
-            border: "none",
-            right: "-4px",
-            opacity: 0,
-            pointerEvents: "none"
-          }}
-        />
-        <Handle
-          id="bottom"
-          type="source"
-          position={Position.Bottom}
-          style={{ 
-            width: "8px", 
-            height: "8px",
-            background: "transparent",
-            border: "none",
-            bottom: "-4px",
-            opacity: 0,
-            pointerEvents: "none"
-          }}
-        />
-        <Handle
-          id="left"
-          type="target"
-          position={Position.Left}
-          style={{ 
-            width: "8px", 
-            height: "8px",
-            background: "transparent",
-            border: "none",
-            left: "-4px",
-            opacity: 0,
-            pointerEvents: "none"
-          }}
-        />
-        <TextArea
-        ref={textareaRef}
-        value={data.content}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        placeholder="Type your note here..."
+      <Handle
+        id="top"
+        type="target"
+        position={Position.Top}
+        style={{
+          width: "8px",
+          height: "8px",
+          background: "transparent",
+          border: "none",
+          top: "-4px",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
       />
+      <Handle
+        id="right"
+        type="source"
+        position={Position.Right}
+        style={{
+          width: "8px",
+          height: "8px",
+          background: "transparent",
+          border: "none",
+          right: "-4px",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
+      <Handle
+        id="bottom"
+        type="source"
+        position={Position.Bottom}
+        style={{
+          width: "8px",
+          height: "8px",
+          background: "transparent",
+          border: "none",
+          bottom: "-4px",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
+      <Handle
+        id="left"
+        type="target"
+        position={Position.Left}
+        style={{
+          width: "8px",
+          height: "8px",
+          background: "transparent",
+          border: "none",
+          left: "-4px",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
+      {isEditing ? (
+        <TextArea
+          ref={textareaRef}
+          value={data.content}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder="Type your note here... (supports markdown)"
+        />
+      ) : (
+        <MarkdownContent onDoubleClick={handleDoubleClick}>
+          {data.content ? (
+            <ReactMarkdown>{data.content}</ReactMarkdown>
+          ) : (
+            <div style={{ color: colors.textMuted, fontStyle: "italic" }}>
+              Double-click to edit...
+            </div>
+          )}
+        </MarkdownContent>
+      )}
     </div>
   );
 });

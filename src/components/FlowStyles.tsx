@@ -5,13 +5,13 @@ const colors = {
   // Primary palette
   primary: "#3b82f6", // Blue
   primaryHover: "#2563eb",
-  
+
   // Edge colors - cohesive palette
   edgeYes: "#10b981", // Emerald green
   edgeNo: "#ef4444", // Red
   edgeEllipsis: "#8b5cf6", // Purple
   edgeDefault: "#6b7280", // Gray
-  
+
   // Neutral colors
   white: "#ffffff",
   gray50: "#f9fafb",
@@ -24,20 +24,20 @@ const colors = {
   gray700: "#374151",
   gray800: "#1f2937",
   gray900: "#111827",
-  
+
   // Background colors
   background: "#ffffff",
   surface: "#f9fafb",
-  
+
   // Text colors
   textPrimary: "#111827",
   textSecondary: "#6b7280",
   textMuted: "#9ca3af",
-  
+
   // Border colors
   border: "#e5e7eb",
   borderFocus: "#3b82f6",
-  
+
   // Shadow
   shadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   shadowMd: "0 4px 6px rgba(0, 0, 0, 0.05)",
@@ -101,7 +101,7 @@ export const ModalInput = styled.input`
   margin-top: 1rem;
   background: ${colors.white};
   color: ${colors.textPrimary};
-  
+
   &:focus {
     outline: none;
     border-color: ${colors.borderFocus};
@@ -187,13 +187,13 @@ export const NoteModalTextarea = styled.textarea`
   background: ${colors.white};
   color: ${colors.textPrimary};
   line-height: 1.5;
-  
+
   &:focus {
     outline: none;
     border-color: ${colors.borderFocus};
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
-  
+
   &::placeholder {
     color: ${colors.textMuted};
   }
@@ -209,7 +209,7 @@ export const NoteModalSelect = styled.select`
   background: ${colors.white};
   color: ${colors.textPrimary};
   cursor: pointer;
-  
+
   &:focus {
     outline: none;
     border-color: ${colors.borderFocus};
@@ -234,7 +234,7 @@ export const NoteModalButton = styled.button`
     transform: translateY(-1px);
     box-shadow: ${colors.shadowMd};
   }
-  
+
   &:active {
     transform: translateY(0);
   }
@@ -256,7 +256,7 @@ export const NoteModalCancelButton = styled.button`
     transform: translateY(-1px);
     box-shadow: ${colors.shadowMd};
   }
-  
+
   &:active {
     transform: translateY(0);
   }

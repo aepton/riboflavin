@@ -8,16 +8,21 @@ export interface EdgeProps {
 }
 
 // Helper function to create bezier curve path
-const createBezierPath = (sourceX: number, sourceY: number, targetX: number, targetY: number) => {
+const createBezierPath = (
+  sourceX: number,
+  sourceY: number,
+  targetX: number,
+  targetY: number
+) => {
   const deltaX = targetX - sourceX;
   const deltaY = targetY - sourceY;
-  
+
   // Control points for more pronounced curve
   const controlPoint1X = sourceX + deltaX * 0.4;
   const controlPoint1Y = sourceY;
   const controlPoint2X = targetX - deltaX * 0.4;
   const controlPoint2Y = targetY;
-  
+
   return `M ${sourceX} ${sourceY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${targetX} ${targetY}`;
 };
 
@@ -33,11 +38,7 @@ const createArrowMarker = (id: string, color: string) => (
       orient="auto"
       markerUnits="strokeWidth"
     >
-      <path
-        d="M 0 0 L 12 4 L 0 8 L 2 4 Z"
-        fill={color}
-        stroke="none"
-      />
+      <path d="M 0 0 L 12 4 L 0 8 L 2 4 Z" fill={color} stroke="none" />
     </marker>
   </defs>
 );
@@ -120,7 +121,13 @@ export const EllipsisEdge = ({
 };
 
 // Custom edge component with check mark
-export const EdgeYes = ({ sourceX, sourceY, targetX, targetY, id }: EdgeProps) => {
+export const EdgeYes = ({
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  id,
+}: EdgeProps) => {
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
@@ -167,7 +174,13 @@ export const EdgeYes = ({ sourceX, sourceY, targetX, targetY, id }: EdgeProps) =
 };
 
 // Custom edge component with X mark
-export const EdgeNo = ({ sourceX, sourceY, targetX, targetY, id }: EdgeProps) => {
+export const EdgeNo = ({
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  id,
+}: EdgeProps) => {
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
