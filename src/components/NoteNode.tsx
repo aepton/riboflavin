@@ -328,11 +328,6 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }, 0);
   }, []);
 
-  const handleMouseUp = useCallback(() => {
-    // This is now handled by the global listener in Flow component
-    console.log("Local mouse up event triggered");
-  }, []);
-
   const handleNoteClick = useCallback(
     (e: React.MouseEvent) => {
       // Only trigger if clicking on the container itself, not when selecting text
@@ -446,13 +441,11 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onMouseUp={handleMouseUp}
           placeholder="Type your note here... (supports markdown)"
         />
       ) : (
         <MarkdownContent
           onDoubleClick={handleDoubleClick}
-          onMouseUp={handleMouseUp}
         >
           {data.content ? (
             <ReactMarkdown>{data.content}</ReactMarkdown>
