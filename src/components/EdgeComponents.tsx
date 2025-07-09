@@ -85,7 +85,7 @@ export const EllipsisEdge = ({
     <g style={{ zIndex: 1 }}>
       <path
         d={path}
-        stroke="#000000"
+        stroke="#8b5cf6"
         strokeWidth={1.5}
         strokeLinecap="round"
         fill="none"
@@ -138,7 +138,7 @@ export const EdgeYes = ({
     <g style={{ zIndex: 1 }}>
       <path
         d={path}
-        stroke="#000000"
+        stroke="#10b981"
         strokeWidth={1.5}
         strokeLinecap="round"
         fill="none"
@@ -191,7 +191,7 @@ export const EdgeNo = ({
     <g style={{ zIndex: 1 }}>
       <path
         d={path}
-        stroke="#000000"
+        stroke="#ef4444"
         strokeWidth={1.5}
         strokeLinecap="round"
         fill="none"
