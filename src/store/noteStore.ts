@@ -175,19 +175,21 @@ export const useNoteStore = create<NoteStore>((set) => ({
       }
       const data: ParsedTranscriptData = await response.json();
 
-      // Process the data - filter out empty columns and duplicates
+      // Process the data - filter out columns without titles and duplicates
       const uniqueColumns = new Map<
         string,
         { id: string; title: string; notes: NoteData[] }
       >();
       data.columns.forEach((col: ColumnData) => {
-        if (col.title && col.title.trim() !== "") {
-          // Use title as key to prevent duplicates
-          if (!uniqueColumns.has(col.title)) {
-            uniqueColumns.set(col.title, col);
+        // Include columns with empty titles (like column-4) but exclude columns without title property
+        if (col.title !== undefined) {
+          // Use title as key to prevent duplicates, but handle empty titles
+          const titleKey = col.title || col.id; // Use column ID as key for empty titles
+          if (!uniqueColumns.has(titleKey)) {
+            uniqueColumns.set(titleKey, col);
           } else {
             // Merge notes from duplicate columns
-            const existing = uniqueColumns.get(col.title)!;
+            const existing = uniqueColumns.get(titleKey)!;
             existing.notes = [...existing.notes, ...col.notes];
           }
         }
@@ -221,10 +223,13 @@ export const useNoteStore = create<NoteStore>((set) => ({
       // Create a mapping from original column IDs to new column positions
       const originalToNewColumnMap: Record<string, string> = {};
       data.columns.forEach((originalCol: ColumnData) => {
-        if (originalCol.title && originalCol.title.trim() !== "") {
-          // Find the new column with the same title
+        // Include columns with empty titles (like column-4) but exclude columns without title property
+        if (originalCol.title !== undefined) {
+          // Find the new column with the same title or ID
           const newColumn = newColumns.find(
-            (col) => col.title === originalCol.title
+            (col) =>
+              col.title === originalCol.title ||
+              (originalCol.title === "" && col.id === originalCol.id)
           );
           if (newColumn) {
             originalToNewColumnMap[originalCol.id] = newColumn.id;
@@ -235,8 +240,8 @@ export const useNoteStore = create<NoteStore>((set) => ({
       // Collect all notes from all columns and sort them by ID to get chronological order
       const allNotes: NoteData[] = [];
       data.columns.forEach((col: ColumnData) => {
-        // Only include notes from columns that have titles (skip empty columns)
-        if (col.title && col.title.trim() !== "") {
+        // Include notes from columns with empty titles (like column-4) but exclude columns without title property
+        if (col.title !== undefined) {
           col.notes.forEach((note: NoteData) => {
             allNotes.push({ ...note, columnId: col.id });
           });
@@ -250,12 +255,20 @@ export const useNoteStore = create<NoteStore>((set) => ({
         return aNum - bNum;
       });
 
-      // Position nodes sequentially across all columns to maintain conversation flow
+      // Position nodes - use different logic for fourth column vs other columns
       const nodes: Node[] = [];
-      let currentY = 100; // Start position
+      let currentY = 100; // Start position for non-fourth column notes
       const NODE_SPACING = 120; // Increased to account for edge symbols and arrows
 
-      allNotes.forEach((note) => {
+      // First, process all non-fourth column notes sequentially
+      const nonFourthColumnNotes = allNotes.filter(
+        (note) => note.columnId !== "column-4"
+      );
+      const fourthColumnNotes = allNotes.filter(
+        (note) => note.columnId === "column-4"
+      );
+
+      nonFourthColumnNotes.forEach((note) => {
         const originalColumnId = note.columnId;
         const newColumnId = originalToNewColumnMap[originalColumnId];
         const columnX = nodeIdToColumnX[newColumnId];
@@ -293,6 +306,100 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
         // Update Y position for next node
         currentY += estimatedHeight + NODE_SPACING;
+      });
+
+      // Now process fourth column notes using the same logic as addNoteToFourthColumn
+      fourthColumnNotes.forEach((note) => {
+        const originalColumnId = note.columnId;
+        const newColumnId = originalToNewColumnMap[originalColumnId];
+        const columnX = nodeIdToColumnX[newColumnId];
+
+        if (columnX === undefined) {
+          console.warn(
+            `No column found for note ${note.id} with columnId ${originalColumnId}`
+          );
+          return;
+        }
+
+        const calculatedX = columnX + COLUMN_WIDTH / 2 - NOTE_WIDTH / 2;
+
+        // Find the source note for this fourth column note by looking at edges
+        const edgeToThisNote = (data.edges || []).find(
+          (edge) => edge.target === note.id
+        );
+        let y = 100; // Default fallback position
+
+        if (edgeToThisNote) {
+          const sourceNode = nodes.find(
+            (node) => node.id === edgeToThisNote.source
+          );
+          if (sourceNode) {
+            // Calculate the height of the source note
+            const sourceContentLength = sourceNode.data.content.length;
+            const sourceLineBreaks = (
+              sourceNode.data.content.match(/\n/g) || []
+            ).length;
+            const sourceEstimatedLines = Math.max(
+              1,
+              Math.ceil(sourceContentLength / 40) + sourceLineBreaks
+            );
+            const sourceEstimatedHeight = Math.max(
+              104,
+              sourceEstimatedLines * 21 + 60
+            );
+
+            // Find all existing reply notes for this specific source note (only in column-4)
+            const existingReplies = nodes.filter((node) => {
+              return (
+                node.data.columnId === "column-4" &&
+                (data.edges || []).some(
+                  (edge) =>
+                    edge.source === edgeToThisNote.source &&
+                    edge.target === node.id
+                )
+              );
+            });
+
+            if (existingReplies.length === 0) {
+              // First reply: position to align with the source note's center
+              const sourceCenterY =
+                sourceNode.position.y + sourceEstimatedHeight / 2;
+              y = sourceCenterY - 52; // 52 is half of the minimum note height (104/2)
+            } else {
+              // Subsequent replies: position below the last reply
+              const lastReply = existingReplies.reduce((latest, current) =>
+                current.position.y > latest.position.y ? current : latest
+              );
+
+              // Calculate height of the last reply
+              const lastReplyContentLength = lastReply.data.content.length;
+              const lastReplyLineBreaks = (
+                lastReply.data.content.match(/\n/g) || []
+              ).length;
+              const lastReplyEstimatedLines = Math.max(
+                1,
+                Math.ceil(lastReplyContentLength / 40) + lastReplyLineBreaks
+              );
+              const lastReplyEstimatedHeight = Math.max(
+                104,
+                lastReplyEstimatedLines * 21 + 60
+              );
+
+              // Use a smaller spacing for replies to keep them closer together
+              y = lastReply.position.y + lastReplyEstimatedHeight + 20;
+            }
+          }
+        }
+
+        nodes.push({
+          id: note.id,
+          type: "noteNode",
+          position: { x: calculatedX, y },
+          data: {
+            content: note.content,
+            columnId: newColumnId,
+          },
+        });
       });
 
       // Edges - restore handle specifications for proper routing

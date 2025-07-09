@@ -75,6 +75,8 @@ const FlowComponent = () => {
   const [noteContent, setNoteContent] = useState("");
   const [selectedEdgeType, setSelectedEdgeType] = useState("smoothstep");
   const [selectedNodeId, setSelectedNodeId] = useState("");
+  const selectedTextRef = useRef<string>("");
+  const justOpenedWithSelectionRef = useRef<boolean>(false);
 
   // Filter state
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
@@ -86,10 +88,17 @@ const FlowComponent = () => {
 
   const handleNoteClick = useCallback(
     (nodeId: string, content: string, columnId: string) => {
-      setSelectedNodeId(nodeId);
-      setNoteContent("");
-      setSelectedEdgeType(lastUsedEdgeType);
-      setShowNoteModal(true);
+      // Check if there's a text selection - if so, don't clear the content
+      const selection = window.getSelection();
+      const hasSelection = selection && selection.toString().trim().length > 0;
+
+      if (!hasSelection) {
+        setSelectedNodeId(nodeId);
+        setNoteContent("");
+        selectedTextRef.current = ""; // Clear the ref for blank modals
+        setSelectedEdgeType(lastUsedEdgeType);
+        setShowNoteModal(true);
+      }
     },
     [lastUsedEdgeType]
   );
@@ -260,10 +269,23 @@ const FlowComponent = () => {
   useEffect(() => {
     const handleNoteClickEvent = (event: CustomEvent) => {
       const { nodeId, content, columnId } = event.detail;
-      setSelectedNodeId(nodeId);
-      setNoteContent("");
-      setSelectedEdgeType("smoothstep");
-      setShowNoteModal(true);
+
+      // Check if we just opened the modal with selected text
+      if (justOpenedWithSelectionRef.current) {
+        return;
+      }
+
+      // Check if there's a text selection - if so, don't clear the content
+      const selection = window.getSelection();
+      const hasSelection = selection && selection.toString().trim().length > 0;
+
+      if (!hasSelection) {
+        setSelectedNodeId(nodeId);
+        setNoteContent("");
+        selectedTextRef.current = ""; // Clear the ref for blank modals
+        setSelectedEdgeType("smoothstep");
+        setShowNoteModal(true);
+      }
     };
 
     document.addEventListener(
@@ -279,6 +301,79 @@ const FlowComponent = () => {
     };
   }, []);
 
+  // Global text selection handler
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      const selection = window.getSelection();
+
+      if (selection && selection.toString().trim().length > 0) {
+        // Find which node contains the selection
+        const range = selection.getRangeAt(0);
+        const nodeElement =
+          range.commonAncestorContainer.parentElement?.closest("[data-id]");
+
+        if (nodeElement) {
+          const nodeId = nodeElement.getAttribute("data-id");
+          if (nodeId) {
+            const node = nodes.find((n: any) => n.id === nodeId);
+
+            if (
+              node &&
+              (node.data.columnId === "column-1" ||
+                node.data.columnId === "column-2" ||
+                node.data.columnId === "column-3")
+            ) {
+              const selectedText = selection.toString().trim();
+              const quotedText = `> ${selectedText}`;
+
+              // Open the rebuttal modal with selected text
+              selectedTextRef.current = quotedText;
+              justOpenedWithSelectionRef.current = true;
+              setSelectedNodeId(nodeId);
+              setSelectedEdgeType("smoothstep");
+              setNoteContent(quotedText);
+              setShowNoteModal(true);
+              
+              // Clear the flag after a short delay
+              setTimeout(() => {
+                justOpenedWithSelectionRef.current = false;
+              }, 100);
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener("mouseup", handleGlobalMouseUp);
+
+    return () => {
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, [nodes]);
+
+  // Listen for text selection events (keeping for backward compatibility)
+  useEffect(() => {
+    const handleTextSelectedEvent = (event: CustomEvent) => {
+      const { nodeId, selectedText, columnId } = event.detail;
+      setSelectedNodeId(nodeId);
+      setNoteContent(selectedText);
+      setSelectedEdgeType("smoothstep");
+      setShowNoteModal(true);
+    };
+
+    document.addEventListener(
+      "textSelected",
+      handleTextSelectedEvent as EventListener
+    );
+
+    return () => {
+      document.removeEventListener(
+        "textSelected",
+        handleTextSelectedEvent as EventListener
+      );
+    };
+  }, []);
+
   const handleNoteModalSubmit = () => {
     if (noteContent.trim() && selectedNodeId) {
       addNoteToFourthColumn(
@@ -289,6 +384,8 @@ const FlowComponent = () => {
       setShowNoteModal(false);
       setNoteContent("");
       setSelectedNodeId("");
+      selectedTextRef.current = ""; // Clear the ref
+      justOpenedWithSelectionRef.current = false; // Clear the flag
     }
   };
 
@@ -296,6 +393,8 @@ const FlowComponent = () => {
     setShowNoteModal(false);
     setNoteContent("");
     setSelectedNodeId("");
+    selectedTextRef.current = ""; // Clear the ref
+    justOpenedWithSelectionRef.current = false; // Clear the flag
   };
 
   const handleNoteModalKeyDown = (e: React.KeyboardEvent) => {
@@ -346,9 +445,7 @@ const FlowComponent = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Data saved successfully:", result.message);
-      alert("Data saved successfully!");
+      await response.json();
     } catch (error) {
       console.error("Error saving data:", error);
       alert("Error saving data. Please check the console for details.");
@@ -507,6 +604,11 @@ const FlowComponent = () => {
             columnId === "column-2" ||
             columnId === "column-3")
         ) {
+          // Check if we just opened the modal with selected text
+          if (justOpenedWithSelectionRef.current) {
+            return;
+          }
+          
           handleNoteClick(id, content, columnId);
         }
       }
@@ -848,7 +950,7 @@ const FlowComponent = () => {
           <NoteModalContent onKeyDown={handleNoteModalKeyDown}>
             <NoteModalTitle>Add Note to Fourth Column</NoteModalTitle>
             <NoteModalTextarea
-              value={noteContent}
+              value={noteContent || selectedTextRef.current}
               onChange={(e) => setNoteContent(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -897,7 +999,7 @@ const FlowComponent = () => {
             zoomOnPinch={false}
             zoomOnDoubleClick={false}
             panOnScroll={false}
-            panOnDrag={true}
+            panOnDrag={false}
             nodesDraggable={false}
             nodesConnectable={false}
             elementsSelectable={true}

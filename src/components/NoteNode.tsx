@@ -100,6 +100,11 @@ const TextArea = styled.textarea`
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
     Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   overflow: hidden;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
 
   &:focus {
     outline: none;
@@ -119,6 +124,11 @@ const MarkdownContent = styled.div`
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
     Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
 
   /* Markdown styling */
   h1,
@@ -318,18 +328,27 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
     }, 0);
   }, []);
 
-  const handleNoteClick = useCallback(() => {
-    if (isFromFirstThreeSpeakers) {
-      const event = new CustomEvent("noteClick", {
-        detail: {
-          nodeId: id,
-          content: data.content,
-          columnId: data.columnId,
-        },
-      });
-      document.dispatchEvent(event);
-    }
-  }, [isFromFirstThreeSpeakers, id, data.content, data.columnId]);
+  const handleMouseUp = useCallback(() => {
+    // This is now handled by the global listener in Flow component
+    console.log("Local mouse up event triggered");
+  }, []);
+
+  const handleNoteClick = useCallback(
+    (e: React.MouseEvent) => {
+      // Only trigger if clicking on the container itself, not when selecting text
+      if (e.target === e.currentTarget && isFromFirstThreeSpeakers) {
+        const event = new CustomEvent("noteClick", {
+          detail: {
+            nodeId: id,
+            content: data.content,
+            columnId: data.columnId,
+          },
+        });
+        document.dispatchEvent(event);
+      }
+    },
+    [isFromFirstThreeSpeakers, id, data.content, data.columnId]
+  );
 
   // Determine border color based on edge types
   const getBorderColor = () => {
@@ -427,10 +446,14 @@ const NoteNode = memo(({ data, id }: NoteNodeProps) => {
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onMouseUp={handleMouseUp}
           placeholder="Type your note here... (supports markdown)"
         />
       ) : (
-        <MarkdownContent onDoubleClick={handleDoubleClick}>
+        <MarkdownContent
+          onDoubleClick={handleDoubleClick}
+          onMouseUp={handleMouseUp}
+        >
           {data.content ? (
             <ReactMarkdown>{data.content}</ReactMarkdown>
           ) : (
