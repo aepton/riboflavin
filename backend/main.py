@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
 import re
+from datetime import datetime
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -26,6 +27,10 @@ class TextContent(BaseModel):
     content: str
 
 class ParsedData(BaseModel):
+    columns: list
+    edges: list
+
+class SaveDataRequest(BaseModel):
     columns: list
     edges: list
 
@@ -172,13 +177,37 @@ def parse_daily_covids_wake():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
-    # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.post("/api/save-data")
+def save_data(request: SaveDataRequest):
+    """Save the provided data to a timestamped file in the same format as the existing data"""
+    try:
+        columns = request.columns
+        edges = request.edges
+        
+        # Generate a timestamp
+        timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        
+        # Save to parsed directory
+        parsed_file_path = os.path.join(PARSED_DIR, f"daily_covids_wake_parsed_{timestamp}.json")
+        with open(parsed_file_path, 'w', encoding='utf-8') as f:
+            json.dump({
+                'columns': columns,
+                'edges': edges
+            }, f, indent=2, ensure_ascii=False)
+        
+        return {"message": f"Data saved successfully to {parsed_file_path}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    """
     parsed_data = parse_daily_covids_wake_transcript()
     
     # Save to public directory (for frontend static loading)
     public_file_path = os.path.join(PUBLIC_DIR, "daily_covids_wake_parsed.json")
     with open(public_file_path, 'w', encoding='utf-8') as f:
         json.dump(parsed_data, f, indent=2, ensure_ascii=False)
+    """

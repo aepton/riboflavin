@@ -805,48 +805,7 @@
     {
       "id": "column-4",
       "title": "",
-      "notes": [
-        {
-          "id": "note-1752031173642",
-          "content": "> a decision that, over time, polarized the country and changed the relationship between many Americans and their government\n\nPretty bold claim"
-        },
-        {
-          "id": "note-1752031194845",
-          "content": "> two prominent political scientists are making the case\n\nSo, people pretty far out of their lane?"
-        },
-        {
-          "id": "note-1752031247703",
-          "content": "> I actually had started to work on a larger project on several topics on which I thought progressives were not paying enough attention to arguments coming from the other side\n\nWhat a strange time in American life to be chastising progressives for not listening to conservatives."
-        },
-        {
-          "id": "note-1752031448506",
-          "content": "> that included immigration, abortion, and then COVID as well\n\nI'm very curious to know what _progressives_ have to learn from _conservatives_ about immigration. Abortion, ok, sure, fine. Covid seems really debatable.\n\nWhat unites all three of these is that it's hard to say for any of them that the public debate is lesser because progressives aren't listening to conservative concerns on these issues."
-        },
-        {
-          "id": "note-1752031543921",
-          "content": "> these, as we call them, truth-seeking institutions, did not function as well as they should have during COVID.\n\nYes, during the greatest episode of mass death in the last century, it is true that our major institutions made mistakes. I'm not sure how it would have ever been possible for them not to have."
-        },
-        {
-          "id": "note-1752031600743",
-          "content": "> there was a premature policy consensus. There was an unwillingness to re-examine assumptions. And there was an intolerance of criticism and divergent points of view\n\nAgain, these are very bizarre criticisms to make of the left, and very straightforward criticisms to make of the right, so it's odd that they punch left here."
-        },
-        {
-          "id": "note-1752031674668",
-          "content": "> It was almost seen as wrong or immoral to raise questions\n\nI get what they're trying to say here but also, it was clearly true that people were making bad-faith objections based on delusion in service of a political objective. That _should_ be called out, _particularly_ during a public health crisis."
-        },
-        {
-          "id": "note-1752031738366",
-          "content": "> For me, it’s been a kind of voyage of discovery\n\nYes, because you're far outside of your field, which should imbue you with a massive sense of caution. Right? You're going to be cautious about making sweeping conclusions about the field of public health that you just discovered existed after the pandemic?"
-        },
-        {
-          "id": "note-1752031820385",
-          "content": "> wow, I thought I knew the pandemic really because I lived through it. But I didn’t know it as I thought I did.\n\nIt's very frustrating that Barbaro is just blatantly agreeing with the highly-contested conclusions made by this book here. Actual public health experts disagree with this, but he just blithely golly-gee's his way into accepting what these two _admitted conservative non-experts_ assert."
-        },
-        {
-          "id": "note-1752031914517",
-          "content": "> there was not a consensus\n\nOne thing that happens a lot in politics is that people use the admitted uncertainty of science as a mark against it. Scientists are supposed to be humble and not overstate their claims. This humility is exhibited nowhere else in these conversations, and certainly not from these two political scientists."
-        }
-      ]
+      "notes": []
     }
   ],
   "edges": [
@@ -854,1641 +813,1561 @@
       "id": "edge-1",
       "source": "note-1",
       "target": "note-2",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-2",
       "source": "note-2",
       "target": "note-3",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-3",
       "source": "note-3",
       "target": "note-4",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-4",
       "source": "note-4",
       "target": "note-5",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-5",
       "source": "note-5",
       "target": "note-6",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-6",
       "source": "note-6",
       "target": "note-7",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-7",
       "source": "note-7",
       "target": "note-8",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-8",
       "source": "note-8",
       "target": "note-9",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-9",
       "source": "note-9",
       "target": "note-10",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-10",
       "source": "note-10",
       "target": "note-11",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-11",
       "source": "note-11",
       "target": "note-12",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-12",
       "source": "note-12",
       "target": "note-13",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-13",
       "source": "note-13",
       "target": "note-14",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-14",
       "source": "note-14",
       "target": "note-15",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-15",
       "source": "note-15",
       "target": "note-16",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-16",
       "source": "note-16",
       "target": "note-17",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-17",
       "source": "note-17",
       "target": "note-18",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-18",
       "source": "note-18",
       "target": "note-19",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-19",
       "source": "note-19",
       "target": "note-20",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-20",
       "source": "note-20",
       "target": "note-21",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-21",
       "source": "note-21",
       "target": "note-22",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-22",
       "source": "note-22",
       "target": "note-23",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-23",
       "source": "note-23",
       "target": "note-24",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-24",
       "source": "note-24",
       "target": "note-25",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-25",
       "source": "note-25",
       "target": "note-26",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-26",
       "source": "note-26",
       "target": "note-27",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-27",
       "source": "note-27",
       "target": "note-28",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-28",
       "source": "note-28",
       "target": "note-29",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-29",
       "source": "note-29",
       "target": "note-30",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-30",
       "source": "note-30",
       "target": "note-31",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-31",
       "source": "note-31",
       "target": "note-32",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-32",
       "source": "note-32",
       "target": "note-33",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-33",
       "source": "note-33",
       "target": "note-34",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-34",
       "source": "note-34",
       "target": "note-35",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-35",
       "source": "note-35",
       "target": "note-36",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-36",
       "source": "note-36",
       "target": "note-37",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-37",
       "source": "note-37",
       "target": "note-38",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-38",
       "source": "note-38",
       "target": "note-39",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-39",
       "source": "note-39",
       "target": "note-40",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-40",
       "source": "note-40",
       "target": "note-41",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-41",
       "source": "note-41",
       "target": "note-42",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-42",
       "source": "note-42",
       "target": "note-43",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-43",
       "source": "note-43",
       "target": "note-44",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-44",
       "source": "note-44",
       "target": "note-45",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-45",
       "source": "note-45",
       "target": "note-46",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-46",
       "source": "note-46",
       "target": "note-47",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-47",
       "source": "note-47",
       "target": "note-48",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-48",
       "source": "note-48",
       "target": "note-49",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-49",
       "source": "note-49",
       "target": "note-50",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-50",
       "source": "note-50",
       "target": "note-51",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-51",
       "source": "note-51",
       "target": "note-52",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-52",
       "source": "note-52",
       "target": "note-53",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-53",
       "source": "note-53",
       "target": "note-54",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-54",
       "source": "note-54",
       "target": "note-55",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-55",
       "source": "note-55",
       "target": "note-56",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-56",
       "source": "note-56",
       "target": "note-57",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-57",
       "source": "note-57",
       "target": "note-58",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-58",
       "source": "note-58",
       "target": "note-59",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-59",
       "source": "note-59",
       "target": "note-60",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-60",
       "source": "note-60",
       "target": "note-61",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-61",
       "source": "note-61",
       "target": "note-62",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-62",
       "source": "note-62",
       "target": "note-63",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-63",
       "source": "note-63",
       "target": "note-64",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-64",
       "source": "note-64",
       "target": "note-65",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-65",
       "source": "note-65",
       "target": "note-66",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-66",
       "source": "note-66",
       "target": "note-67",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-67",
       "source": "note-67",
       "target": "note-68",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-68",
       "source": "note-68",
       "target": "note-69",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-69",
       "source": "note-69",
       "target": "note-70",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-70",
       "source": "note-70",
       "target": "note-71",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-71",
       "source": "note-71",
       "target": "note-72",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-72",
       "source": "note-72",
       "target": "note-73",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-73",
       "source": "note-73",
       "target": "note-74",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-74",
       "source": "note-74",
       "target": "note-75",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-75",
       "source": "note-75",
       "target": "note-76",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-76",
       "source": "note-76",
       "target": "note-77",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-77",
       "source": "note-77",
       "target": "note-78",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-78",
       "source": "note-78",
       "target": "note-79",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-79",
       "source": "note-79",
       "target": "note-80",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-80",
       "source": "note-80",
       "target": "note-81",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-81",
       "source": "note-81",
       "target": "note-82",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-82",
       "source": "note-82",
       "target": "note-83",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-83",
       "source": "note-83",
       "target": "note-84",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-84",
       "source": "note-84",
       "target": "note-85",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-85",
       "source": "note-85",
       "target": "note-86",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-86",
       "source": "note-86",
       "target": "note-87",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-87",
       "source": "note-87",
       "target": "note-88",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-88",
       "source": "note-88",
       "target": "note-89",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-89",
       "source": "note-89",
       "target": "note-90",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-90",
       "source": "note-90",
       "target": "note-91",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-91",
       "source": "note-91",
       "target": "note-92",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-92",
       "source": "note-92",
       "target": "note-93",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-93",
       "source": "note-93",
       "target": "note-94",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-94",
       "source": "note-94",
       "target": "note-95",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-95",
       "source": "note-95",
       "target": "note-96",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-96",
       "source": "note-96",
       "target": "note-97",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-97",
       "source": "note-97",
       "target": "note-98",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-98",
       "source": "note-98",
       "target": "note-99",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-99",
       "source": "note-99",
       "target": "note-100",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-100",
       "source": "note-100",
       "target": "note-101",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-101",
       "source": "note-101",
       "target": "note-102",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-102",
       "source": "note-102",
       "target": "note-103",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-103",
       "source": "note-103",
       "target": "note-104",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-104",
       "source": "note-104",
       "target": "note-105",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-105",
       "source": "note-105",
       "target": "note-106",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-106",
       "source": "note-106",
       "target": "note-107",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-107",
       "source": "note-107",
       "target": "note-108",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-108",
       "source": "note-108",
       "target": "note-109",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-109",
       "source": "note-109",
       "target": "note-110",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-110",
       "source": "note-110",
       "target": "note-111",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-111",
       "source": "note-111",
       "target": "note-112",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-112",
       "source": "note-112",
       "target": "note-113",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-113",
       "source": "note-113",
       "target": "note-114",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-114",
       "source": "note-114",
       "target": "note-115",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-115",
       "source": "note-115",
       "target": "note-116",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-116",
       "source": "note-116",
       "target": "note-117",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-117",
       "source": "note-117",
       "target": "note-118",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-118",
       "source": "note-118",
       "target": "note-119",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-119",
       "source": "note-119",
       "target": "note-120",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-120",
       "source": "note-120",
       "target": "note-121",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-121",
       "source": "note-121",
       "target": "note-122",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-122",
       "source": "note-122",
       "target": "note-123",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-123",
       "source": "note-123",
       "target": "note-124",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-124",
       "source": "note-124",
       "target": "note-125",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-125",
       "source": "note-125",
       "target": "note-126",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-126",
       "source": "note-126",
       "target": "note-127",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-127",
       "source": "note-127",
       "target": "note-128",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-128",
       "source": "note-128",
       "target": "note-129",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-129",
       "source": "note-129",
       "target": "note-130",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-130",
       "source": "note-130",
       "target": "note-131",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-131",
       "source": "note-131",
       "target": "note-132",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-132",
       "source": "note-132",
       "target": "note-133",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-133",
       "source": "note-133",
       "target": "note-134",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-134",
       "source": "note-134",
       "target": "note-135",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-135",
       "source": "note-135",
       "target": "note-136",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-136",
       "source": "note-136",
       "target": "note-137",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-137",
       "source": "note-137",
       "target": "note-138",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-138",
       "source": "note-138",
       "target": "note-139",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-139",
       "source": "note-139",
       "target": "note-140",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-140",
       "source": "note-140",
       "target": "note-141",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-141",
       "source": "note-141",
       "target": "note-142",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-142",
       "source": "note-142",
       "target": "note-143",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-143",
       "source": "note-143",
       "target": "note-144",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-144",
       "source": "note-144",
       "target": "note-145",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-145",
       "source": "note-145",
       "target": "note-146",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-146",
       "source": "note-146",
       "target": "note-147",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-147",
       "source": "note-147",
       "target": "note-148",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-148",
       "source": "note-148",
       "target": "note-149",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-149",
       "source": "note-149",
       "target": "note-150",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-150",
       "source": "note-150",
       "target": "note-151",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-151",
       "source": "note-151",
       "target": "note-152",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-152",
       "source": "note-152",
       "target": "note-153",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-153",
       "source": "note-153",
       "target": "note-154",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-154",
       "source": "note-154",
       "target": "note-155",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-155",
       "source": "note-155",
       "target": "note-156",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-156",
       "source": "note-156",
       "target": "note-157",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-157",
       "source": "note-157",
       "target": "note-158",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-158",
       "source": "note-158",
       "target": "note-159",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-159",
       "source": "note-159",
       "target": "note-160",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-160",
       "source": "note-160",
       "target": "note-161",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-161",
       "source": "note-161",
       "target": "note-162",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-162",
       "source": "note-162",
       "target": "note-163",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-163",
       "source": "note-163",
       "target": "note-164",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-164",
       "source": "note-164",
       "target": "note-165",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-165",
       "source": "note-165",
       "target": "note-166",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-166",
       "source": "note-166",
       "target": "note-167",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-167",
       "source": "note-167",
       "target": "note-168",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-168",
       "source": "note-168",
       "target": "note-169",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-169",
       "source": "note-169",
       "target": "note-170",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-170",
       "source": "note-170",
       "target": "note-171",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-171",
       "source": "note-171",
       "target": "note-172",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-172",
       "source": "note-172",
       "target": "note-173",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-173",
       "source": "note-173",
       "target": "note-174",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-174",
       "source": "note-174",
       "target": "note-175",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-175",
       "source": "note-175",
       "target": "note-176",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-176",
       "source": "note-176",
       "target": "note-177",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-177",
       "source": "note-177",
       "target": "note-178",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-178",
       "source": "note-178",
       "target": "note-179",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-179",
       "source": "note-179",
       "target": "note-180",
-      "type": "smoothstep",
       "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "left",
+      "type": "smoothstep"
     },
     {
       "id": "edge-180",
       "source": "note-180",
       "target": "note-181",
-      "type": "smoothstep",
       "sourceHandle": "left",
-      "targetHandle": "right"
+      "targetHandle": "right",
+      "type": "smoothstep"
     },
     {
       "id": "edge-181",
       "source": "note-181",
       "target": "note-182",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-182",
       "source": "note-182",
       "target": "note-183",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-183",
       "source": "note-183",
       "target": "note-184",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-184",
       "source": "note-184",
       "target": "note-185",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-185",
       "source": "note-185",
       "target": "note-186",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-186",
       "source": "note-186",
       "target": "note-187",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-187",
       "source": "note-187",
       "target": "note-188",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-188",
       "source": "note-188",
       "target": "note-189",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-189",
       "source": "note-189",
       "target": "note-190",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-190",
       "source": "note-190",
       "target": "note-191",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-191",
       "source": "note-191",
       "target": "note-192",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-192",
       "source": "note-192",
       "target": "note-193",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-193",
       "source": "note-193",
       "target": "note-194",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-194",
       "source": "note-194",
       "target": "note-195",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
+      "targetHandle": "top",
+      "type": "smoothstep"
     },
     {
       "id": "edge-195",
       "source": "note-195",
       "target": "note-196",
-      "type": "smoothstep",
       "sourceHandle": "bottom",
-      "targetHandle": "top"
-    },
-    {
-      "id": "edge-note-2-note-1752031173642",
-      "source": "note-2",
-      "target": "note-1752031173642",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-2-note-1752031194845",
-      "source": "note-2",
-      "target": "note-1752031194845",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-13-note-1752031247703",
-      "source": "note-13",
-      "target": "note-1752031247703",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-13-note-1752031448506",
-      "source": "note-13",
-      "target": "note-1752031448506",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-15-note-1752031543921",
-      "source": "note-15",
-      "target": "note-1752031543921",
-      "type": "yes",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-15-note-1752031600743",
-      "source": "note-15",
-      "target": "note-1752031600743",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-19-note-1752031674668",
-      "source": "note-19",
-      "target": "note-1752031674668",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-23-note-1752031738366",
-      "source": "note-23",
-      "target": "note-1752031738366",
-      "type": "smoothstep",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-24-note-1752031820385",
-      "source": "note-24",
-      "target": "note-1752031820385",
-      "type": "no",
-      "sourceHandle": "right",
-      "targetHandle": "left"
-    },
-    {
-      "id": "edge-note-25-note-1752031914517",
-      "source": "note-25",
-      "target": "note-1752031914517",
-      "type": "smoothstep",
-      "sourceHandle": "right",
-      "targetHandle": "left"
+      "targetHandle": "top",
+      "type": "smoothstep"
     }
   ]
 }
