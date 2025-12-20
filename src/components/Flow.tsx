@@ -15,6 +15,12 @@ import {
   ModalText,
   ColumnHeader,
   ColumnHeadersContainer,
+  NoteModal,
+  NoteModalContent,
+  NoteModalTitle,
+  NoteModalTextarea,
+  NoteModalButton,
+  NoteModalCancelButton,
 } from "./FlowStyles";
 
 // Import constants from store
@@ -44,6 +50,8 @@ const FlowComponent = () => {
     edges: initialEdges,
     columns,
     loadParsedTranscript,
+    createNewFlow,
+    addColumn,
   } = useNoteStore();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -51,11 +59,11 @@ const FlowComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const reactFlowInstance = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [modalText, setModalText] = useState("");
+  const [modalText] = useState("");
 
-  // Check for admin parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAdmin = urlParams.get("admin") === "true";
+  // Add speaker modal state
+  const [showAddSpeakerModal, setShowAddSpeakerModal] = useState(false);
+  const [newSpeakerName, setNewSpeakerName] = useState("");
 
   // Load parsed transcript immediately on mount
   useEffect(() => {
@@ -268,14 +276,36 @@ const FlowComponent = () => {
   };
 
   // Show modal only if not admin
-  useEffect(() => {
-    if (!isAdmin && nodes.length > 0) {
-      setModalText(
-        "Welcome to the transcript viewer. Press Enter to scroll to the 35th note."
-      );
-      setShowModal(true);
+  // useEffect(() => {
+  //   if (!isAdmin && nodes.length > 0) {
+  //     setModalText(
+  //       "Welcome to the transcript viewer. Press Enter to scroll to the 35th note."
+  //     );
+  //     setShowModal(true);
+  //   }
+  // }, [nodes, isAdmin]);
+
+  const handleAddSpeaker = () => {
+    if (newSpeakerName.trim()) {
+      addColumn(newSpeakerName.trim());
+      setShowAddSpeakerModal(false);
+      setNewSpeakerName("");
     }
-  }, [nodes, isAdmin]);
+  };
+
+  const handleAddSpeakerCancel = () => {
+    setShowAddSpeakerModal(false);
+    setNewSpeakerName("");
+  };
+
+  const handleAddSpeakerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSpeaker();
+    } else if (e.key === "Escape") {
+      handleAddSpeakerCancel();
+    }
+  };
 
   // Focus the modal when it appears
   useEffect(() => {
@@ -350,7 +380,123 @@ const FlowComponent = () => {
           </ModalContent>
         </Modal>
       )}
-      {nodes.length > 1 && columns.length > 1 && (
+
+      {/* Bottom Right Buttons */}
+      {!isLoading && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "20px",
+            right: "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            zIndex: 100,
+          }}
+        >
+          {/* Add Speaker Button */}
+          <button
+            onClick={() => setShowAddSpeakerModal(true)}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#10b981",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "600",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#059669";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#10b981";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>➕</span>
+            Add Speaker
+          </button>
+
+          {/* New Flow Button */}
+          <button
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Create a new flow? This will clear the current view (you can reload to restore it)."
+                )
+              ) {
+                createNewFlow();
+              }
+            }}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#8b5cf6",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "600",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#7c3aed";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#8b5cf6";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>✨</span>
+            New Flow
+          </button>
+        </div>
+      )}
+
+      {/* Add Speaker Modal */}
+      {showAddSpeakerModal && (
+        <NoteModal>
+          <NoteModalContent onKeyDown={handleAddSpeakerKeyDown}>
+            <NoteModalTitle>Add New Speaker</NoteModalTitle>
+            <NoteModalTextarea
+              value={newSpeakerName}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setNewSpeakerName(e.target.value)
+              }
+              placeholder="Enter speaker name..."
+              autoFocus
+              style={{ minHeight: "60px" }}
+            />
+            <div>
+              <NoteModalButton onClick={handleAddSpeaker}>
+                Add Speaker
+              </NoteModalButton>
+              <NoteModalCancelButton onClick={handleAddSpeakerCancel}>
+                Cancel
+              </NoteModalCancelButton>
+            </div>
+          </NoteModalContent>
+        </NoteModal>
+      )}
+
+      {nodes.length > 0 && columns.length > 0 && (
         <>
           <ReactFlow
             ref={reactFlowWrapper}

@@ -42,6 +42,8 @@ interface NoteStore {
   connectNotes: (sourceId: string, targetId: string) => void;
   deleteNote: (id: string) => void;
   loadParsedTranscript: () => Promise<void>;
+  createNewFlow: () => void;
+  addColumn: (title: string) => void;
 }
 
 const COLUMN_WIDTH = 300;
@@ -311,4 +313,38 @@ export const useNoteStore = create<NoteStore>((set) => ({
       throw error; // Re-throw the error to see what's happening
     }
   },
+
+  createNewFlow: () =>
+    set(() => ({
+      nodes: [initialNode],
+      edges: [],
+      columns: [initialColumn],
+    })),
+
+  addColumn: (title) =>
+    set((state) => {
+      const columnNumber = state.columns.length + 1;
+      const newColumnId = `column-${columnNumber}`;
+      const newColumn = {
+        id: newColumnId,
+        title: title || `Column ${columnNumber}`,
+        x: 50 + (state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING)),
+      };
+
+      // Create an initial empty note for this column
+      const newNode: Node = {
+        id: `note-${Date.now()}`,
+        type: "note",
+        position: {
+          x: newColumn.x + (COLUMN_WIDTH - NOTE_WIDTH) / 2,
+          y: 50,
+        },
+        data: { content: "", columnId: newColumnId, isNew: true },
+      };
+
+      return {
+        columns: [...state.columns, newColumn],
+        nodes: [...state.nodes, newNode],
+      };
+    }),
 }));
