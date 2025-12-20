@@ -48,6 +48,9 @@ interface NoteStore {
     sourceId: string,
     edgeType: string
   ) => void;
+  createNewFlow: () => void;
+  addColumn: (title: string) => void;
+  updateColumnTitle: (columnId: string, title: string) => void;
 }
 
 const COLUMN_WIDTH = 300;
@@ -547,4 +550,46 @@ export const useNoteStore = create<NoteStore>((set) => ({
         lastUsedEdgeType: edgeType, // Update the last used edge type
       };
     }),
+
+  createNewFlow: () =>
+    set(() => ({
+      nodes: [initialNode],
+      edges: [],
+      columns: [initialColumn],
+      lastUsedEdgeType: "smoothstep",
+    })),
+
+  addColumn: (title) =>
+    set((state) => {
+      const columnNumber = state.columns.length + 1;
+      const newColumnId = `column-${columnNumber}`;
+      const newColumn = {
+        id: newColumnId,
+        title: title || `Column ${columnNumber}`,
+        x: 50 + (state.columns.length * (COLUMN_WIDTH + COLUMN_SPACING)),
+      };
+
+      // Create an initial empty note for this column
+      const newNode: Node = {
+        id: `note-${Date.now()}`,
+        type: "note",
+        position: {
+          x: newColumn.x + (COLUMN_WIDTH - NOTE_WIDTH) / 2,
+          y: 50,
+        },
+        data: { content: "", columnId: newColumnId, isNew: true },
+      };
+
+      return {
+        columns: [...state.columns, newColumn],
+        nodes: [...state.nodes, newNode],
+      };
+    }),
+
+  updateColumnTitle: (columnId, title) =>
+    set((state) => ({
+      columns: state.columns.map((col) =>
+        col.id === columnId ? { ...col, title } : col
+      ),
+    })),
 }));
