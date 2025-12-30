@@ -70,7 +70,6 @@ const FlowComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const reactFlowInstance = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [modalText] = useState("");
 
   // Note creation modal state
   const [showNoteModal, setShowNoteModal] = useState(false);
@@ -93,7 +92,7 @@ const FlowComponent = () => {
   const isAdmin = urlParams.get("admin") === "true";
 
   const handleNoteClick = useCallback(
-    (nodeId: string, content: string, columnId: string) => {
+    (nodeId: string) => {
       // Check if there's a text selection - if so, don't clear the content
       const selection = window.getSelection();
       const hasSelection = selection && selection.toString().trim().length > 0;
@@ -297,7 +296,7 @@ const FlowComponent = () => {
   // Listen for note clicks from the first three speakers
   useEffect(() => {
     const handleNoteClickEvent = (event: CustomEvent) => {
-      const { nodeId, content, columnId } = event.detail;
+      const { nodeId } = event.detail;
 
       // Check if we just opened the modal with selected text
       if (justOpenedWithSelectionRef.current) {
@@ -383,7 +382,7 @@ const FlowComponent = () => {
   // Listen for text selection events (keeping for backward compatibility)
   useEffect(() => {
     const handleTextSelectedEvent = (event: CustomEvent) => {
-      const { nodeId, selectedText, columnId } = event.detail;
+      const { nodeId, selectedText } = event.detail;
       setSelectedNodeId(nodeId);
       setNoteContent(selectedText);
       setSelectedEdgeType("smoothstep");
@@ -620,11 +619,11 @@ const FlowComponent = () => {
   };
 
   const handleNodeClick = useCallback(
-    (event: React.MouseEvent, node: Node) => {
+    (_event: React.MouseEvent, node: Node) => {
       const { id, data } = node;
 
       if (data && data.columnId) {
-        const { columnId, content } = data;
+        const { columnId } = data;
 
         // Only allow clicking on notes from the first three speakers when admin=true
         if (
@@ -638,7 +637,7 @@ const FlowComponent = () => {
             return;
           }
           
-          handleNoteClick(id, content, columnId);
+          handleNoteClick(id);
         }
       }
     },
@@ -1021,7 +1020,7 @@ const FlowComponent = () => {
       {showModal && (
         <Modal onKeyDown={handleModalKeyDown} tabIndex={0}>
           <ModalContent>
-            <ModalText>{modalText}</ModalText>
+            <ModalText></ModalText>
             <button
               onClick={() => {
                 setShowModal(false);

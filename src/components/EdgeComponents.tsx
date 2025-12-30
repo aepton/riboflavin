@@ -15,7 +15,6 @@ const createBezierPath = (
   targetY: number
 ) => {
   const deltaX = targetX - sourceX;
-  const deltaY = targetY - sourceY;
 
   // Control points for more pronounced curve
   const controlPoint1X = sourceX + deltaX * 0.4;
@@ -26,30 +25,12 @@ const createBezierPath = (
   return `M ${sourceX} ${sourceY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${targetX} ${targetY}`;
 };
 
-// Helper function to create elongated arrow marker that follows the curve
-const createArrowMarker = (id: string, color: string) => (
-  <defs key={id}>
-    <marker
-      id={id}
-      markerWidth="12"
-      markerHeight="8"
-      refX="10"
-      refY="4"
-      orient="auto"
-      markerUnits="strokeWidth"
-    >
-      <path d="M 0 0 L 12 4 L 0 8 L 2 4 Z" fill={color} stroke="none" />
-    </marker>
-  </defs>
-);
-
 // Custom edge component that connects to the closest handles
 export const CustomEdge = ({
   sourceX,
   sourceY,
   targetX,
   targetY,
-  id,
 }: EdgeProps) => {
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
 
@@ -73,7 +54,6 @@ export const EllipsisEdge = ({
   sourceY,
   targetX,
   targetY,
-  id,
 }: EdgeProps) => {
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
@@ -126,7 +106,6 @@ export const EdgeYes = ({
   sourceY,
   targetX,
   targetY,
-  id,
 }: EdgeProps) => {
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
@@ -179,7 +158,6 @@ export const EdgeNo = ({
   sourceY,
   targetX,
   targetY,
-  id,
 }: EdgeProps) => {
   // Calculate position closer to source (1/3 of the way from source to target)
   const symbolX = sourceX + (targetX - sourceX) * 0.33;

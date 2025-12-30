@@ -44,47 +44,6 @@ const colors = {
   shadowLg: "0 10px 15px rgba(0, 0, 0, 0.1)",
 };
 
-const NoteContainer = styled.div<{
-  isFocused: boolean;
-  isLinked: boolean;
-  hasYesEdge: boolean;
-  hasNoEdge: boolean;
-  isClickable?: boolean;
-  "data-id"?: string;
-}>`
-  background: ${(props) => (props.isLinked ? colors.gray50 : colors.white)};
-  border: 1px solid
-    ${(props) => {
-      if (props.hasYesEdge) return colors.edgeYes;
-      if (props.hasNoEdge) return colors.edgeNo;
-      return colors.border;
-    }};
-  border-width: ${(props) => {
-    if (props.hasYesEdge || props.hasNoEdge) return "2px";
-    return "1px";
-  }};
-  border-radius: 12px;
-  padding: 1rem;
-  width: 280px;
-  min-height: 80px;
-  box-shadow: ${(props) =>
-    props.isFocused
-      ? `0 0 0 3px rgba(59, 130, 246, 0.1), ${colors.shadowMd}`
-      : colors.shadow};
-  transition: all 0.2s ease;
-  position: relative;
-  cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
-
-  &:hover {
-    ${(props) =>
-      props.isClickable &&
-      `
-      transform: translateY(-1px);
-      box-shadow: ${colors.shadowLg};
-    `}
-  }
-`;
-
 const TextArea = styled.textarea`
   width: 100%;
   min-height: 60px;
