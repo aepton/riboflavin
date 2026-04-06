@@ -8,8 +8,7 @@ const globalStyles = {
   body: {
     margin: 0,
     padding: 0,
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: '"EB Garamond", Georgia, serif',
   },
 };
 

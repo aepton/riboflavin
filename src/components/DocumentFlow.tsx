@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Background,
   BackgroundVariant,
   Controls,
@@ -93,13 +94,15 @@ const DocumentFlow = () => {
     documentTitle,
     loadDocument,
     createHighlight,
-    createDerivedAnnotation,
     addReply,
     addTag,
   } = useDocumentStore();
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { setViewport } = useReactFlow();
+  const lastDocTitle = useRef<string>("");
+  const pannedToNodes = useRef(new Set<string>());
 
   // New-document modal
   const [showNewDoc, setShowNewDoc] = useState(false);
@@ -119,6 +122,8 @@ const DocumentFlow = () => {
   const [highlightSelection, setHighlightSelection] = useState<{
     text: string;
     sourceNodeId: string;
+    startIdx: number;
+    endIdx: number;
     rect: { top: number; bottom: number; left: number; right: number };
   } | null>(null);
 
@@ -127,29 +132,61 @@ const DocumentFlow = () => {
     setNodes(storeNodes);
   }, [storeNodes, setNodes]);
 
+  // When a new document loads, snap to zoom=2 with paragraphs at the top-left.
+  // COLUMN_X_BASE=20, first paragraph y=20 → viewport (-20,-20,2) puts them at screen (20,20).
+  useEffect(() => {
+    if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
+      lastDocTitle.current = documentTitle;
+      setViewport({ x: -20, y: -20, zoom: 2 }, { duration: 250 });
+    }
+  }, [storeNodes.length, documentTitle, setViewport]);
+
   useEffect(() => {
     setEdges(storeEdges);
   }, [storeEdges, setEdges]);
+
+  // Pan viewport to center the source + new annotation pair when a highlight/annotation is created
+  useEffect(() => {
+    const fresh = storeNodes.find(
+      (n) => n.data.nodeType === "annotation" && n.data.isNew && !pannedToNodes.current.has(n.id)
+    );
+    if (!fresh) return;
+    pannedToNodes.current.add(fresh.id);
+
+    // Find the source node so we can center the pair
+    const sourceEdge = storeEdges.find((e) => e.target === fresh.id);
+    const sourceNode = sourceEdge ? storeNodes.find((n) => n.id === sourceEdge.source) : null;
+
+    const pairLeft = sourceNode ? sourceNode.position.x : fresh.position.x;
+    const pairRight = fresh.position.x + 300; // annotation node width
+    const pairCenterX = (pairLeft + pairRight) / 2;
+    // Vertical: annotation is roughly aligned with source, use annotation center as proxy
+    const pairCenterY = fresh.position.y + 85;
+
+    const availH = window.innerHeight - 52; // subtract header height
+    setViewport(
+      {
+        x: window.innerWidth / 2 - pairCenterX * 2,
+        y: availH / 2 - pairCenterY * 2,
+        zoom: 2,
+      },
+      { duration: 250 }
+    );
+  }, [storeNodes, storeEdges, setViewport]);
 
   // ── Event listeners from nodes ─────────────────────────────────────────────
 
   useEffect(() => {
     const handler = (e: Event) => {
       const { action, nodeId } = (e as CustomEvent).detail;
-      if (
-        action === "simplify" ||
-        action === "rephrase" ||
-        action === "summarize"
-      ) {
-        createDerivedAnnotation(action, nodeId);
-      } else if (action === "tag") {
+      if (action === "tag") {
         setTagNodeId(nodeId);
         setTagInput("");
       }
     };
     document.addEventListener("docParagraphAction", handler);
     return () => document.removeEventListener("docParagraphAction", handler);
-  }, [createDerivedAnnotation]);
+  }, []);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -174,8 +211,8 @@ const DocumentFlow = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { text, sourceNodeId } = (e as CustomEvent).detail;
-      createHighlight(text, sourceNodeId);
+      const { text, sourceNodeId, startIdx, endIdx } = (e as CustomEvent).detail;
+      createHighlight(text, sourceNodeId, startIdx, endIdx);
     };
     document.addEventListener("docCreateHighlight", handler);
     return () => document.removeEventListener("docCreateHighlight", handler);
@@ -204,7 +241,12 @@ const DocumentFlow = () => {
     (e: React.MouseEvent) => {
       e.stopPropagation();
       if (highlightSelection) {
-        createHighlight(highlightSelection.text, highlightSelection.sourceNodeId);
+        createHighlight(
+          highlightSelection.text,
+          highlightSelection.sourceNodeId,
+          highlightSelection.startIdx,
+          highlightSelection.endIdx,
+        );
         setHighlightSelection(null);
         window.getSelection()?.removeAllRanges();
       }
@@ -289,7 +331,7 @@ const DocumentFlow = () => {
               gap: "10px",
               fontSize: "11px",
               color: "#94a3b8",
-              fontFamily: "system-ui, sans-serif",
+              fontFamily: "inherit",
             }}
           >
             <span>Select text → highlight</span>
@@ -316,10 +358,12 @@ const DocumentFlow = () => {
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            fitView
-            fitViewOptions={{ padding: 0.08 }}
-            minZoom={0.15}
+            defaultViewport={{ x: -20, y: -20, zoom: 2 }}
+            minZoom={2}
             maxZoom={2}
+            zoomOnScroll={false}
+            zoomOnPinch={false}
+            zoomOnDoubleClick={false}
             defaultEdgeOptions={{ style: { strokeWidth: 1.5 } }}
             nodesDraggable
             panOnScroll
@@ -343,7 +387,7 @@ const DocumentFlow = () => {
               height: "100%",
               gap: "14px",
               color: "#94a3b8",
-              fontFamily: "system-ui, sans-serif",
+              fontFamily: "inherit",
             }}
           >
             <div style={{ fontSize: "40px" }}>📄</div>
@@ -380,7 +424,7 @@ const DocumentFlow = () => {
             fontSize: "12px",
             fontWeight: 600,
             cursor: "pointer",
-            fontFamily: "system-ui, sans-serif",
+            fontFamily: "inherit",
             boxShadow: "0 4px 14px rgba(0,0,0,0.28)",
             whiteSpace: "nowrap",
             letterSpacing: "0.02em",
@@ -434,7 +478,7 @@ const DocumentFlow = () => {
               }}
               style={{
                 ...inputStyle,
-                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontFamily: "inherit",
                 lineHeight: "1.7",
                 resize: "vertical",
                 minHeight: "280px",

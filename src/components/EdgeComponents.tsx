@@ -1,13 +1,19 @@
-// Edge component props interface
+import { THREAD_COLORS } from "../store/documentStore";
+
 export interface EdgeProps {
   sourceX: number;
   sourceY: number;
   targetX: number;
   targetY: number;
   id?: string;
+  data?: { colorIndex?: number };
 }
 
-// Helper function to create bezier curve path
+function threadColor(colorIndex: number | undefined): string {
+  if (colorIndex === undefined) return "#94a3b8";
+  return THREAD_COLORS[colorIndex % THREAD_COLORS.length].border;
+}
+
 const createBezierPath = (
   sourceX: number,
   sourceY: number,
@@ -15,84 +21,44 @@ const createBezierPath = (
   targetY: number
 ) => {
   const deltaX = targetX - sourceX;
-
-  // Control points for more pronounced curve
   const controlPoint1X = sourceX + deltaX * 0.4;
   const controlPoint1Y = sourceY;
   const controlPoint2X = targetX - deltaX * 0.4;
   const controlPoint2Y = targetY;
-
   return `M ${sourceX} ${sourceY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${targetX} ${targetY}`;
 };
 
-// Custom edge component that connects to the closest handles
-export const CustomEdge = ({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-}: EdgeProps) => {
+export const CustomEdge = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) => {
+  const stroke = threadColor(data?.colorIndex);
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
-
   return (
-    <g style={{ zIndex: 1 }}>
-      <path
-        d={path}
-        stroke="#000000"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        fill="none"
-        style={{ zIndex: 1 }}
-      />
+    <g>
+      <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
     </g>
   );
 };
 
-// Custom edge component with ellipsis overlay
-export const EllipsisEdge = ({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-}: EdgeProps) => {
-  // Calculate position closer to source (1/3 of the way from source to target)
+export const EllipsisEdge = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) => {
+  const stroke = threadColor(data?.colorIndex);
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
-
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
-
+  const gradId = `ellipsisGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g style={{ zIndex: 1 }}>
-      <path
-        d={path}
-        stroke="#8b5cf6"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        fill="none"
-        style={{ zIndex: 1 }}
-      />
-      {/* Gradient background circle */}
+    <g>
+      <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
-        <radialGradient id="ellipsisGradient" cx="50%" cy="50%" r="50%">
+        <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#f8fafc" stopOpacity="1" />
           <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle
-        cx={symbolX}
-        cy={symbolY}
-        r="64"
-        fill="url(#ellipsisGradient)"
-        style={{ zIndex: 2 }}
-      />
+      <circle cx={symbolX} cy={symbolY} r="64" fill={`url(#${gradId})`} />
       <text
-        x={symbolX}
-        y={symbolY}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize="32"
-        fill="#8b5cf6"
-        style={{ userSelect: "none", pointerEvents: "none", zIndex: 3 }}
+        x={symbolX} y={symbolY}
+        textAnchor="middle" dominantBaseline="middle"
+        fontSize="32" fill={stroke}
+        style={{ userSelect: "none", pointerEvents: "none" }}
       >
         ...
       </text>
@@ -100,51 +66,27 @@ export const EllipsisEdge = ({
   );
 };
 
-// Custom edge component with check mark
-export const EdgeYes = ({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-}: EdgeProps) => {
-  // Calculate position closer to source (1/3 of the way from source to target)
+export const EdgeYes = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) => {
+  const stroke = threadColor(data?.colorIndex);
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
-
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
-
+  const gradId = `yesGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g style={{ zIndex: 1 }}>
-      <path
-        d={path}
-        stroke="#10b981"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        fill="none"
-        style={{ zIndex: 1 }}
-      />
-      {/* Gradient background circle */}
+    <g>
+      <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
-        <radialGradient id="checkGradient" cx="50%" cy="50%" r="50%">
+        <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#f8fafc" stopOpacity="1" />
           <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle
-        cx={symbolX}
-        cy={symbolY}
-        r="64"
-        fill="url(#checkGradient)"
-        style={{ zIndex: 2 }}
-      />
+      <circle cx={symbolX} cy={symbolY} r="64" fill={`url(#${gradId})`} />
       <text
-        x={symbolX}
-        y={symbolY}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize="32"
-        fill="#10b981"
-        style={{ userSelect: "none", pointerEvents: "none", zIndex: 3 }}
+        x={symbolX} y={symbolY}
+        textAnchor="middle" dominantBaseline="middle"
+        fontSize="32" fill={stroke}
+        style={{ userSelect: "none", pointerEvents: "none" }}
       >
         ✓
       </text>
@@ -152,51 +94,27 @@ export const EdgeYes = ({
   );
 };
 
-// Custom edge component with X mark
-export const EdgeNo = ({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-}: EdgeProps) => {
-  // Calculate position closer to source (1/3 of the way from source to target)
+export const EdgeNo = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) => {
+  const stroke = threadColor(data?.colorIndex);
   const symbolX = sourceX + (targetX - sourceX) * 0.33;
   const symbolY = sourceY + (targetY - sourceY) * 0.33;
-
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
-
+  const gradId = `noGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g style={{ zIndex: 1 }}>
-      <path
-        d={path}
-        stroke="#ef4444"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        fill="none"
-        style={{ zIndex: 1 }}
-      />
-      {/* Gradient background circle */}
+    <g>
+      <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
-        <radialGradient id="xGradient" cx="50%" cy="50%" r="50%">
+        <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#f8fafc" stopOpacity="1" />
           <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle
-        cx={symbolX}
-        cy={symbolY}
-        r="64"
-        fill="url(#xGradient)"
-        style={{ zIndex: 2 }}
-      />
+      <circle cx={symbolX} cy={symbolY} r="64" fill={`url(#${gradId})`} />
       <text
-        x={symbolX}
-        y={symbolY}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize="32"
-        fill="#ef4444"
-        style={{ userSelect: "none", pointerEvents: "none", zIndex: 3 }}
+        x={symbolX} y={symbolY}
+        textAnchor="middle" dominantBaseline="middle"
+        fontSize="32" fill={stroke}
+        style={{ userSelect: "none", pointerEvents: "none" }}
       >
         ✗
       </text>
