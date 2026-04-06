@@ -3,22 +3,16 @@ import { Handle, Position } from "reactflow";
 import { useDocumentStore, THREAD_COLORS, type AnnotationType, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 
-const TYPE_FALLBACK: Record<
+const TYPE_COLORS: Record<
   AnnotationType,
-  { nodeBg: string; border: string; badge: string }
+  { nodeBg: string; border: string }
 > = {
-  highlight: { nodeBg: "#fffbeb", border: "#fde047", badge: "#d97706" },
-  simplify:  { nodeBg: "#eff6ff", border: "#93c5fd", badge: "#2563eb" },
-  rephrase:  { nodeBg: "#f5f3ff", border: "#c4b5fd", badge: "#7c3aed" },
-  summarize: { nodeBg: "#ecfdf5", border: "#86efac", badge: "#16a34a" },
-  reply:     { nodeBg: "#f9fafb", border: "#e5e7eb", badge: "#6b7280" },
+  highlight: { nodeBg: "#fffbeb", border: "#fde047" },
+  reply:     { nodeBg: "#f9fafb", border: "#e5e7eb" },
 };
 
 const PLACEHOLDERS: Record<AnnotationType, string> = {
   highlight: "Add notes about this highlight…",
-  simplify:  "Write a simplified version…",
-  rephrase:  "Write a rephrased version…",
-  summarize: "Write a summary…",
   reply:     "Type your reply…",
 };
 
@@ -46,16 +40,14 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
   const color =
     data.colorIndex !== undefined
       ? THREAD_COLORS[data.colorIndex % THREAD_COLORS.length]
-      : TYPE_FALLBACK[data.annotationType] ?? TYPE_FALLBACK.reply;
+      : TYPE_COLORS[data.annotationType] ?? TYPE_COLORS.reply;
 
   const placeholder = PLACEHOLDERS[data.annotationType] ?? "Type here…";
 
-  // When entering edit mode, snapshot current content into local draft
+  // Snapshot current content into local draft when editing begins
   useEffect(() => {
-    if (isEditing) {
-      setDraft(data.content);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isEditing) setDraft(data.content);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
 
   // Auto-focus new nodes
@@ -68,9 +60,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
   // Focus the textarea after the render that enables editing
   useEffect(() => {
-    if (isEditing) {
-      textareaRef.current?.focus();
-    }
+    if (isEditing) textareaRef.current?.focus();
   }, [isEditing]);
 
   const adjustHeight = useCallback(() => {
@@ -95,7 +85,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       setDraft(e.target.value);
       adjustHeight();
     },
-    [adjustHeight]
+    [adjustHeight],
   );
 
   const handleKeyDown = useCallback(
@@ -106,12 +96,13 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       }
       if (e.key === "Escape") {
         e.preventDefault();
-        setIsEditing(false); // discard
+        setIsEditing(false);
       }
     },
-    [saveEdit]
+    [saveEdit],
   );
 
+  // Single-click → open reply modal (via custom event to DocumentFlow)
   const handleNodeClick = useCallback(
     (e: React.MouseEvent) => {
       if (isEditing) return;
@@ -120,23 +111,24 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         document.dispatchEvent(
           new CustomEvent("docAnnotationAction", {
             detail: { nodeId: id, depth: data.depth },
-          })
+          }),
         );
       }
     },
-    [isEditing, id, data.depth]
+    [isEditing, id, data.depth],
   );
 
   const handleTagClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       document.dispatchEvent(
-        new CustomEvent("docTagAction", { detail: { nodeId: id } })
+        new CustomEvent("docTagAction", { detail: { nodeId: id } }),
       );
     },
-    [id]
+    [id],
   );
 
+  // Text selection → emit event so DocumentFlow can show the highlight button
   const handleMouseUp = useCallback(() => {
     if (isEditing) return;
     const selection = window.getSelection();
@@ -160,7 +152,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
               endIdx,
               rect: { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right },
             },
-          })
+          }),
         );
         return;
       }
@@ -194,7 +186,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       <Handle id="left" type="target" position={Position.Left}
         style={{ opacity: 0, pointerEvents: "none", left: -4 }} />
 
-      {/* Source text snippet (highlights only) */}
+      {/* Quoted source text (highlights only) */}
       {data.annotationType === "highlight" && data.sourceText && (
         <div style={{
           borderLeft: `2.5px solid ${color.border}`,
@@ -206,12 +198,12 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           lineHeight: "1.5",
         }}>
           {data.sourceText.length > 100
-            ? data.sourceText.slice(0, 100) + "…"
+            ? data.sourceText.slice(0, 100) + "\u2026"
             : data.sourceText}
         </div>
       )}
 
-      {/* Editable content */}
+      {/* Content — editable textarea or rendered text with highlights */}
       {isEditing ? (
         <textarea
           ref={textareaRef}

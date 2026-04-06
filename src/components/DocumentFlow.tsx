@@ -469,7 +469,7 @@ const DocumentFlow = () => {
             <textarea
               autoFocus
               placeholder={
-                "Paste your document here.\n\nParagraphs are separated by blank lines.\nEach paragraph becomes an independent node you can annotate, highlight, simplify, or rephrase."
+                "Paste your document here.\n\nParagraphs are separated by blank lines.\nEach paragraph becomes a node you can highlight, annotate, and reply to."
               }
               value={docText}
               onChange={(e) => setDocText(e.target.value)}
