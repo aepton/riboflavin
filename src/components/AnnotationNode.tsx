@@ -119,6 +119,11 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         e.preventDefault();
         setIsEditing(false);
       }
+      // Enter without Shift saves (blurs)
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        setIsEditing(false);
+      }
     },
     []
   );
@@ -225,6 +230,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       {isEditing ? (
         <textarea
           ref={textareaRef}
+          className="nodrag"
           value={data.content}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -244,11 +250,14 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
             overflow: "hidden",
             display: "block",
             boxSizing: "border-box",
+            userSelect: "text",
+            WebkitUserSelect: "text",
           }}
         />
       ) : (
         <div
-          style={{ minHeight: "36px" }}
+          className="nodrag"
+          style={{ minHeight: "36px", userSelect: "text", WebkitUserSelect: "text" }}
           onDoubleClick={handleDoubleClick}
         >
           {data.content ? (

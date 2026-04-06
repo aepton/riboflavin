@@ -115,6 +115,13 @@ const DocumentFlow = () => {
   const [tagNodeId, setTagNodeId] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState("");
 
+  // Floating highlight button — rendered here (outside ReactFlow's transform layer)
+  const [highlightSelection, setHighlightSelection] = useState<{
+    text: string;
+    sourceNodeId: string;
+    rect: { top: number; bottom: number; left: number; right: number };
+  } | null>(null);
+
   // Sync store → local ReactFlow state
   useEffect(() => {
     setNodes(storeNodes);
@@ -174,7 +181,36 @@ const DocumentFlow = () => {
     return () => document.removeEventListener("docCreateHighlight", handler);
   }, [createHighlight]);
 
+  // Listen for text selections from ParagraphNode
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setHighlightSelection(detail ?? null);
+    };
+    document.addEventListener("docTextSelected", handler);
+    return () => document.removeEventListener("docTextSelected", handler);
+  }, []);
+
+  // Clear highlight button on any mousedown outside it
+  useEffect(() => {
+    const handler = () => setHighlightSelection(null);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   // ── Actions ────────────────────────────────────────────────────────────────
+
+  const handleHighlightClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (highlightSelection) {
+        createHighlight(highlightSelection.text, highlightSelection.sourceNodeId);
+        setHighlightSelection(null);
+        window.getSelection()?.removeAllRanges();
+      }
+    },
+    [highlightSelection, createHighlight]
+  );
 
   const handleCreateDocument = useCallback(() => {
     if (docText.trim()) {
@@ -326,6 +362,36 @@ const DocumentFlow = () => {
           </div>
         )}
       </div>
+
+      {/* ── Floating Highlight Button ─────────────────────────────────────── */}
+      {highlightSelection && (
+        <div
+          style={{
+            position: "fixed",
+            top: highlightSelection.rect.bottom + 8,
+            left: Math.round(
+              (highlightSelection.rect.left + highlightSelection.rect.right) / 2 - 52
+            ),
+            zIndex: 9999,
+            background: "#1e293b",
+            color: "#fff",
+            padding: "6px 16px",
+            borderRadius: "8px",
+            fontSize: "12px",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "system-ui, sans-serif",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.28)",
+            whiteSpace: "nowrap",
+            letterSpacing: "0.02em",
+            pointerEvents: "auto",
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={handleHighlightClick}
+        >
+          ✎ Highlight
+        </div>
+      )}
 
       {/* ── New Document Modal ─────────────────────────────────────────────── */}
       {showNewDoc && (

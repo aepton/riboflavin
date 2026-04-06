@@ -58,11 +58,15 @@ const FlowComponent = () => {
     nodes: initialNodes,
     edges: initialEdges,
     columns,
+    topics,
     loadParsedTranscript,
+    loadAvailableTranscripts,
     addNoteToFourthColumn,
     lastUsedEdgeType,
     createNewFlow,
     addColumn,
+    currentTranscript,
+    availableTranscripts,
   } = useNoteStore();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -70,6 +74,9 @@ const FlowComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const reactFlowInstance = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
+  // Transcript selector state
+  const [showTranscriptDropdown, setShowTranscriptDropdown] = useState(false);
 
   // Note creation modal state
   const [showNoteModal, setShowNoteModal] = useState(false);
@@ -79,9 +86,13 @@ const FlowComponent = () => {
   const selectedTextRef = useRef<string>("");
   const justOpenedWithSelectionRef = useRef<boolean>(false);
 
-  // Filter state
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  // Topic filter state - default to first topic
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [showTopicDropdown, setShowTopicDropdown] = useState(false);
+
+  // Edge type filter state
+  const [activeEdgeFilter, setActiveEdgeFilter] = useState<string | null>(null);
+  const [showEdgeFilterDropdown, setShowEdgeFilterDropdown] = useState(false);
 
   // Add speaker modal state
   const [showAddSpeakerModal, setShowAddSpeakerModal] = useState(false);
@@ -108,11 +119,12 @@ const FlowComponent = () => {
     [lastUsedEdgeType]
   );
 
-  // Load parsed transcript immediately on mount
+  // Load available transcripts and initial data on mount
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
+        await loadAvailableTranscripts();
         await loadParsedTranscript();
       } catch (error) {
         console.error("Failed to load initial data:", error);
@@ -121,7 +133,14 @@ const FlowComponent = () => {
       }
     };
     loadData();
-  }, [loadParsedTranscript]);
+  }, [loadParsedTranscript, loadAvailableTranscripts]);
+
+  // Set active topic to first topic when topics change
+  useEffect(() => {
+    if (topics.length > 0 && !activeTopic) {
+      setActiveTopic(topics[0]);
+    }
+  }, [topics, activeTopic]);
 
   // Only update nodes and edges when they actually change
   useEffect(() => {
@@ -191,22 +210,28 @@ const FlowComponent = () => {
     }
   }, [onKeyDown]);
 
-  // Close filter dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest("[data-filter-dropdown]")) {
-        setShowFilterDropdown(false);
+      if (!target.closest("[data-topic-dropdown]")) {
+        setShowTopicDropdown(false);
+      }
+      if (!target.closest("[data-edge-filter-dropdown]")) {
+        setShowEdgeFilterDropdown(false);
+      }
+      if (!target.closest("[data-transcript-dropdown]")) {
+        setShowTranscriptDropdown(false);
       }
     };
 
-    if (showFilterDropdown) {
+    if (showTopicDropdown || showEdgeFilterDropdown || showTranscriptDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  }, [showFilterDropdown]);
+  }, [showTopicDropdown, showEdgeFilterDropdown, showTranscriptDropdown]);
 
   const scrollToNode = (nodeId: string) => {
     if (!reactFlowInstance) return;
@@ -480,66 +505,62 @@ const FlowComponent = () => {
     }
   };
 
-  // Filter nodes and edges based on active filter
+  // Filter nodes and edges based on active topic AND edge type
   const filteredNodes = useMemo(() => {
-    if (!activeFilter) return nodes;
+    let result = nodes;
 
-    // Find all nodes that have edges of the specified type
-    const nodesWithFilteredEdges = new Set<string>();
+    // First filter by topic
+    if (activeTopic) {
+      const topicColumns = columns
+        .filter((col) => col.topic === activeTopic)
+        .map((col) => col.id);
+      result = result.filter((node) => topicColumns.includes(node.data.columnId));
+    }
 
-    edges.forEach((edge) => {
-      if (edge.type === activeFilter) {
-        nodesWithFilteredEdges.add(edge.source);
-        nodesWithFilteredEdges.add(edge.target);
-      }
-    });
+    // Then filter by edge type if active
+    if (activeEdgeFilter) {
+      const nodesWithFilteredEdges = new Set<string>();
+      edges.forEach((edge) => {
+        if (edge.type === activeEdgeFilter) {
+          nodesWithFilteredEdges.add(edge.source);
+          nodesWithFilteredEdges.add(edge.target);
+        }
+      });
+      result = result.filter((node) => nodesWithFilteredEdges.has(node.id));
+    }
 
-    return nodes.filter((node) => nodesWithFilteredEdges.has(node.id));
-  }, [nodes, edges, activeFilter]);
+    return result;
+  }, [nodes, columns, edges, activeTopic, activeEdgeFilter]);
 
   const filteredEdges = useMemo(() => {
-    if (!activeFilter) return edges;
-    return edges.filter((edge) => edge.type === activeFilter);
-  }, [edges, activeFilter]);
+    // Get the IDs of filtered nodes
+    const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
 
-  // Recalculate viewport when filter changes - using same logic as scroll wheel handler
+    // Filter edges where both source and target are in filtered nodes
+    let result = edges.filter(
+      (edge) =>
+        filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
+    );
+
+    // Additionally filter by edge type if active
+    if (activeEdgeFilter) {
+      result = result.filter((edge) => edge.type === activeEdgeFilter);
+    }
+
+    return result;
+  }, [edges, filteredNodes, activeEdgeFilter]);
+
+  // Recalculate viewport when topic changes - reset to top
   useEffect(() => {
-    if (reactFlowInstance && filteredNodes.length > 0) {
-      // Use the same bounds calculation as the scroll wheel handler
-      const flowArea = document.querySelector(".flow-area");
-      const flowHeight = flowArea?.clientHeight || window.innerHeight;
-
-      // Get the highest and lowest node positions from filtered nodes
-      const nodePositions = filteredNodes.map((node) => node.position.y);
-      const minNodeY = Math.min(...nodePositions);
-      const maxNodeY = Math.max(...nodePositions);
-
-      // Estimate the height of the highest node (same logic as scroll wheel)
-      const highestNode = filteredNodes.find(
-        (node) => node.position.y === maxNodeY
-      );
-      let highestNodeHeight = 140; // Default height
-
-      if (highestNode) {
-        const contentLength = highestNode.data.content.length;
-        const estimatedLines = Math.ceil(contentLength / 50);
-        highestNodeHeight = Math.max(140, estimatedLines * 28 + 60);
-      }
-
-      // Calculate bounds using same logic as scroll wheel handler
-      const topBound = -minNodeY + 50; // Keep some padding at top
-      const bottomBound = -(maxNodeY + highestNodeHeight - flowHeight + 50); // Keep some padding at bottom
-
-      // Set viewport to show all filtered nodes with proper bounds
-      const currentViewport = reactFlowInstance.getViewport();
-
+    if (reactFlowInstance && filteredNodes.length > 0 && activeTopic) {
+      // Reset viewport to top when topic changes
       reactFlowInstance.setViewport({
-        x: currentViewport.x, // Keep x position unchanged
-        y: Math.max(bottomBound, Math.min(topBound, currentViewport.y)), // Clamp to bounds like scroll wheel
+        x: -25, // Same as initial viewport
+        y: 0,
         zoom: 1,
       });
     }
-  }, [reactFlowInstance, filteredNodes, activeFilter]);
+  }, [reactFlowInstance, activeTopic]);
 
   // Handle mouse wheel for vertical scrolling only - using filtered nodes when filter is active
   const onWheel = useCallback(
@@ -558,8 +579,8 @@ const FlowComponent = () => {
         const flowArea = document.querySelector(".flow-area");
         const flowHeight = flowArea?.clientHeight || window.innerHeight;
 
-        // Use filtered nodes when filter is active, otherwise use all nodes
-        const nodesToUse = activeFilter ? filteredNodes : nodes;
+        // Use filtered nodes when topic or edge filter is active, otherwise use all nodes
+        const nodesToUse = (activeTopic || activeEdgeFilter) ? filteredNodes : nodes;
 
         if (nodesToUse.length === 0) return;
 
@@ -595,7 +616,7 @@ const FlowComponent = () => {
         });
       }
     },
-    [reactFlowInstance, nodes, filteredNodes, activeFilter]
+    [reactFlowInstance, nodes, filteredNodes, activeTopic, activeEdgeFilter]
   );
 
   // Add wheel event listener to the entire flow area
@@ -609,13 +630,47 @@ const FlowComponent = () => {
     }
   }, [onWheel]);
 
-  const handleFilterToggle = (filterType: string) => {
-    if (activeFilter === filterType) {
-      setActiveFilter(null); // Clear filter
+  const handleTopicChange = (topic: string) => {
+    setActiveTopic(topic);
+    setShowTopicDropdown(false);
+  };
+
+  const handleEdgeFilterToggle = (filterType: string) => {
+    if (activeEdgeFilter === filterType) {
+      setActiveEdgeFilter(null); // Clear filter
     } else {
-      setActiveFilter(filterType); // Set new filter
+      setActiveEdgeFilter(filterType); // Set new filter
     }
-    setShowFilterDropdown(false);
+    setShowEdgeFilterDropdown(false);
+  };
+
+  const handleTranscriptChange = async (filename: string) => {
+    if (filename === currentTranscript) {
+      setShowTranscriptDropdown(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setShowTranscriptDropdown(false);
+
+    try {
+      await loadParsedTranscript(filename);
+    } catch (error) {
+      console.error("Failed to load transcript:", error);
+      alert(`Failed to load transcript: ${filename}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Helper to format transcript name for display
+  const formatTranscriptName = (filename: string) => {
+    return filename
+      .replace("_parsed.json", "")
+      .replace(/_/g, " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const handleNodeClick = useCallback(
@@ -722,22 +777,22 @@ const FlowComponent = () => {
         </button>
       )}
 
-      {/* Filter Button - Visible to all users */}
-      {!isLoading && (
+      {/* Transcript Selector - Visible to all users, only show if multiple transcripts available */}
+      {!isLoading && availableTranscripts.length > 1 && (
         <div
           style={{
             position: "absolute",
-            top: isAdmin ? "80px" : "20px",
+            top: "20px",
             right: "20px",
             zIndex: 100,
           }}
-          data-filter-dropdown
+          data-transcript-dropdown
         >
           <button
-            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            onClick={() => setShowTranscriptDropdown(!showTranscriptDropdown)}
             style={{
               padding: "0.75rem 1rem",
-              backgroundColor: activeFilter ? "#3b82f6" : "#6b7280",
+              backgroundColor: "#6366f1",
               color: "white",
               border: "none",
               borderRadius: "8px",
@@ -751,31 +806,22 @@ const FlowComponent = () => {
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = activeFilter
-                ? "#2563eb"
-                : "#4b5563";
+              e.currentTarget.style.backgroundColor = "#4f46e5";
               e.currentTarget.style.transform = "translateY(-1px)";
               e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeFilter
-                ? "#3b82f6"
-                : "#6b7280";
+              e.currentTarget.style.backgroundColor = "#6366f1";
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
             }}
           >
-            <span style={{ fontSize: "16px" }}>🔍</span>
-            Filter
-            {activeFilter && (
-              <span style={{ fontSize: "12px", opacity: 0.8 }}>
-                ({activeFilter})
-              </span>
-            )}
+            <span style={{ fontSize: "16px" }}>📄</span>
+            {formatTranscriptName(currentTranscript)}
           </button>
 
-          {/* Filter Dropdown */}
-          {showFilterDropdown && (
+          {/* Transcript Dropdown */}
+          {showTranscriptDropdown && (
             <div
               style={{
                 position: "absolute",
@@ -790,16 +836,240 @@ const FlowComponent = () => {
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.25rem",
-                minWidth: "120px",
+                minWidth: "200px",
+                maxWidth: "300px",
+              }}
+            >
+              {availableTranscripts.map((transcript) => (
+                <button
+                  key={transcript}
+                  onClick={() => handleTranscriptChange(transcript)}
+                  style={{
+                    padding: "0.5rem 0.75rem",
+                    backgroundColor:
+                      currentTranscript === transcript ? "#6366f1" : "transparent",
+                    color: currentTranscript === transcript ? "white" : "#374151",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    textAlign: "left",
+                    transition: "all 0.2s",
+                    fontWeight: currentTranscript === transcript ? "600" : "500",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentTranscript !== transcript) {
+                      e.currentTarget.style.backgroundColor = "#f3f4f6";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (currentTranscript !== transcript) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
+                  }}
+                >
+                  {currentTranscript === transcript && (
+                    <span style={{ marginRight: "0.5rem" }}>✓</span>
+                  )}
+                  {formatTranscriptName(transcript)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Topic Selector - Visible to all users, only show if topics available */}
+      {!isLoading && topics.length > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            top: isAdmin ? "80px" : (availableTranscripts.length > 1 ? "80px" : "20px"),
+            right: "20px",
+            zIndex: 100,
+          }}
+          data-topic-dropdown
+        >
+          <button
+            onClick={() => setShowTopicDropdown(!showTopicDropdown)}
+            style={{
+              padding: "0.75rem 1rem",
+              backgroundColor: "#3b82f6",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "600",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              transition: "all 0.2s ease",
+              maxWidth: "250px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#2563eb";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#3b82f6";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>📋</span>
+            <span style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
+              {activeTopic || "Select Topic"}
+            </span>
+          </button>
+
+          {/* Topic Dropdown */}
+          {showTopicDropdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                marginTop: "4px",
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 10px 15px rgba(0,0,0,0.1)",
+                padding: "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+                minWidth: "250px",
+                maxWidth: "350px",
+              }}
+            >
+              {topics.map((topic) => (
+                <button
+                  key={topic}
+                  onClick={() => handleTopicChange(topic)}
+                  style={{
+                    padding: "0.5rem 0.75rem",
+                    backgroundColor:
+                      activeTopic === topic ? "#3b82f6" : "transparent",
+                    color: activeTopic === topic ? "white" : "#374151",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    textAlign: "left",
+                    transition: "all 0.2s",
+                    fontWeight: activeTopic === topic ? "600" : "500",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTopic !== topic) {
+                      e.currentTarget.style.backgroundColor = "#f3f4f6";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTopic !== topic) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
+                  }}
+                >
+                  {activeTopic === topic && (
+                    <span style={{ marginRight: "0.5rem" }}>✓</span>
+                  )}
+                  {topic}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Edge Type Filter - Visible to all users */}
+      {!isLoading && (
+        <div
+          style={{
+            position: "absolute",
+            top: isAdmin
+              ? "140px"
+              : (availableTranscripts.length > 1
+                  ? (topics.length > 0 ? "140px" : "80px")
+                  : (topics.length > 0 ? "80px" : "20px")),
+            right: "20px",
+            zIndex: 100,
+          }}
+          data-edge-filter-dropdown
+        >
+          <button
+            onClick={() => setShowEdgeFilterDropdown(!showEdgeFilterDropdown)}
+            style={{
+              padding: "0.75rem 1rem",
+              backgroundColor: activeEdgeFilter ? "#8b5cf6" : "#6b7280",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "600",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = activeEdgeFilter
+                ? "#7c3aed"
+                : "#4b5563";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = activeEdgeFilter
+                ? "#8b5cf6"
+                : "#6b7280";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>🔗</span>
+            Edge Filter
+            {activeEdgeFilter && (
+              <span style={{ fontSize: "12px", opacity: 0.8 }}>
+                ({activeEdgeFilter})
+              </span>
+            )}
+          </button>
+
+          {/* Edge Filter Dropdown */}
+          {showEdgeFilterDropdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                marginTop: "4px",
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 10px 15px rgba(0,0,0,0.1)",
+                padding: "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+                minWidth: "140px",
               }}
             >
               <button
-                onClick={() => handleFilterToggle("yes")}
+                onClick={() => handleEdgeFilterToggle("yes")}
                 style={{
                   padding: "0.5rem 0.75rem",
                   backgroundColor:
-                    activeFilter === "yes" ? "#10b981" : "transparent",
-                  color: activeFilter === "yes" ? "white" : "#374151",
+                    activeEdgeFilter === "yes" ? "#10b981" : "transparent",
+                  color: activeEdgeFilter === "yes" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
@@ -811,12 +1081,12 @@ const FlowComponent = () => {
                   fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
-                  if (activeFilter !== "yes") {
+                  if (activeEdgeFilter !== "yes") {
                     e.currentTarget.style.backgroundColor = "#f3f4f6";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (activeFilter !== "yes") {
+                  if (activeEdgeFilter !== "yes") {
                     e.currentTarget.style.backgroundColor = "transparent";
                   }
                 }}
@@ -826,12 +1096,12 @@ const FlowComponent = () => {
               </button>
 
               <button
-                onClick={() => handleFilterToggle("no")}
+                onClick={() => handleEdgeFilterToggle("no")}
                 style={{
                   padding: "0.5rem 0.75rem",
                   backgroundColor:
-                    activeFilter === "no" ? "#ef4444" : "transparent",
-                  color: activeFilter === "no" ? "white" : "#374151",
+                    activeEdgeFilter === "no" ? "#ef4444" : "transparent",
+                  color: activeEdgeFilter === "no" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
@@ -843,12 +1113,12 @@ const FlowComponent = () => {
                   fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
-                  if (activeFilter !== "no") {
+                  if (activeEdgeFilter !== "no") {
                     e.currentTarget.style.backgroundColor = "#f3f4f6";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (activeFilter !== "no") {
+                  if (activeEdgeFilter !== "no") {
                     e.currentTarget.style.backgroundColor = "transparent";
                   }
                 }}
@@ -858,12 +1128,12 @@ const FlowComponent = () => {
               </button>
 
               <button
-                onClick={() => handleFilterToggle("ellipsis")}
+                onClick={() => handleEdgeFilterToggle("ellipsis")}
                 style={{
                   padding: "0.5rem 0.75rem",
                   backgroundColor:
-                    activeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
-                  color: activeFilter === "ellipsis" ? "white" : "#374151",
+                    activeEdgeFilter === "ellipsis" ? "#8b5cf6" : "transparent",
+                  color: activeEdgeFilter === "ellipsis" ? "white" : "#374151",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
@@ -875,12 +1145,12 @@ const FlowComponent = () => {
                   fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
-                  if (activeFilter !== "ellipsis") {
+                  if (activeEdgeFilter !== "ellipsis") {
                     e.currentTarget.style.backgroundColor = "#f3f4f6";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (activeFilter !== "ellipsis") {
+                  if (activeEdgeFilter !== "ellipsis") {
                     e.currentTarget.style.backgroundColor = "transparent";
                   }
                 }}
@@ -890,7 +1160,7 @@ const FlowComponent = () => {
               </button>
 
               {/* Clear Filter Option */}
-              {activeFilter && (
+              {activeEdgeFilter && (
                 <>
                   <div
                     style={{
@@ -900,7 +1170,7 @@ const FlowComponent = () => {
                     }}
                   />
                   <button
-                    onClick={() => handleFilterToggle(activeFilter)}
+                    onClick={() => handleEdgeFilterToggle(activeEdgeFilter)}
                     style={{
                       padding: "0.5rem 0.75rem",
                       backgroundColor: "transparent",

@@ -4,6 +4,7 @@ import type { Node, Edge } from "reactflow";
 interface Column {
   id: string;
   title: string;
+  topic?: string;
   x: number;
 }
 
@@ -16,6 +17,7 @@ interface NoteData {
 interface ColumnData {
   id: string;
   title: string;
+  topic?: string;
   notes: NoteData[];
 }
 
@@ -31,18 +33,23 @@ interface EdgeData {
 interface ParsedTranscriptData {
   columns: ColumnData[];
   edges?: EdgeData[];
+  topics?: string[];
 }
 
 interface NoteStore {
   nodes: Node[];
   edges: Edge[];
   columns: Column[];
+  topics: string[];
   lastUsedEdgeType: string; // Track the most recently used edge type
+  currentTranscript: string;
+  availableTranscripts: string[];
   addNote: (columnId: string) => void;
   updateNote: (id: string, content: string) => void;
   connectNotes: (sourceId: string, targetId: string) => void;
   deleteNote: (id: string) => void;
-  loadParsedTranscript: () => Promise<void>;
+  loadParsedTranscript: (filename?: string) => Promise<void>;
+  loadAvailableTranscripts: () => Promise<void>;
   addNoteToFourthColumn: (
     content: string,
     sourceId: string,
@@ -75,11 +82,20 @@ const initialNode: Node = {
   data: { content: "", columnId: initialColumn.id, isNew: true },
 };
 
+// List of available transcript files to check
+const TRANSCRIPT_FILES = [
+  "daily_covids_wake_parsed.json",
+  "inbox_qa_parsed.json",
+];
+
 export const useNoteStore = create<NoteStore>((set) => ({
   nodes: [initialNode],
   edges: [],
   columns: [initialColumn],
+  topics: [],
   lastUsedEdgeType: "smoothstep",
+  currentTranscript: "daily_covids_wake_parsed.json",
+  availableTranscripts: [],
 
   addNote: (columnId) =>
     set((state) => {
@@ -167,10 +183,31 @@ export const useNoteStore = create<NoteStore>((set) => ({
       ),
     })),
 
-  loadParsedTranscript: async () => {
+  loadAvailableTranscripts: async () => {
+    const available: string[] = [];
+
+    for (const filename of TRANSCRIPT_FILES) {
+      try {
+        const response = await fetch(`/${filename}`, { method: 'HEAD' });
+        if (response.ok) {
+          available.push(filename);
+        }
+      } catch (error) {
+        // File doesn't exist or can't be accessed, skip it
+        console.log(`Transcript ${filename} not available`);
+      }
+    }
+
+    set({ availableTranscripts: available });
+  },
+
+  loadParsedTranscript: async (filename?: string) => {
     try {
+      // Use provided filename or current transcript
+      const transcriptToLoad = filename || useNoteStore.getState().currentTranscript;
+
       // Load from public directory as static asset
-      const response = await fetch("/daily_covids_wake_parsed.json");
+      const response = await fetch(`/${transcriptToLoad}`);
       if (!response.ok) {
         throw new Error(
           `Failed to load static asset: ${response.status} ${response.statusText}`
@@ -203,6 +240,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
           col: {
             id: string;
             title: string;
+            topic?: string;
             notes: NoteData[];
           },
           idx: number
@@ -213,6 +251,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
           return {
             id: col.id,
             title: col.title,
+            topic: col.topic,
             x: columnX,
           };
         }
@@ -422,6 +461,8 @@ export const useNoteStore = create<NoteStore>((set) => ({
         columns: newColumns,
         nodes: nodes,
         edges: allEdges,
+        topics: data.topics || [],
+        currentTranscript: transcriptToLoad,
       });
     } catch (error) {
       console.error(

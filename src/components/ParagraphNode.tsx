@@ -22,46 +22,36 @@ const actionButtonStyle = {
   fontFamily: "system-ui, -apple-system, sans-serif",
   fontWeight: 500 as const,
   letterSpacing: "0.01em",
-  transition: "background 0.1s, border-color 0.1s",
 };
 
 const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
   const { removeTag } = useDocumentStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [selectionText, setSelectionText] = useState("");
-  const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null);
 
   const handleMouseUp = useCallback(() => {
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0 && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       if (containerRef.current?.contains(range.commonAncestorContainer)) {
-        setSelectionText(selection.toString().trim());
-        setSelectionRect(range.getBoundingClientRect());
+        const rect = range.getBoundingClientRect();
+        // Dispatch to DocumentFlow, which lives outside ReactFlow's transform layer
+        document.dispatchEvent(
+          new CustomEvent("docTextSelected", {
+            detail: {
+              text: selection.toString().trim(),
+              sourceNodeId: id,
+              // Plain object — DOMRect isn't cloneable across event boundary
+              rect: { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right },
+            },
+          })
+        );
         return;
       }
     }
-    setSelectionText("");
-    setSelectionRect(null);
-  }, []);
-
-  const handleHighlight = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (selectionText) {
-        document.dispatchEvent(
-          new CustomEvent("docCreateHighlight", {
-            detail: { text: selectionText, sourceNodeId: id },
-          })
-        );
-        setSelectionText("");
-        setSelectionRect(null);
-        window.getSelection()?.removeAllRanges();
-      }
-    },
-    [selectionText, id]
-  );
+    // No selection — clear any existing highlight button
+    document.dispatchEvent(new CustomEvent("docTextSelected", { detail: null }));
+  }, [id]);
 
   const dispatchAction = useCallback(
     (action: string) => {
@@ -91,8 +81,6 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           : "0 1px 4px rgba(0,0,0,0.06)",
         position: "relative",
         transition: "box-shadow 0.15s ease",
-        userSelect: "text",
-        WebkitUserSelect: "text",
       }}
     >
       <Handle
@@ -123,8 +111,9 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
         ¶
       </div>
 
-      {/* Content */}
+      {/* Content — nodrag lets ReactFlow skip drag handling so text is selectable */}
       <div
+        className="nodrag"
         style={{
           fontFamily: 'Georgia, "Times New Roman", serif',
           fontSize: "15px",
@@ -132,6 +121,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           color: "#1e293b",
           paddingRight: "16px",
           cursor: "text",
+          userSelect: "text",
+          WebkitUserSelect: "text",
         }}
       >
         {data.content}
@@ -139,14 +130,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
       {/* Tags */}
       {data.tags && data.tags.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "4px",
-            marginTop: "10px",
-          }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
           {data.tags.map((tag: string) => (
             <span
               key={tag}
@@ -165,18 +149,10 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
               #{tag}
               <button
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTag(id, tag);
-                }}
+                onClick={(e) => { e.stopPropagation(); removeTag(id, tag); }}
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                  color: "#94a3b8",
-                  fontSize: "13px",
-                  lineHeight: 1,
+                  background: "none", border: "none", cursor: "pointer",
+                  padding: 0, color: "#94a3b8", fontSize: "13px", lineHeight: 1,
                 }}
               >
                 ×
@@ -188,6 +164,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
       {/* Action bar — visible on hover */}
       <div
+        className="nodrag"
         style={{
           display: "flex",
           gap: "4px",
@@ -204,10 +181,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           <button
             key={action}
             onMouseDown={(e) => e.preventDefault()}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatchAction(action);
-            }}
+            onClick={(e) => { e.stopPropagation(); dispatchAction(action); }}
             style={actionButtonStyle}
           >
             {action}
@@ -215,44 +189,12 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
         ))}
         <button
           onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatchAction("tag");
-          }}
+          onClick={(e) => { e.stopPropagation(); dispatchAction("tag"); }}
           style={{ ...actionButtonStyle, color: "#6366f1" }}
         >
           # tag
         </button>
       </div>
-
-      {/* Floating highlight button — appears near the text selection */}
-      {selectionText && selectionRect && (
-        <div
-          style={{
-            position: "fixed",
-            top: selectionRect.bottom + 6,
-            left: Math.round(
-              (selectionRect.left + selectionRect.right) / 2 - 48
-            ),
-            zIndex: 10000,
-            background: "#1e293b",
-            color: "#fff",
-            padding: "5px 14px",
-            borderRadius: "8px",
-            fontSize: "12px",
-            fontWeight: 500,
-            cursor: "pointer",
-            fontFamily: "system-ui, sans-serif",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-            whiteSpace: "nowrap",
-            letterSpacing: "0.01em",
-          }}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleHighlight}
-        >
-          ✎ Highlight
-        </div>
-      )}
     </div>
   );
 });
