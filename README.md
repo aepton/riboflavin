@@ -1,49 +1,30 @@
-# Riboflavin - Interactive Note-Taking App
+# Riboflavin
 
-A React-based note-taking application that allows you to create, connect, and organize notes in a visual flow diagram. Built with React Flow and TypeScript.
+A document annotation tool built with React Flow. Paste any text to break it
+into paragraph nodes, then highlight passages, write threaded replies, and tag
+anything — all laid out on a pannable canvas.
 
-## Features
+## Getting started
 
-- Create notes by double-clicking anywhere on the canvas
-- Connect notes by dragging from one note's handle to another
-- Edit notes directly in the interface
-- Keyboard shortcuts for quick note creation (Cmd/Ctrl + Enter)
-- Drag and drop notes to organize your thoughts
-- Pan and zoom the canvas for better navigation
+```bash
+npm install
+npm run dev
+```
 
-## Getting Started
+Open `http://localhost:5173`, click **Open Document**, and paste some text.
 
-1. Install dependencies:
+## How it works
 
-   ```bash
-   npm install
-   ```
+- **Paragraphs** are arranged in a column on the left. Select text in any
+  paragraph (or annotation) and click **Highlight** to create a linked
+  annotation node.
+- **Annotations** appear to the right of their source. Click an annotation to
+  reply; double-click to edit. Replies inherit the thread color of their parent.
+- **Tags** can be added to any node for lightweight categorization.
 
-2. Start the development server:
+## Stack
 
-   ```bash
-   npm run dev
-   ```
-
-3. Open your browser and navigate to `http://localhost:5173`
-
-## Keyboard Shortcuts
-
-- `Cmd/Ctrl + Enter`: Create a new note
-- `Delete`: Remove selected notes
-- `Space + Drag`: Pan the canvas
-- `Mouse Wheel`: Zoom in/out
-
-## Development
-
-This project is built with:
-
-- React
-- TypeScript
-- React Flow
-- Zustand (State Management)
-- Emotion (Styling)
-
-## License
-
-MIT
+- React + TypeScript
+- [React Flow](https://reactflow.dev) for the node/edge canvas
+- [Zustand](https://zustand-demo.pmnd.rs) for state management
+- [EB Garamond](https://fonts.google.com/specimen/EB+Garamond) for typography

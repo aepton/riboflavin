@@ -1,13 +1,12 @@
 import { Global } from "@emotion/react";
 import { ReactFlowProvider } from "reactflow";
-import Flow from "./components/Flow";
+import DocumentFlow from "./components/DocumentFlow";
 
 const globalStyles = {
   body: {
     margin: 0,
     padding: 0,
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: '"EB Garamond", Georgia, serif',
   },
 };
 
@@ -16,7 +15,7 @@ function App() {
     <>
       <Global styles={globalStyles} />
       <ReactFlowProvider>
-        <Flow />
+        <DocumentFlow />
       </ReactFlowProvider>
     </>
   );

@@ -4,3 +4,4 @@ dist/
 .env
 data/parsed/
 data/test/
+public/inbox_qa_parsed.json
