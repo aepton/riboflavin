@@ -6,7 +6,7 @@ export interface EdgeProps {
   targetX: number;
   targetY: number;
   id?: string;
-  data?: { colorIndex?: number };
+  data?: { colorIndex?: number; dimmed?: boolean };
 }
 
 function threadColor(colorIndex: number | undefined): string {
@@ -18,7 +18,7 @@ const createBezierPath = (
   sourceX: number,
   sourceY: number,
   targetX: number,
-  targetY: number
+  targetY: number,
 ) => {
   const deltaX = targetX - sourceX;
   const controlPoint1X = sourceX + deltaX * 0.4;
@@ -32,7 +32,7 @@ export const CustomEdge = ({ sourceX, sourceY, targetX, targetY, data }: EdgePro
   const stroke = threadColor(data?.colorIndex);
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
   return (
-    <g>
+    <g opacity={data?.dimmed ? 0.12 : 1} style={{ transition: "opacity 0.25s ease" }}>
       <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
     </g>
   );
@@ -45,7 +45,7 @@ export const EllipsisEdge = ({ sourceX, sourceY, targetX, targetY, data }: EdgeP
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
   const gradId = `ellipsisGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g>
+    <g opacity={data?.dimmed ? 0.12 : 1} style={{ transition: "opacity 0.25s ease" }}>
       <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
         <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
@@ -73,7 +73,7 @@ export const EdgeYes = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps)
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
   const gradId = `yesGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g>
+    <g opacity={data?.dimmed ? 0.12 : 1} style={{ transition: "opacity 0.25s ease" }}>
       <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
         <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
@@ -101,7 +101,7 @@ export const EdgeNo = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) 
   const path = createBezierPath(sourceX, sourceY, targetX, targetY);
   const gradId = `noGrad-${data?.colorIndex ?? "x"}`;
   return (
-    <g>
+    <g opacity={data?.dimmed ? 0.12 : 1} style={{ transition: "opacity 0.25s ease" }}>
       <path d={path} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" fill="none" />
       <defs>
         <radialGradient id={gradId} cx="50%" cy="50%" r="50%">

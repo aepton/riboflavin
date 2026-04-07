@@ -53,30 +53,105 @@ function getColumnX(depth: number): number {
 }
 
 /**
- * Pick a Y position for a new annotation that:
- * - tries to align with the source node's vertical center
- * - never overlaps any existing node at the same depth
+ * Estimate the pixel Y offset of a character index within a node's rendered text.
+ * Used to align highlight annotations with the highlighted passage.
  */
-function getAnnotationY(
-  sourceNode: Node,
-  siblings: Node[],   // nodes directly linked from this same source
-  allAtDepth: Node[],  // all nodes already placed at the new depth
+function estimateCharY(
+  content: string,
+  charIdx: number,
+  nodeType: "paragraph" | "annotation",
 ): number {
-  const sourceH = estimateHeight(sourceNode.data.content);
-  const idealY = Math.max(50, sourceNode.position.y + sourceH / 2 - 50);
+  if (!content || charIdx <= 0) return 0;
 
-  let minY = 50;
-  if (allAtDepth.length > 0) {
-    const last = allAtDepth.reduce((a, b) => (a.position.y > b.position.y ? a : b));
-    minY = last.position.y + estimateAnnotationHeight(last.data.content) + NODE_GAP;
+  const topPad = nodeType === "paragraph" ? 16 : 52;
+  const cpl = nodeType === "paragraph" ? 36 : 38;
+  const lh = nodeType === "paragraph" ? 26 : 25;
+
+  const textBefore = content.slice(0, charIdx);
+  let lines = 0;
+  for (const segment of textBefore.split("\n")) {
+    lines += Math.max(1, Math.ceil(segment.length / cpl));
+  }
+  lines -= 1;
+
+  return topPad + Math.max(0, lines) * lh;
+}
+
+// ── Column layout ───────────────────────────────────────────────────────────
+
+/** Compute the ideal Y for an annotation based on its source node. */
+function idealYForNode(node: Node, sourceNode: Node): number {
+  const nodeType = sourceNode.data.nodeType as "paragraph" | "annotation";
+
+  // Highlights: align with the character position in the source text
+  if (node.data.highlightStartIdx !== undefined) {
+    const charY = estimateCharY(sourceNode.data.content, node.data.highlightStartIdx, nodeType);
+    return Math.max(20, sourceNode.position.y + charY);
   }
 
-  if (siblings.length > 0) {
-    const lastSib = siblings.reduce((a, b) => (a.position.y > b.position.y ? a : b));
-    minY = Math.max(minY, lastSib.position.y + estimateAnnotationHeight(lastSib.data.content) + NODE_GAP);
+  // Replies: align with the vertical center of the source node
+  const sourceH = nodeType === "paragraph"
+    ? estimateHeight(sourceNode.data.content)
+    : estimateAnnotationHeight(sourceNode.data.content);
+  return Math.max(20, sourceNode.position.y + sourceH / 2 - 50);
+}
+
+/**
+ * Re-sort and re-position every annotation node at a given depth so that:
+ *  1. Each node sits as close as possible to its source node's Y
+ *  2. Nodes are ordered by their ideal Y (== source order), minimising edge crossings
+ *  3. No two nodes overlap
+ *
+ * Then cascade to deeper depths, since moving nodes here shifts their
+ * children's ideal positions.
+ */
+function relayoutFromDepth(nodes: Node[], edges: Edge[], startDepth: number): Node[] {
+  let result = [...nodes];
+
+  // Find the max depth present in the graph
+  let maxDepth = 0;
+  for (const n of result) {
+    if ((n.data.depth as number) > maxDepth) maxDepth = n.data.depth as number;
   }
 
-  return Math.max(idealY, minY);
+  for (let depth = startDepth; depth <= maxDepth; depth++) {
+    const atDepth = result.filter((n) => n.data.depth === depth);
+    if (atDepth.length === 0) continue;
+
+    // Build a lookup for quick access
+    const nodeById = new Map(result.map((n) => [n.id, n]));
+
+    // For each node at this depth, compute its ideal Y from its source
+    const items = atDepth.map((n) => {
+      const inEdge = edges.find((e) => e.target === n.id);
+      const sourceNode = inEdge ? nodeById.get(inEdge.source) : undefined;
+      const ideal = sourceNode ? idealYForNode(n, sourceNode) : n.position.y;
+      return { node: n, idealY: ideal };
+    });
+
+    // Sort by ideal Y. Array.sort is stable, so creation-order is the tiebreaker.
+    items.sort((a, b) => a.idealY - b.idealY);
+
+    // Greedy top-to-bottom placement: each node gets max(idealY, previousBottom + gap)
+    const updates = new Map<string, number>();
+    let cursor = 20;
+    for (const { node, idealY } of items) {
+      const y = Math.max(idealY, cursor);
+      updates.set(node.id, y);
+      cursor = y + estimateAnnotationHeight(node.data.content) + NODE_GAP;
+    }
+
+    // Apply position updates
+    result = result.map((n) => {
+      const newY = updates.get(n.id);
+      if (newY !== undefined && newY !== n.position.y) {
+        return { ...n, position: { x: getColumnX(depth), y: newY } };
+      }
+      return n;
+    });
+  }
+
+  return result;
 }
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -93,12 +168,13 @@ export interface DocNodeData {
   content: string;
   nodeType: "paragraph" | "annotation";
   annotationType?: AnnotationType;
-  sourceText?: string;         // quoted text snippet (highlights only)
+  sourceText?: string;            // quoted text snippet (highlights only)
   tags: string[];
   isNew?: boolean;
   depth: number;
-  colorIndex?: number;         // thread color — assigned at highlight creation, inherited by replies
-  highlights?: HighlightRange[]; // persisted highlight ranges on this node's text
+  colorIndex?: number;            // thread color — assigned at highlight creation, inherited by replies
+  highlights?: HighlightRange[];  // persisted highlight ranges on this node's text
+  highlightStartIdx?: number;     // char offset in source — used by layout to position near the highlight
 }
 
 interface DocumentStore {
@@ -164,15 +240,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
 
       const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
       const newDepth = (sourceNode.data.depth as number) + 1;
-
-      const linkedIds = state.edges
-        .filter((e) => e.source === sourceNodeId)
-        .map((e) => e.target);
-      const siblings = state.nodes.filter((n) => linkedIds.includes(n.id));
-      const allAtDepth = state.nodes.filter((n) => n.data.depth === newDepth);
-
       const newId = `anno-${Date.now()}`;
-      const y = getAnnotationY(sourceNode, siblings, allAtDepth);
 
       // Persist the highlight range on the source node
       const updatedNodes = state.nodes.map((n) =>
@@ -193,7 +261,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       const newNode: Node = {
         id: newId,
         type: "annotationNode",
-        position: { x: getColumnX(newDepth), y },
+        position: { x: getColumnX(newDepth), y: 0 }, // placeholder — relayout will position
         data: {
           content: "",
           nodeType: "annotation",
@@ -203,6 +271,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
           depth: newDepth,
           colorIndex,
           isNew: true,
+          highlightStartIdx: startIdx,
         } as DocNodeData,
       };
 
@@ -216,9 +285,11 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
         data: { colorIndex },
       };
 
+      const allEdges = [...state.edges, newEdge];
+
       return {
-        nodes: [...updatedNodes, newNode],
-        edges: [...state.edges, newEdge],
+        nodes: relayoutFromDepth([...updatedNodes, newNode], allEdges, newDepth),
+        edges: allEdges,
         nextColorIndex: state.nextColorIndex + 1,
       };
     }),
@@ -230,20 +301,12 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
 
       const colorIndex = sourceNode.data.colorIndex as number | undefined;
       const newDepth = (sourceNode.data.depth as number) + 1;
-
-      const linkedIds = state.edges
-        .filter((e) => e.source === sourceNodeId)
-        .map((e) => e.target);
-      const siblings = state.nodes.filter((n) => linkedIds.includes(n.id));
-      const allAtDepth = state.nodes.filter((n) => n.data.depth === newDepth);
-
       const newId = `anno-${Date.now()}`;
-      const y = getAnnotationY(sourceNode, siblings, allAtDepth);
 
       const newNode: Node = {
         id: newId,
         type: "annotationNode",
-        position: { x: getColumnX(newDepth), y },
+        position: { x: getColumnX(newDepth), y: 0 }, // placeholder — relayout will position
         data: {
           content,
           nodeType: "annotation",
@@ -264,9 +327,11 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
         data: { colorIndex },
       };
 
+      const allEdges = [...state.edges, newEdge];
+
       return {
-        nodes: [...state.nodes, newNode],
-        edges: [...state.edges, newEdge],
+        nodes: relayoutFromDepth([...state.nodes, newNode], allEdges, newDepth),
+        edges: allEdges,
       };
     }),
 

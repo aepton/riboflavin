@@ -86,6 +86,24 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
+// ─── Helpers ────────────────────────────────────────────────────────────────────
+
+/** BFS through edges to find every node in the same connected component. */
+function getConnectedIds(startId: string, edges: { source: string; target: string }[]): Set<string> {
+  const connected = new Set<string>();
+  const queue = [startId];
+  while (queue.length > 0) {
+    const cur = queue.pop()!;
+    if (connected.has(cur)) continue;
+    connected.add(cur);
+    for (const e of edges) {
+      if (e.source === cur && !connected.has(e.target)) queue.push(e.target);
+      if (e.target === cur && !connected.has(e.source)) queue.push(e.source);
+    }
+  }
+  return connected;
+}
+
 // ─── Main component ─────────────────────────────────────────────────────────
 const DocumentFlow = () => {
   const {
@@ -100,9 +118,13 @@ const DocumentFlow = () => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { setViewport } = useReactFlow();
+  const { setViewport, fitView, getViewport } = useReactFlow();
   const lastDocTitle = useRef<string>("");
   const pannedToNodes = useRef(new Set<string>());
+
+  // Thread-focus state
+  const [focusedNodeIds, setFocusedNodeIds] = useState<Set<string> | null>(null);
+  const savedViewport = useRef<{ x: number; y: number; zoom: number } | null>(null);
 
   // New-document modal
   const [showNewDoc, setShowNewDoc] = useState(false);
@@ -127,50 +149,70 @@ const DocumentFlow = () => {
     rect: { top: number; bottom: number; left: number; right: number };
   } | null>(null);
 
-  // Sync store → local ReactFlow state
+  // ── Sync store → local ReactFlow state (with dimming) ─────────────────────
+
   useEffect(() => {
-    setNodes(storeNodes);
-  }, [storeNodes, setNodes]);
+    setNodes(
+      focusedNodeIds
+        ? storeNodes.map((n) => ({
+            ...n,
+            data: {
+              ...n.data,
+              dimmed: !focusedNodeIds.has(n.id),
+              threadFocused: focusedNodeIds.has(n.id),
+            },
+          }))
+        : storeNodes,
+    );
+  }, [storeNodes, focusedNodeIds, setNodes]);
+
+  useEffect(() => {
+    setEdges(
+      focusedNodeIds
+        ? storeEdges.map((e) => ({
+            ...e,
+            data: {
+              ...e.data,
+              dimmed: !(focusedNodeIds.has(e.source) && focusedNodeIds.has(e.target)),
+            },
+          }))
+        : storeEdges,
+    );
+  }, [storeEdges, focusedNodeIds, setEdges]);
 
   // When a new document loads, snap to zoom=2 with paragraphs at the top-left.
-  // COLUMN_X_BASE=20, first paragraph y=20 → viewport (-20,-20,2) puts them at screen (20,20).
   useEffect(() => {
     if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
       lastDocTitle.current = documentTitle;
+      setFocusedNodeIds(null);
       setViewport({ x: -20, y: -20, zoom: 2 }, { duration: 250 });
     }
   }, [storeNodes.length, documentTitle, setViewport]);
 
-  useEffect(() => {
-    setEdges(storeEdges);
-  }, [storeEdges, setEdges]);
-
-  // Pan viewport to center the source + new annotation pair when a highlight/annotation is created
+  // Pan viewport to center the source + new annotation pair when a highlight is created
   useEffect(() => {
     const fresh = storeNodes.find(
-      (n) => n.data.nodeType === "annotation" && n.data.isNew && !pannedToNodes.current.has(n.id)
+      (n) => n.data.nodeType === "annotation" && n.data.isNew && !pannedToNodes.current.has(n.id),
     );
     if (!fresh) return;
     pannedToNodes.current.add(fresh.id);
 
-    // Find the source node so we can center the pair
     const sourceEdge = storeEdges.find((e) => e.target === fresh.id);
     const sourceNode = sourceEdge ? storeNodes.find((n) => n.id === sourceEdge.source) : null;
 
     const pairLeft = sourceNode ? sourceNode.position.x : fresh.position.x;
-    const pairRight = fresh.position.x + 300; // annotation node width
+    const pairRight = fresh.position.x + 300;
     const pairCenterX = (pairLeft + pairRight) / 2;
-    // Vertical: annotation is roughly aligned with source, use annotation center as proxy
     const pairCenterY = fresh.position.y + 85;
 
-    const availH = window.innerHeight - 52; // subtract header height
+    const availH = window.innerHeight - 52;
     setViewport(
       {
         x: window.innerWidth / 2 - pairCenterX * 2,
         y: availH / 2 - pairCenterY * 2,
         zoom: 2,
       },
-      { duration: 250 }
+      { duration: 250 },
     );
   }, [storeNodes, storeEdges, setViewport]);
 
@@ -218,7 +260,6 @@ const DocumentFlow = () => {
     return () => document.removeEventListener("docCreateHighlight", handler);
   }, [createHighlight]);
 
-  // Listen for text selections from ParagraphNode
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -234,6 +275,49 @@ const DocumentFlow = () => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // ── Thread focus ──────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { nodeId } = (e as CustomEvent).detail;
+
+      // Toggle off if this node is already in the focused set
+      if (focusedNodeIds?.has(nodeId)) {
+        setFocusedNodeIds(null);
+        if (savedViewport.current) {
+          setViewport(savedViewport.current, { duration: 250 });
+          savedViewport.current = null;
+        }
+        return;
+      }
+
+      const connected = getConnectedIds(nodeId, storeEdges);
+      savedViewport.current = getViewport();
+      setFocusedNodeIds(connected);
+
+      // Let React flush the dimming update, then fit the view to the connected nodes
+      setTimeout(() => {
+        fitView({
+          nodes: [...connected].map((id) => ({ id })),
+          padding: 0.12,
+          duration: 300,
+        });
+      }, 50);
+    };
+    document.addEventListener("docFocusThread", handler);
+    return () => document.removeEventListener("docFocusThread", handler);
+  }, [focusedNodeIds, storeEdges, fitView, getViewport, setViewport]);
+
+  const handlePaneClick = useCallback(() => {
+    if (focusedNodeIds) {
+      setFocusedNodeIds(null);
+      if (savedViewport.current) {
+        setViewport(savedViewport.current, { duration: 250 });
+        savedViewport.current = null;
+      }
+    }
+  }, [focusedNodeIds, setViewport]);
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -251,7 +335,7 @@ const DocumentFlow = () => {
         window.getSelection()?.removeAllRanges();
       }
     },
-    [highlightSelection, createHighlight]
+    [highlightSelection, createHighlight],
   );
 
   const handleCreateDocument = useCallback(() => {
@@ -356,10 +440,11 @@ const DocumentFlow = () => {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             defaultViewport={{ x: -20, y: -20, zoom: 2 }}
-            minZoom={2}
+            minZoom={0.15}
             maxZoom={2}
             zoomOnScroll={false}
             zoomOnPinch={false}
@@ -414,7 +499,7 @@ const DocumentFlow = () => {
             position: "fixed",
             top: highlightSelection.rect.bottom + 8,
             left: Math.round(
-              (highlightSelection.rect.left + highlightSelection.rect.right) / 2 - 52
+              (highlightSelection.rect.left + highlightSelection.rect.right) / 2 - 52,
             ),
             zIndex: 9999,
             background: "#1e293b",

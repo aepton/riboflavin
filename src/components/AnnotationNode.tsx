@@ -26,6 +26,8 @@ interface AnnotationNodeProps {
     depth: number;
     colorIndex?: number;
     highlights?: HighlightRange[];
+    dimmed?: boolean;
+    threadFocused?: boolean;
   };
   id: string;
 }
@@ -128,6 +130,16 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     [id],
   );
 
+  const handleFocusClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      document.dispatchEvent(
+        new CustomEvent("docFocusThread", { detail: { nodeId: id } }),
+      );
+    },
+    [id],
+  );
+
   // Text selection → emit event so DocumentFlow can show the highlight button
   const handleMouseUp = useCallback(() => {
     if (isEditing) return;
@@ -160,6 +172,18 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     document.dispatchEvent(new CustomEvent("docTextSelected", { detail: null }));
   }, [id, isEditing]);
 
+  const footerBtnStyle: React.CSSProperties = {
+    background: "none",
+    border: `1px solid ${color.border}`,
+    borderRadius: "5px",
+    cursor: "pointer",
+    padding: "1px 6px",
+    fontSize: "10px",
+    color: "#64748b",
+    fontFamily: "inherit",
+    fontWeight: 500,
+  };
+
   return (
     <div
       onDoubleClick={handleDoubleClick}
@@ -179,6 +203,8 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         lineHeight: "1.65",
         color: "#1e293b",
         userSelect: isEditing ? "text" : "none",
+        transition: "opacity 0.25s ease",
+        opacity: data.dimmed ? 0.18 : 1,
       }}
     >
       <Handle id="right" type="source" position={Position.Right}
@@ -294,24 +320,28 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           color: "#94a3b8",
         }}>
           <span>click to reply · double-click to edit</span>
-          <button
-            data-no-reply
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={handleTagClick}
-            style={{
-              background: "none",
-              border: `1px solid ${color.border}`,
-              borderRadius: "5px",
-              cursor: "pointer",
-              padding: "1px 6px",
-              fontSize: "10px",
-              color: "#64748b",
-              fontFamily: "inherit",
-              fontWeight: 500,
-            }}
-          >
-            # tag
-          </button>
+          <div data-no-reply style={{ display: "flex", gap: "4px" }}>
+            <button
+              data-no-reply
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleTagClick}
+              style={footerBtnStyle}
+            >
+              # tag
+            </button>
+            <button
+              data-no-reply
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleFocusClick}
+              style={{
+                ...footerBtnStyle,
+                color: data.threadFocused ? "#1e293b" : "#94a3b8",
+                background: data.threadFocused ? "rgba(0,0,0,0.06)" : "none",
+              }}
+            >
+              {data.threadFocused ? "unfocus" : "focus"}
+            </button>
+          </div>
         </div>
       )}
     </div>
