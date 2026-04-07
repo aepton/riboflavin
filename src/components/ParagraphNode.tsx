@@ -9,6 +9,8 @@ interface ParagraphNodeProps {
     tags: string[];
     depth: number;
     highlights?: HighlightRange[];
+    dimmed?: boolean;
+    threadFocused?: boolean;
   };
   id: string;
 }
@@ -24,10 +26,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
   // Snapshot current content into local draft when editing begins
   useEffect(() => {
-    if (isEditing) {
-      setDraft(data.content);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isEditing) setDraft(data.content);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
 
   // Auto-size textarea to content
@@ -42,9 +42,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
   // Focus textarea after it enters the DOM
   useEffect(() => {
-    if (isEditing) {
-      textareaRef.current?.focus();
-    }
+    if (isEditing) textareaRef.current?.focus();
   }, [isEditing]);
 
   const handleMouseUp = useCallback(() => {
@@ -70,7 +68,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
               endIdx,
               rect: { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right },
             },
-          })
+          }),
         );
         return;
       }
@@ -88,26 +86,48 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
       setDraft(e.target.value);
       adjustHeight();
     },
-    [adjustHeight]
+    [adjustHeight],
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        setIsEditing(false); // discard
+        setIsEditing(false);
       }
     },
-    []
+    [],
   );
 
   const dispatchTag = useCallback(() => {
     document.dispatchEvent(
       new CustomEvent("docParagraphAction", {
         detail: { nodeId: id, action: "tag" },
-      })
+      }),
     );
   }, [id]);
+
+  const handleFocus = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      document.dispatchEvent(
+        new CustomEvent("docFocusThread", { detail: { nodeId: id } }),
+      );
+    },
+    [id],
+  );
+
+  const actionBtnStyle: React.CSSProperties = {
+    padding: "3px 10px",
+    borderRadius: "6px",
+    border: "1px solid #e5e7eb",
+    background: "#f9fafb",
+    color: "#374151",
+    fontSize: "11px",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    fontWeight: 500,
+  };
 
   return (
     <div
@@ -127,7 +147,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           ? "0 4px 12px rgba(0,0,0,0.1)"
           : "0 1px 4px rgba(0,0,0,0.06)",
         position: "relative",
-        transition: "box-shadow 0.15s ease, border-color 0.15s ease",
+        transition: "box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.25s ease",
+        opacity: data.dimmed ? 0.18 : 1,
       }}
     >
       <Handle id="right" type="source" position={Position.Right}
@@ -235,36 +256,28 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           <button
             onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
-            style={{
-              padding: "3px 10px",
-              borderRadius: "6px",
-              border: "1px solid #e5e7eb",
-              background: "#f9fafb",
-              color: "#374151",
-              fontSize: "11px",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontWeight: 500,
-            }}
+            style={actionBtnStyle}
           >
             edit
           </button>
           <button
             onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => { e.stopPropagation(); dispatchTag(); }}
-            style={{
-              padding: "3px 10px",
-              borderRadius: "6px",
-              border: "1px solid #e5e7eb",
-              background: "#f9fafb",
-              color: "#6366f1",
-              fontSize: "11px",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontWeight: 500,
-            }}
+            style={{ ...actionBtnStyle, color: "#6366f1" }}
           >
             # tag
+          </button>
+          <button
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleFocus}
+            style={{
+              ...actionBtnStyle,
+              marginLeft: "auto",
+              color: data.threadFocused ? "#1e293b" : "#94a3b8",
+              background: data.threadFocused ? "#e2e8f0" : "#f9fafb",
+            }}
+          >
+            {data.threadFocused ? "unfocus" : "focus"}
           </button>
         </div>
       )}
