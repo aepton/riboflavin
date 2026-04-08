@@ -5,7 +5,6 @@ import ReactFlow, {
   useReactFlow,
   Background,
   BackgroundVariant,
-  Controls,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import {
@@ -16,6 +15,7 @@ import {
 } from "../store/documentStore";
 import ParagraphNode from "./ParagraphNode";
 import AnnotationNode from "./AnnotationNode";
+import AddParagraphNode from "./AddParagraphNode";
 import { CustomEdge, EdgeNo, EdgeYes, EllipsisEdge } from "./EdgeComponents";
 import { REACTION_EMOJIS } from "./EmojiReactions";
 import { useAuthStore } from "../store/authStore";
@@ -26,6 +26,7 @@ import { useFontStore, FONT_OPTIONS } from "../store/fontStore";
 const nodeTypes = {
   paragraphNode: ParagraphNode,
   annotationNode: AnnotationNode,
+  addParagraphNode: AddParagraphNode,
 };
 
 const edgeTypes = {
@@ -174,13 +175,6 @@ const DocumentFlow = () => {
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
 
-  // Show username modal after hydration if missing
-  useEffect(() => {
-    if (!authHydrated) return;
-    if (!username) {
-      setShowUsernameModal(true);
-    }
-  }, [authHydrated, username]);
 
   // Round picker / URL-based loading
   const [showRoundPicker, setShowRoundPicker] = useState(false);
@@ -189,9 +183,9 @@ const DocumentFlow = () => {
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const roundLoadAttempted = useRef(false);
 
-  // On mount (once auth is ready), check the URL for a slug or show the round picker
+  // On mount (once hydrated), check the URL for a slug or show the round picker
   useEffect(() => {
-    if (!authReady || roundLoadAttempted.current) return;
+    if (!authHydrated || roundLoadAttempted.current) return;
     roundLoadAttempted.current = true;
 
     const params = new URLSearchParams(window.location.search);
@@ -240,7 +234,7 @@ const DocumentFlow = () => {
         }
       })();
     }
-  }, [authReady, loadRound]);
+  }, [authHydrated, loadRound]);
 
   const handlePickRound = useCallback(
     async (slug: string) => {
@@ -271,8 +265,8 @@ const DocumentFlow = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Persona picker
-  const [personaOpen, setPersonaOpen] = useState(false);
+  // Hamburger menu & persona picker
+  const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [personaFilter, setPersonaFilter] = useState("");
   const personaRef = useRef<HTMLDivElement>(null);
 
@@ -311,17 +305,36 @@ const DocumentFlow = () => {
   // ── Sync store → local ReactFlow state (with dimming + highlight) ──────────
 
   useEffect(() => {
-    setNodes(
-      storeNodes.map((n) => ({
-        ...n,
-        data: {
-          ...n.data,
-          dimmed: focusedNodeIds ? !focusedNodeIds.has(n.id) : false,
-          threadFocused: focusedNodeIds ? focusedNodeIds.has(n.id) : false,
-          highlighted: n.id === highlightedNodeId,
-        },
-      })),
-    );
+    const mapped = storeNodes.map((n) => ({
+      ...n,
+      data: {
+        ...n.data,
+        dimmed: focusedNodeIds ? !focusedNodeIds.has(n.id) : false,
+        threadFocused: focusedNodeIds ? focusedNodeIds.has(n.id) : false,
+        highlighted: n.id === highlightedNodeId,
+      },
+    }));
+
+    // Append an "add paragraph" node after the last paragraph
+    if (storeNodes.length > 0) {
+      const paragraphs = storeNodes
+        .filter((n) => n.data.depth === 0)
+        .sort((a, b) => a.position.y - b.position.y);
+      const lastPara = paragraphs[paragraphs.length - 1];
+      if (lastPara) {
+        const lastH = estimateHeight(lastPara.data.content as string);
+        mapped.push({
+          id: "__add_paragraph__",
+          type: "addParagraphNode",
+          position: { x: lastPara.position.x, y: lastPara.position.y + lastH + 32 },
+          data: { afterNodeId: lastPara.id },
+          draggable: false,
+          selectable: false,
+        } as never);
+      }
+    }
+
+    setNodes(mapped);
   }, [storeNodes, focusedNodeIds, highlightedNodeId, setNodes]);
 
   useEffect(() => {
@@ -434,7 +447,8 @@ const DocumentFlow = () => {
   useEffect(() => {
     const handler = (e: Event) => {
       const { text, sourceNodeId, startIdx, endIdx } = (e as CustomEvent).detail;
-      createHighlight(text, sourceNodeId, startIdx, endIdx, username ?? undefined);
+      if (!username) { setShowUsernameModal(true); return; }
+      createHighlight(text, sourceNodeId, startIdx, endIdx, username);
     };
     document.addEventListener("docCreateHighlight", handler);
     return () => document.removeEventListener("docCreateHighlight", handler);
@@ -498,6 +512,12 @@ const DocumentFlow = () => {
     return () => document.removeEventListener("docFocusThread", handler);
   }, [focusedNodeIds, storeEdges, fitView, getViewport, setViewport]);
 
+  const handleNodeClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("node", node.id);
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
   const handlePaneClick = useCallback(() => {
     if (focusedNodeIds) {
       setFocusedNodeIds(null);
@@ -517,13 +537,14 @@ const DocumentFlow = () => {
   const handleHighlightClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      if (!username) { setShowUsernameModal(true); return; }
       if (highlightSelection) {
         createHighlight(
           highlightSelection.text,
           highlightSelection.sourceNodeId,
           highlightSelection.startIdx,
           highlightSelection.endIdx,
-          username ?? undefined,
+          username,
         );
         setHighlightSelection(null);
         window.getSelection()?.removeAllRanges();
@@ -542,8 +563,9 @@ const DocumentFlow = () => {
   }, [docText, docTitle, loadDocument, username]);
 
   const handleSubmitReply = useCallback(() => {
+    if (!username) { setShowUsernameModal(true); return; }
     if (replyNodeId && replyContent.trim()) {
-      addReply(replyContent.trim(), replyNodeId, replyEdgeType, username ?? undefined);
+      addReply(replyContent.trim(), replyNodeId, replyEdgeType, username);
       setReplyNodeId(null);
       setReplyContent("");
     }
@@ -566,6 +588,7 @@ const DocumentFlow = () => {
   );
 
   const currentNodeIdx = useRef(0);
+  const [currentNavIdx, setCurrentNavIdx] = useState(0);
   const navAnimating = useRef(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   /** For tall nodes: how far we've scrolled within the current node (0 = top). */
@@ -584,7 +607,13 @@ const DocumentFlow = () => {
       const duration = nextDepth < prevDepth ? 400 : 250;
 
       currentNodeIdx.current = idx;
+      setCurrentNavIdx(idx);
       nodeScrollOffset.current = scrollY;
+
+      // Update URL with the current node
+      const url = new URL(window.location.href);
+      url.searchParams.set("node", node.id);
+      window.history.replaceState({}, "", url.toString());
 
       const h =
         node.data.nodeType === "paragraph"
@@ -872,17 +901,17 @@ const DocumentFlow = () => {
     }
   }, [saveSlug, username, documentTitle, storeNodes, storeEdges]);
 
-  // Close persona dropdown on outside click
+  // Close hamburger menu on outside click
   useEffect(() => {
-    if (!personaOpen) return;
+    if (!hamburgerOpen) return;
     const handler = (e: MouseEvent) => {
       if (personaRef.current && !personaRef.current.contains(e.target as Node)) {
-        setPersonaOpen(false);
+        setHamburgerOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [personaOpen]);
+  }, [hamburgerOpen]);
 
   const filteredUsers = useMemo(
     () =>
@@ -913,167 +942,33 @@ const DocumentFlow = () => {
           flexShrink: 0,
           height: "52px",
           background: "#fff",
-          borderBottom: "1px solid #e2e8f0",
           display: "flex",
           alignItems: "center",
           padding: "0 20px",
           gap: "12px",
           zIndex: 100,
+          position: "relative",
         }}
       >
-        <div
-          style={{
-            fontWeight: 600,
-            fontSize: "15px",
-            color: "#0f172a",
-            flex: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {hasContent ? documentTitle : "Document Mode"}
+        {/* Title */}
+        <div style={{ flex: 1, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+          {hasContent ? (
+            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0f172a" }}>
+              {documentTitle}
+            </span>
+          ) : (
+            <>
+              <span style={{ fontWeight: 700, fontSize: "16px", color: "#0f172a" }}>
+                Riboflavin
+              </span>
+              <span style={{ fontSize: "12px", color: "#94a3b8", marginLeft: "8px" }}>
+                The name doesn't mean anything
+              </span>
+            </>
+          )}
         </div>
 
-        {/* Font picker */}
-        <select
-          value={currentFont.label}
-          onChange={(e) => setFont(e.target.value)}
-          style={{
-            ...inputStyle,
-            width: "auto",
-            padding: "4px 8px",
-            fontSize: "12px",
-            cursor: "pointer",
-            appearance: "auto",
-            fontFamily: currentFont.family,
-          }}
-        >
-          {FONT_OPTIONS.map((f) => (
-            <option key={f.label} value={f.label} style={{ fontFamily: f.family }}>
-              {f.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Legend */}
-        {hasContent && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontSize: "11px",
-              color: "#94a3b8",
-              fontFamily: "inherit",
-            }}
-          >
-            <span>Select text → highlight</span>
-            <span>·</span>
-            <span>Click annotation → reply</span>
-          </div>
-        )}
-
-        {/* ── Persona switcher ── */}
-        {username && (
-          <div ref={personaRef} style={{ position: "relative" }}>
-            <button
-              onClick={() => { setPersonaOpen((v) => !v); setPersonaFilter(""); }}
-              style={{
-                ...secondaryBtn,
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                maxWidth: "140px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-              title={`Signed in as ${username}`}
-            >
-              <span style={{ fontSize: "12px" }}>{username}</span>
-              <span style={{ fontSize: "9px", marginLeft: "2px" }}>{personaOpen ? "\u25B2" : "\u25BC"}</span>
-            </button>
-
-            {personaOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "calc(100% + 4px)",
-                  right: 0,
-                  width: "180px",
-                  background: "#fff",
-                  border: "1px solid #d1d5db",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-                  zIndex: 300,
-                  padding: "4px",
-                }}
-              >
-                <input
-                  autoFocus
-                  value={personaFilter}
-                  onChange={(e) => setPersonaFilter(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && personaFilter.trim()) {
-                      setUsername(personaFilter.trim());
-                      setPersonaOpen(false);
-                    }
-                    if (e.key === "Escape") setPersonaOpen(false);
-                  }}
-                  placeholder="Switch user…"
-                  style={{ ...inputStyle, fontSize: "12px", padding: "5px 8px", marginBottom: "2px" }}
-                />
-                {filteredUsers.map((u) => (
-                  <div
-                    key={u}
-                    onClick={() => { setUsername(u); setPersonaOpen(false); }}
-                    style={{
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      fontFamily: "inherit",
-                      color: u === username ? "#0f172a" : "#475569",
-                      fontWeight: u === username ? 700 : 400,
-                      background: u === username ? "#f1f5f9" : "transparent",
-                    }}
-                    onMouseEnter={(e) => { (e.currentTarget).style.background = "#f1f5f9"; }}
-                    onMouseLeave={(e) => { (e.currentTarget).style.background = u === username ? "#f1f5f9" : "transparent"; }}
-                  >
-                    {u}
-                  </div>
-                ))}
-                {personaFilter.trim() && !knownUsers.includes(personaFilter.trim()) && (
-                  <div
-                    onClick={() => { setUsername(personaFilter.trim()); setPersonaOpen(false); }}
-                    style={{
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      fontFamily: "inherit",
-                      color: "#3b82f6",
-                      borderTop: "1px solid #e5e7eb",
-                      marginTop: "2px",
-                      paddingTop: "6px",
-                    }}
-                  >
-                    + create "{personaFilter.trim()}"
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {hasContent && (
-          <button
-            onClick={() => setShowLeaderboard((v) => !v)}
-            style={secondaryBtn}
-          >
-            Reactions
-          </button>
-        )}
-
-        {/* Save or Login button */}
+        {/* Save button — always visible when applicable */}
         {hasContent && authReady ? (
           <button
             onClick={() => { setShowSave(true); setSaveSlug(slugify(documentTitle)); setSaveError(null); }}
@@ -1092,12 +987,188 @@ const DocumentFlow = () => {
           </button>
         ) : null}
 
-        <button
-          onClick={() => setShowNewDoc(true)}
-          style={secondaryBtn}
-        >
-          {hasContent ? "+ New Document" : "Open Document"}
-        </button>
+        {/* Hamburger menu */}
+        <div ref={personaRef} style={{ position: "relative" }}>
+          <button
+            onClick={() => setHamburgerOpen((v) => !v)}
+            style={{
+              ...secondaryBtn,
+              fontSize: "18px",
+              padding: "4px 10px",
+              lineHeight: 1,
+            }}
+            title="Menu"
+          >
+            &#9776;
+          </button>
+
+          {hamburgerOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                width: "220px",
+                background: "#fff",
+                border: "1px solid #d1d5db",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                zIndex: 300,
+                padding: "8px",
+              }}
+            >
+              {/* Font picker */}
+              <div style={{ marginBottom: "8px" }}>
+                <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Font</div>
+                <select
+                  value={currentFont.label}
+                  onChange={(e) => setFont(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    width: "100%",
+                    padding: "4px 8px",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    appearance: "auto",
+                    fontFamily: currentFont.family,
+                  }}
+                >
+                  {FONT_OPTIONS.map((f) => (
+                    <option key={f.label} value={f.label} style={{ fontFamily: f.family }}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Persona switcher */}
+              <div style={{ marginBottom: "8px" }}>
+                <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  User{username ? `: ${username}` : ""}
+                </div>
+                <input
+                  value={personaFilter}
+                  onChange={(e) => setPersonaFilter(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && personaFilter.trim()) {
+                      setUsername(personaFilter.trim());
+                      setPersonaFilter("");
+                    }
+                  }}
+                  placeholder="Switch user…"
+                  style={{ ...inputStyle, fontSize: "12px", padding: "5px 8px", width: "100%", marginBottom: "2px", boxSizing: "border-box" }}
+                />
+                {filteredUsers.map((u) => (
+                  <div
+                    key={u}
+                    onClick={() => { setUsername(u); setPersonaFilter(""); }}
+                    style={{
+                      padding: "4px 8px",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      fontFamily: "inherit",
+                      color: u === username ? "#0f172a" : "#475569",
+                      fontWeight: u === username ? 700 : 400,
+                      background: u === username ? "#f1f5f9" : "transparent",
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget).style.background = "#f1f5f9"; }}
+                    onMouseLeave={(e) => { (e.currentTarget).style.background = u === username ? "#f1f5f9" : "transparent"; }}
+                  >
+                    {u}
+                  </div>
+                ))}
+                {personaFilter.trim() && !knownUsers.includes(personaFilter.trim()) && (
+                  <div
+                    onClick={() => { setUsername(personaFilter.trim()); setPersonaFilter(""); }}
+                    style={{
+                      padding: "4px 8px",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      fontFamily: "inherit",
+                      color: "#3b82f6",
+                      borderTop: "1px solid #e5e7eb",
+                      marginTop: "2px",
+                      paddingTop: "6px",
+                    }}
+                  >
+                    + create "{personaFilter.trim()}"
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div style={{ borderTop: "1px solid #e5e7eb", margin: "4px 0" }} />
+
+              {/* Actions */}
+              {hasContent && (
+                <button
+                  onClick={() => { setShowLeaderboard((v) => !v); setHamburgerOpen(false); }}
+                  style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
+                >
+                  Reactions
+                </button>
+              )}
+              <button
+                onClick={() => { setShowNewDoc(true); setHamburgerOpen(false); }}
+                style={{ ...secondaryBtn, width: "100%", textAlign: "left" }}
+              >
+                {hasContent ? "+ New Document" : "Open Document"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ── Progress bar ─────────────────────────────────────────────── */}
+        {hasContent && sortedNavNodes.length > 0 && (() => {
+          const heights = sortedNavNodes.map((n) =>
+            n.data.nodeType === "paragraph"
+              ? estimateHeight(n.data.content as string)
+              : estimateAnnotationHeight(n.data.content as string),
+          );
+          const totalH = heights.reduce((s, h) => s + h, 0);
+          if (totalH === 0) return null;
+
+          if (focusedNodeIds) {
+            // Focus mode: show focused nodes as accent, rest as light
+            const segments = sortedNavNodes.map((n, i) => ({
+              pct: (heights[i] / totalH) * 100,
+              focused: focusedNodeIds.has(n.id),
+            }));
+            return (
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: "3px",
+                display: "flex",
+              }}>
+                {segments.map((seg, i) => (
+                  <div key={i} style={{
+                    width: `${seg.pct}%`,
+                    background: seg.focused ? "#6366f1" : "#e2e8f0",
+                    transition: "background 0.2s",
+                  }} />
+                ))}
+              </div>
+            );
+          }
+
+          // Normal mode: dark = read, accent = current, light = unread
+          const segments = sortedNavNodes.map((_, i) => ({
+            pct: (heights[i] / totalH) * 100,
+            state: i < currentNavIdx ? "read" : i === currentNavIdx ? "current" : "unread",
+          }));
+          return (
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0, height: "3px",
+              display: "flex",
+            }}>
+              {segments.map((seg, i) => (
+                <div key={i} style={{
+                  width: `${seg.pct}%`,
+                  background: seg.state === "read" ? "#334155" : seg.state === "current" ? "#6366f1" : "#e2e8f0",
+                  transition: "background 0.2s",
+                }} />
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── Canvas ────────────────────────────────────────────────────────── */}
@@ -1108,6 +1179,7 @@ const DocumentFlow = () => {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onNodeClick={handleNodeClick}
             onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
@@ -1119,9 +1191,11 @@ const DocumentFlow = () => {
             zoomOnPinch={false}
             zoomOnDoubleClick={false}
             defaultEdgeOptions={{ style: { strokeWidth: 1.5 } }}
-            nodesDraggable
+            nodesDraggable={false}
+            panOnDrag={false}
             panOnScroll={false}
             selectionOnDrag={false}
+            proOptions={{ hideAttribution: true }}
           >
             <Background
               variant={BackgroundVariant.Dots}
@@ -1129,7 +1203,76 @@ const DocumentFlow = () => {
               size={1}
               color="#e2e8f0"
             />
-            <Controls showInteractive={false} style={{ bottom: 16, left: 16 }} />
+
+            {/* ── Prev / Next nav buttons ─────────────────────────── */}
+            <style>{`
+              .rf-nav-btn {
+                padding: 14px 28px;
+                font-size: 18px;
+                font-weight: 600;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+                user-select: none;
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+              }
+              @media (min-width: 768px) {
+                .rf-nav-btn {
+                  padding: 6px 14px;
+                  font-size: 13px;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                  opacity: 0.6;
+                  transition: opacity 0.15s;
+                }
+                .rf-nav-btn:hover:not(:disabled) {
+                  opacity: 1;
+                }
+              }
+            `}</style>
+            {sortedNavNodes.length > 1 && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 20,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  display: "flex",
+                  gap: "12px",
+                  zIndex: 10,
+                }}
+              >
+                <button
+                  className="rf-nav-btn"
+                  onClick={() => {
+                    if (currentNavIdx > 0) navigateToNode(currentNavIdx - 1);
+                  }}
+                  disabled={currentNavIdx === 0}
+                  style={{
+                    background: currentNavIdx === 0 ? "#f1f5f9" : "#fff",
+                    color: currentNavIdx === 0 ? "#94a3b8" : "#334155",
+                    cursor: currentNavIdx === 0 ? "default" : "pointer",
+                  }}
+                >
+                  Prev
+                </button>
+                <button
+                  className="rf-nav-btn"
+                  onClick={() => {
+                    if (currentNavIdx < sortedNavNodes.length - 1) navigateToNode(currentNavIdx + 1);
+                  }}
+                  disabled={currentNavIdx >= sortedNavNodes.length - 1}
+                  style={{
+                    background: currentNavIdx >= sortedNavNodes.length - 1 ? "#f1f5f9" : "#fff",
+                    color: currentNavIdx >= sortedNavNodes.length - 1 ? "#94a3b8" : "#334155",
+                    cursor: currentNavIdx >= sortedNavNodes.length - 1 ? "default" : "pointer",
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </ReactFlow>
         ) : (
           <div

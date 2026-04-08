@@ -38,7 +38,7 @@ interface AnnotationNodeProps {
 }
 
 const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
-  const { updateNode, removeTag, toggleReaction } = useDocumentStore();
+  const { updateNode, removeTag, toggleReaction, deleteNode } = useDocumentStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -363,6 +363,14 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
               style={footerBtnStyle}
             >
               # tag
+            </button>
+            <button
+              data-no-reply
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={(e) => { e.stopPropagation(); deleteNode(id); }}
+              style={{ ...footerBtnStyle, color: "#dc2626" }}
+            >
+              delete
             </button>
             <button
               data-no-reply

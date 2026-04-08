@@ -16,18 +16,27 @@ interface ParagraphNodeProps {
     reactions?: Record<string, number>;
     highlighted?: boolean;
     author?: string;
+    isNew?: boolean;
   };
   id: string;
 }
 
 const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
-  const { removeTag, updateNode, toggleReaction } = useDocumentStore();
+  const { removeTag, updateNode, toggleReaction, deleteNode } = useDocumentStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
+
+  // Auto-focus new nodes into editing mode
+  useEffect(() => {
+    if (data.isNew) {
+      const t = setTimeout(() => setIsEditing(true), 150);
+      return () => clearTimeout(t);
+    }
+  }, [data.isNew]);
 
   // Snapshot current content into local draft when editing begins
   useEffect(() => {
@@ -96,12 +105,16 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        saveEdit();
+      }
       if (e.key === "Escape") {
         e.preventDefault();
         setIsEditing(false);
       }
     },
-    [],
+    [saveEdit],
   );
 
   const dispatchTag = useCallback(() => {
@@ -293,6 +306,13 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
             style={{ ...actionBtnStyle, color: "#6366f1" }}
           >
             # tag
+          </button>
+          <button
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={(e) => { e.stopPropagation(); deleteNode(id); }}
+            style={{ ...actionBtnStyle, color: "#dc2626" }}
+          >
+            delete
           </button>
           <button
             onMouseDown={(e) => e.preventDefault()}

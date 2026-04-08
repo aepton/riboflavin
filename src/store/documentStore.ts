@@ -222,6 +222,7 @@ interface DocumentStore {
   removeTag: (nodeId: string, tag: string) => void;
   toggleReaction: (nodeId: string, emoji: string) => void;
   deleteNode: (id: string) => void;
+  addParagraph: (afterNodeId: string | null, author?: string) => void;
 }
 
 // ── Store ────────────────────────────────────────────────────────────────────
@@ -435,8 +436,43 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
     })),
 
   deleteNode: (id) =>
-    set((state) => ({
-      nodes: state.nodes.filter((n) => n.id !== id),
-      edges: state.edges.filter((e) => e.source !== id && e.target !== id),
-    })),
+    set((state) => {
+      const remaining = state.nodes.filter((n) => n.id !== id);
+      const remainingEdges = state.edges.filter((e) => e.source !== id && e.target !== id);
+      return { nodes: relayoutAll(remaining, remainingEdges), edges: remainingEdges };
+    }),
+
+  addParagraph: (afterNodeId, author) =>
+    set((state) => {
+      const newId = `para-${Date.now()}`;
+      // Find the target node to insert after; if null, append at the end
+      const depth0 = state.nodes
+        .filter((n) => n.data.depth === 0)
+        .sort((a, b) => a.position.y - b.position.y);
+      const afterIdx = afterNodeId
+        ? depth0.findIndex((n) => n.id === afterNodeId)
+        : depth0.length - 1;
+      const afterNode = depth0[afterIdx];
+      const newY = afterNode
+        ? afterNode.position.y + nodeHeight(afterNode) + NODE_GAP
+        : 20;
+
+      const newNode: Node = {
+        id: newId,
+        type: "paragraphNode",
+        position: { x: getColumnX(0), y: newY },
+        data: {
+          content: "",
+          nodeType: "paragraph",
+          tags: [],
+          depth: 0,
+          highlights: [],
+          reactions: {},
+          isNew: true,
+          author,
+        } as DocNodeData,
+      };
+      const nodes = [...state.nodes, newNode];
+      return { nodes: relayoutAll(nodes, state.edges) };
+    }),
 }));
