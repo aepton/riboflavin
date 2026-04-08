@@ -2,6 +2,8 @@ import { memo, useRef, useState, useCallback, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { useDocumentStore, THREAD_COLORS, type AnnotationType, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
+import { NodeFrame } from "./NodeChrome";
+import { ReactionBar } from "./EmojiReactions";
 
 const TYPE_COLORS: Record<
   AnnotationType,
@@ -28,12 +30,15 @@ interface AnnotationNodeProps {
     highlights?: HighlightRange[];
     dimmed?: boolean;
     threadFocused?: boolean;
+    reactions?: Record<string, number>;
+    highlighted?: boolean;
+    author?: string;
   };
   id: string;
 }
 
 const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
-  const { updateNode, removeTag } = useDocumentStore();
+  const { updateNode, removeTag, toggleReaction } = useDocumentStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -174,8 +179,10 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
   const footerBtnStyle: React.CSSProperties = {
     background: "none",
-    border: `1px solid ${color.border}`,
-    borderRadius: "5px",
+    border: "none",
+    borderTop: `1px solid ${color.border}`,
+    borderRight: `1px solid ${color.border}`,
+    borderRadius: 0,
     cursor: "pointer",
     padding: "1px 6px",
     fontSize: "10px",
@@ -185,32 +192,46 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
   };
 
   return (
-    <div
-      onDoubleClick={handleDoubleClick}
-      onClick={handleNodeClick}
-      onMouseUp={handleMouseUp}
-      style={{
-        background: color.nodeBg,
-        border: `1.5px solid ${color.border}`,
-        borderRadius: "10px",
-        padding: "12px 14px",
-        width: "300px",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-        position: "relative",
-        cursor: isEditing ? "text" : "pointer",
-        fontFamily: "inherit",
-        fontSize: "15px",
-        lineHeight: "1.65",
-        color: "#1e293b",
-        userSelect: isEditing ? "text" : "none",
-        transition: "opacity 0.25s ease",
-        opacity: data.dimmed ? 0.18 : 1,
-      }}
+    <NodeFrame
+      borderColor={data.highlighted ? "#3b82f6" : color.border}
+      bracketColor={data.highlighted ? "#2563eb" : color.border}
+      background={color.nodeBg}
+      innerRuleColor={data.highlighted ? "#93c5fd" : color.border}
+      width={340}
+      opacity={data.dimmed ? 0.18 : 1}
+      style={{ cursor: isEditing ? "text" : "pointer" }}
     >
+      <div
+        onDoubleClick={handleDoubleClick}
+        onClick={handleNodeClick}
+        onMouseUp={handleMouseUp}
+        style={{
+          padding: "12px 14px",
+          position: "relative",
+          fontFamily: "inherit",
+          fontSize: "15px",
+          lineHeight: "1.65",
+          color: "#1e293b",
+          userSelect: isEditing ? "text" : "none",
+        }}
+      >
       <Handle id="right" type="source" position={Position.Right}
         style={{ opacity: 0, pointerEvents: "none", right: -4 }} />
       <Handle id="left" type="target" position={Position.Left}
         style={{ opacity: 0, pointerEvents: "none", left: -4 }} />
+
+      {/* Author */}
+      {data.author && (
+        <div style={{
+          fontSize: "10px",
+          color: "#64748b",
+          fontWeight: 600,
+          letterSpacing: "0.03em",
+          marginBottom: "4px",
+        }}>
+          {data.author}
+        </div>
+      )}
 
       {/* Quoted source text (highlights only) */}
       {data.annotationType === "highlight" && data.sourceText && (
@@ -285,11 +306,14 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         >
           {data.tags.map((tag: string) => (
             <span key={tag} style={{
-              background: "rgba(255,255,255,0.65)",
+              background: "none",
               color: "#475569",
               padding: "2px 6px",
-              borderRadius: "9999px",
+              borderRadius: 0,
               fontSize: "11px",
+              border: "none",
+              borderTop: `1px solid ${color.border}`,
+              borderRight: `1px solid ${color.border}`,
               display: "flex", alignItems: "center", gap: "3px",
             }}>
               #{tag}
@@ -307,13 +331,24 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         </div>
       )}
 
+      {/* Reactions */}
+      {!isEditing && (
+        <div className="nodrag" data-no-reply style={{ paddingTop: "4px" }}>
+          <ReactionBar
+            reactions={data.reactions ?? {}}
+            onToggle={(emoji) => toggleReaction(id, emoji)}
+            accentColor={color.border}
+          />
+        </div>
+      )}
+
       {/* Footer */}
       {!isEditing && (
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginTop: "8px",
+          marginTop: "4px",
           paddingTop: "6px",
           borderTop: `1px solid ${color.border}`,
           fontSize: "10px",
@@ -344,7 +379,8 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </NodeFrame>
   );
 });
 

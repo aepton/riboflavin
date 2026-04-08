@@ -2,6 +2,8 @@ import { memo, useRef, useState, useCallback, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { useDocumentStore, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
+import { NodeFrame } from "./NodeChrome";
+import { ReactionBar } from "./EmojiReactions";
 
 interface ParagraphNodeProps {
   data: {
@@ -11,12 +13,15 @@ interface ParagraphNodeProps {
     highlights?: HighlightRange[];
     dimmed?: boolean;
     threadFocused?: boolean;
+    reactions?: Record<string, number>;
+    highlighted?: boolean;
+    author?: string;
   };
   id: string;
 }
 
 const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
-  const { removeTag, updateNode } = useDocumentStore();
+  const { removeTag, updateNode, toggleReaction } = useDocumentStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -119,9 +124,11 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
   const actionBtnStyle: React.CSSProperties = {
     padding: "3px 10px",
-    borderRadius: "6px",
-    border: "1px solid #e5e7eb",
-    background: "#f9fafb",
+    borderRadius: 0,
+    border: "none",
+    borderTop: "1px solid #d1d5db",
+    borderRight: "1px solid #d1d5db",
+    background: "none",
     color: "#374151",
     fontSize: "11px",
     cursor: "pointer",
@@ -130,27 +137,22 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      onMouseUp={handleMouseUp}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        background: "#fff",
-        border: isEditing ? "1px solid #94a3b8" : "1px solid #e2e8f0",
-        borderRadius: "12px",
-        padding: "16px",
-        width: "320px",
-        boxShadow: isEditing
-          ? "0 4px 16px rgba(0,0,0,0.12)"
-          : isHovered
-          ? "0 4px 12px rgba(0,0,0,0.1)"
-          : "0 1px 4px rgba(0,0,0,0.06)",
-        position: "relative",
-        transition: "box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.25s ease",
-        opacity: data.dimmed ? 0.18 : 1,
-      }}
+    <NodeFrame
+      borderColor={data.highlighted ? "#3b82f6" : isEditing ? "#94a3b8" : "#d1d5db"}
+      bracketColor={data.highlighted ? "#2563eb" : isEditing ? "#475569" : "#64748b"}
+      background="#fff"
+      innerRuleColor={data.highlighted ? "#93c5fd" : isEditing ? "#cbd5e1" : "#e5e7eb"}
+      width={360}
+      opacity={data.dimmed ? 0.18 : 1}
+      style={{ cursor: isEditing ? "text" : "default" }}
     >
+      <div
+        ref={containerRef}
+        onMouseUp={handleMouseUp}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{ padding: "16px", position: "relative" }}
+      >
       <Handle id="right" type="source" position={Position.Right}
         style={{ opacity: 0, pointerEvents: "none", right: -4 }} />
       <Handle id="left" type="target" position={Position.Left}
@@ -221,9 +223,12 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
           {data.tags.map((tag: string) => (
             <span key={tag} style={{
-              background: "#f1f5f9", color: "#475569",
-              padding: "2px 8px", borderRadius: "9999px",
+              background: "none", color: "#475569",
+              padding: "2px 8px", borderRadius: 0,
               fontSize: "11px", fontFamily: "inherit",
+              border: "none",
+              borderTop: "1px solid #e2e8f0",
+              borderRight: "1px solid #e2e8f0",
               display: "flex", alignItems: "center", gap: "4px",
             }}>
               #{tag}
@@ -240,19 +245,41 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
         </div>
       )}
 
+      {/* Reactions */}
+      {!isEditing && (
+        <div className="nodrag" style={{ paddingTop: "4px" }}>
+          <ReactionBar
+            reactions={data.reactions ?? {}}
+            onToggle={(emoji) => toggleReaction(id, emoji)}
+            accentColor="#d1d5db"
+          />
+        </div>
+      )}
+
       {/* Action bar */}
       {!isEditing && (
         <div
           className="nodrag"
           style={{
             display: "flex", gap: "4px",
-            marginTop: "10px", paddingTop: "8px",
+            marginTop: "6px", paddingTop: "8px",
             borderTop: "1px solid #f1f5f9",
             opacity: isHovered ? 1 : 0,
             transition: "opacity 0.15s ease",
             pointerEvents: isHovered ? "auto" : "none",
           }}
         >
+          {data.author && (
+            <span style={{
+              fontSize: "10px",
+              color: "#94a3b8",
+              fontStyle: "italic",
+              alignSelf: "center",
+              marginRight: "4px",
+            }}>
+              {data.author}
+            </span>
+          )}
           <button
             onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
@@ -281,7 +308,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           </button>
         </div>
       )}
-    </div>
+      </div>
+    </NodeFrame>
   );
 });
 
