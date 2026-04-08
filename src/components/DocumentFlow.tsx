@@ -339,15 +339,62 @@ const DocumentFlow = () => {
   }, [storeEdges, focusedNodeIds, setEdges]);
 
   // When a new document loads, center the viewport on the first node.
-  const pendingNavToFirst = useRef(false);
+  const pendingInitialNav = useRef<{ position: { x: number; y: number }; data: Record<string, unknown> } | null>(null);
+  const rfInitialized = useRef(false);
+
+  const applyInitialNav = useCallback(() => {
+    const node = pendingInitialNav.current;
+    if (!node) return;
+    pendingInitialNav.current = null;
+
+    const h =
+      node.data.nodeType === "paragraph"
+        ? estimateHeight(node.data.content as string)
+        : estimateAnnotationHeight(node.data.content as string);
+    const zoom = 1;
+    const headerH = 52;
+    const availW = window.innerWidth;
+    const availH = window.innerHeight - headerH;
+    const viewportH = availH / zoom;
+    const centerX = node.position.x + COLUMN_WIDTH / 2;
+    const targetY = h > viewportH
+      ? node.position.y + viewportH / 2
+      : node.position.y + h / 2;
+
+    setViewport(
+      {
+        x: availW / 2 - centerX * zoom,
+        y: availH / 2 - targetY * zoom + headerH / 2,
+        zoom,
+      },
+      { duration: 0 },
+    );
+  }, [setViewport]);
+
+  const handleReactFlowInit = useCallback(() => {
+    rfInitialized.current = true;
+    applyInitialNav();
+  }, [applyInitialNav]);
+
   useEffect(() => {
     if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
       lastDocTitle.current = documentTitle;
       setFocusedNodeIds(null);
       currentNodeIdx.current = 0;
-      pendingNavToFirst.current = true;
+      nodeScrollOffset.current = 0;
+
+      // Find the topmost node and center on it
+      const sorted = [...storeNodes].sort((a, b) => a.position.y - b.position.y);
+      const node = sorted[0];
+      if (node) {
+        pendingInitialNav.current = node;
+        if (rfInitialized.current) {
+          // RF already initialized (e.g. picking a new round), apply immediately
+          setTimeout(() => applyInitialNav(), 0);
+        }
+      }
     }
-  }, [storeNodes.length, documentTitle]);
+  }, [storeNodes, documentTitle, applyInitialNav]);
 
   // ── Event listeners from nodes ─────────────────────────────────────────────
 
@@ -576,14 +623,6 @@ const DocumentFlow = () => {
     },
     [sortedNavNodes, setViewport],
   );
-
-  // After navigateToNode is defined, handle pending nav-to-first-node on doc load
-  useEffect(() => {
-    if (pendingNavToFirst.current && sortedNavNodes.length > 0) {
-      pendingNavToFirst.current = false;
-      setTimeout(() => navigateToNode(0), 100);
-    }
-  }, [sortedNavNodes, navigateToNode]);
 
   // Keep currentNodeIdx in bounds when nodes change
   useEffect(() => {
@@ -1072,6 +1111,7 @@ const DocumentFlow = () => {
             onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
+            onInit={handleReactFlowInit}
             defaultViewport={{ x: 40, y: 20, zoom: 1 }}
             minZoom={0.15}
             maxZoom={2}
