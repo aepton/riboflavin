@@ -339,15 +339,15 @@ const DocumentFlow = () => {
   }, [storeEdges, focusedNodeIds, setEdges]);
 
   // When a new document loads, center the viewport on the first node.
+  const pendingNavToFirst = useRef(false);
   useEffect(() => {
     if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
       lastDocTitle.current = documentTitle;
       setFocusedNodeIds(null);
       currentNodeIdx.current = 0;
-      // Delay slightly so sortedNavNodes and layout are ready
-      setTimeout(() => navigateToNode(0), 100);
+      pendingNavToFirst.current = true;
     }
-  }, [storeNodes.length, documentTitle, navigateToNode]);
+  }, [storeNodes.length, documentTitle]);
 
   // ── Event listeners from nodes ─────────────────────────────────────────────
 
@@ -576,6 +576,14 @@ const DocumentFlow = () => {
     },
     [sortedNavNodes, setViewport],
   );
+
+  // After navigateToNode is defined, handle pending nav-to-first-node on doc load
+  useEffect(() => {
+    if (pendingNavToFirst.current && sortedNavNodes.length > 0) {
+      pendingNavToFirst.current = false;
+      setTimeout(() => navigateToNode(0), 100);
+    }
+  }, [sortedNavNodes, navigateToNode]);
 
   // Keep currentNodeIdx in bounds when nodes change
   useEffect(() => {
