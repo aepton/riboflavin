@@ -338,15 +338,16 @@ const DocumentFlow = () => {
     );
   }, [storeEdges, focusedNodeIds, setEdges]);
 
-  // When a new document loads, snap to zoom=1 centered on the first node.
+  // When a new document loads, center the viewport on the first node.
   useEffect(() => {
     if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
       lastDocTitle.current = documentTitle;
       setFocusedNodeIds(null);
       currentNodeIdx.current = 0;
-      setViewport({ x: 40, y: 20, zoom: 1 }, { duration: 250 });
+      // Delay slightly so sortedNavNodes and layout are ready
+      setTimeout(() => navigateToNode(0), 100);
     }
-  }, [storeNodes.length, documentTitle, setViewport]);
+  }, [storeNodes.length, documentTitle, navigateToNode]);
 
   // ── Event listeners from nodes ─────────────────────────────────────────────
 
