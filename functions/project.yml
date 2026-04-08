@@ -1,0 +1,9 @@
+packages:
+  - name: spaces
+    actions:
+      - name: read
+        runtime: nodejs:18
+        web: true
+      - name: write
+        runtime: nodejs:18
+        web: true

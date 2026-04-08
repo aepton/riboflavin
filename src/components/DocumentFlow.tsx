@@ -145,12 +145,10 @@ const DocumentFlow = () => {
   } = useDocumentStore();
 
   const {
-    accessKey: storedAccessKey,
     username,
     knownUsers,
     ready: authReady,
     hydrated: authHydrated,
-    setCredentials,
     setUsername,
     hydrate,
   } = useAuthStore();
@@ -172,24 +170,17 @@ const DocumentFlow = () => {
     }
   }, [hydrate]);
 
-  // Credentials modal
-  const [showCredentials, setShowCredentials] = useState(false);
-  const [loginAccessKey, setLoginAccessKey] = useState("");
-  const [loginSecretKey, setLoginSecretKey] = useState("");
-
   // Username modal
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
 
-  // Show the right modal after hydration if something is missing
+  // Show username modal after hydration if missing
   useEffect(() => {
     if (!authHydrated) return;
-    if (!storedAccessKey) {
-      setShowCredentials(true);
-    } else if (!username) {
+    if (!username) {
       setShowUsernameModal(true);
     }
-  }, [authHydrated, storedAccessKey, username]);
+  }, [authHydrated, username]);
 
   // Round picker / URL-based loading
   const [showRoundPicker, setShowRoundPicker] = useState(false);
@@ -772,15 +763,6 @@ const DocumentFlow = () => {
   // Patch: include highlightedNodeId in the node data so the component can render it
 
   // ── Auth handlers ─────────────────────────────────────────────────────────
-  const handleSubmitCredentials = useCallback(() => {
-    if (loginAccessKey.trim() && loginSecretKey.trim()) {
-      setCredentials(loginAccessKey.trim(), loginSecretKey.trim());
-      setShowCredentials(false);
-      // If username is still missing, prompt for it next
-      if (!username) setShowUsernameModal(true);
-    }
-  }, [loginAccessKey, loginSecretKey, setCredentials, username]);
-
   const handleSubmitUsername = useCallback(() => {
     if (loginUsername.trim()) {
       setUsername(loginUsername.trim());
@@ -1054,12 +1036,11 @@ const DocumentFlow = () => {
         ) : hasContent && !authReady ? (
           <button
             onClick={() => {
-              if (!storedAccessKey) setShowCredentials(true);
-              else if (!username) setShowUsernameModal(true);
+              if (!username) setShowUsernameModal(true);
             }}
             style={secondaryBtn}
           >
-            Login to Save
+            Set Username to Save
           </button>
         ) : null}
 
@@ -1530,56 +1511,6 @@ const DocumentFlow = () => {
                 </div>
               );
             })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Credentials Modal ──────────────────────────────────────────── */}
-      {showCredentials && (
-        <div style={overlayStyle} onClick={() => { if (storedAccessKey) setShowCredentials(false); }}>
-          <div
-            style={{ ...cardStyle, width: "380px", maxWidth: "92vw", padding: "24px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, fontSize: "17px", color: "#0f172a" }}>
-              Connect to Spaces
-            </div>
-            <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
-              Enter your DigitalOcean Spaces access key and secret.
-            </div>
-            <input
-              autoFocus
-              value={loginAccessKey}
-              onChange={(e) => setLoginAccessKey(e.target.value)}
-              placeholder="Access Key"
-              style={inputStyle}
-            />
-            <input
-              value={loginSecretKey}
-              onChange={(e) => setLoginSecretKey(e.target.value)}
-              placeholder="Secret Key"
-              type="password"
-              style={inputStyle}
-              onKeyDown={(e) => { if (e.key === "Enter") handleSubmitCredentials(); }}
-            />
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
-              {storedAccessKey && (
-                <button onClick={() => setShowCredentials(false)} style={secondaryBtn}>
-                  Cancel
-                </button>
-              )}
-              <button
-                onClick={handleSubmitCredentials}
-                disabled={!loginAccessKey.trim() || !loginSecretKey.trim()}
-                style={{
-                  ...primaryBtn,
-                  opacity: loginAccessKey.trim() && loginSecretKey.trim() ? 1 : 0.45,
-                  cursor: loginAccessKey.trim() && loginSecretKey.trim() ? "pointer" : "default",
-                }}
-              >
-                Connect
-              </button>
-            </div>
           </div>
         </div>
       )}

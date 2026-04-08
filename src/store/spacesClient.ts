@@ -1,57 +1,38 @@
 /**
- * Thin wrapper around @aws-sdk/client-s3 configured for DigitalOcean Spaces.
+ * Client for reading/writing JSON via DigitalOcean Functions.
+ *
+ * The functions handle Spaces credentials server-side, so the browser
+ * never needs access keys.
  */
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
 
-const BUCKET = "riboflavin";
-const REGION = "sfo3";
-const ENDPOINT = `https://${REGION}.digitaloceanspaces.com`;
+const READ_URL =
+  import.meta.env.VITE_FUNCTIONS_READ_URL ??
+  "https://faas-sfo3-7872a1dd.doserverless.co/api/v1/web/fn-a2c9ce36-7181-4e9b-b1ac-09b78f7b904f/default/riboflavin_read";
 
-let client: S3Client | null = null;
-
-export function initSpaces(accessKey: string, secretKey: string) {
-  client = new S3Client({
-    region: REGION,
-    endpoint: ENDPOINT,
-    credentials: { accessKeyId: accessKey, secretAccessKey: secretKey },
-    forcePathStyle: false,
-  });
-}
-
-function getClient(): S3Client {
-  if (!client) throw new Error("Spaces client not initialised — call initSpaces first");
-  return client;
-}
+const WRITE_URL =
+  import.meta.env.VITE_FUNCTIONS_WRITE_URL ??
+  "https://faas-sfo3-7872a1dd.doserverless.co/api/v1/web/fn-a2c9ce36-7181-4e9b-b1ac-09b78f7b904f/default/riboflavin_write";
 
 // ── Read / write helpers ────────────────────────────────────────────────────
 
 export async function putJSON(key: string, body: unknown): Promise<void> {
-  await getClient().send(
-    new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: key,
-      Body: JSON.stringify(body, null, 2),
-      ContentType: "application/json",
-      ACL: "private",
-    }),
-  );
+  const res = await fetch(WRITE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key, body }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error ?? "Write failed");
+  }
 }
 
 export async function getJSON<T = unknown>(key: string): Promise<T | null> {
-  try {
-    const res = await getClient().send(
-      new GetObjectCommand({ Bucket: BUCKET, Key: key }),
-    );
-    const text = await res.Body?.transformToString();
-    return text ? (JSON.parse(text) as T) : null;
-  } catch (e: unknown) {
-    if (e && typeof e === "object" && "name" in e && (e as { name: string }).name === "NoSuchKey") {
-      return null;
-    }
-    throw e;
+  const res = await fetch(`${READ_URL}?key=${encodeURIComponent(key)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error ?? "Read failed");
   }
+  return (await res.json()) as T;
 }
