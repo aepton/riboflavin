@@ -347,13 +347,13 @@ const DocumentFlow = () => {
     );
   }, [storeEdges, focusedNodeIds, setEdges]);
 
-  // When a new document loads, snap to zoom=2 centered on the first node.
+  // When a new document loads, snap to zoom=1 centered on the first node.
   useEffect(() => {
     if (storeNodes.length > 0 && documentTitle !== lastDocTitle.current) {
       lastDocTitle.current = documentTitle;
       setFocusedNodeIds(null);
       currentNodeIdx.current = 0;
-      setViewport({ x: -20, y: -20, zoom: 2 }, { duration: 250 });
+      setViewport({ x: 40, y: 20, zoom: 1 }, { duration: 250 });
     }
   }, [storeNodes.length, documentTitle, setViewport]);
 
@@ -552,7 +552,7 @@ const DocumentFlow = () => {
           ? estimateHeight(node.data.content)
           : estimateAnnotationHeight(node.data.content);
 
-      const zoom = 2;
+      const zoom = 1;
       const headerH = 52;
       const availW = window.innerWidth;
       const availH = window.innerHeight - headerH;
@@ -628,7 +628,7 @@ const DocumentFlow = () => {
           ? estimateHeight(node.data.content)
           : estimateAnnotationHeight(node.data.content);
       const headerH = 52;
-      const zoom = 2;
+      const zoom = 1;
       const viewportH = (window.innerHeight - headerH) / zoom;
       const scrollStep = viewportH * 0.7;
 
@@ -682,7 +682,7 @@ const DocumentFlow = () => {
           ? estimateHeight(node.data.content)
           : estimateAnnotationHeight(node.data.content);
       const headerH = 52;
-      const zoom = 2;
+      const zoom = 1;
       const viewportH = (window.innerHeight - headerH) / zoom;
       const scrollStep = viewportH * 0.7;
 
@@ -1082,7 +1082,7 @@ const DocumentFlow = () => {
             onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            defaultViewport={{ x: -20, y: -20, zoom: 2 }}
+            defaultViewport={{ x: 40, y: 20, zoom: 1 }}
             minZoom={0.15}
             maxZoom={2}
             zoomOnScroll={false}
