@@ -11,11 +11,13 @@ import {
   useDocumentStore,
   estimateHeight,
   estimateAnnotationHeight,
+  estimateTextEntryHeight,
   COLUMN_WIDTH,
 } from "../store/documentStore";
 import ParagraphNode from "./ParagraphNode";
 import AnnotationNode from "./AnnotationNode";
 import AddParagraphNode from "./AddParagraphNode";
+import TextEntryNode from "./TextEntryNode";
 import { CustomEdge, EdgeNo, EdgeYes, EllipsisEdge } from "./EdgeComponents";
 import { REACTION_EMOJIS } from "./EmojiReactions";
 import { useAuthStore } from "../store/authStore";
@@ -27,6 +29,7 @@ const nodeTypes = {
   paragraphNode: ParagraphNode,
   annotationNode: AnnotationNode,
   addParagraphNode: AddParagraphNode,
+  textEntryNode: TextEntryNode,
 };
 
 const edgeTypes = {
@@ -129,6 +132,8 @@ function slugify(s: string): string {
 interface CatalogEntry {
   slug: string;
   name: string;
+  description?: string;
+  link?: string;
   creator: string;
   tags: string[];
 }
@@ -141,8 +146,10 @@ const DocumentFlow = () => {
     loadDocument,
     loadRound,
     createHighlight,
+    createParagraphFromHighlight,
     addReply,
     addTag,
+    setDocumentTitle,
   } = useDocumentStore();
 
   const {
@@ -161,6 +168,7 @@ const DocumentFlow = () => {
   const { setViewport, fitView, getViewport } = useReactFlow();
   const lastDocTitle = useRef<string>("");
   const pannedToNodes = useRef(new Set<string>());
+  const lastSavedSnapshot = useRef<string>("");
 
   // Hydrate auth from localStorage on mount
   const hydrated = useRef(false);
@@ -198,11 +206,16 @@ const DocumentFlow = () => {
         try {
           const data = await getJSON<{
             title: string;
+            description?: string;
+            link?: string;
             nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
             edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
           }>(`rounds/${slug}`);
           if (data) {
             loadRound(data.title, data.nodes as never[], data.edges as never[]);
+            setRoundDescription(data.description ?? "");
+            setRoundLink(data.link ?? "");
+            lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
 
             // If a node param is present, focus its thread after a brief delay
             if (nodeParam) {
@@ -218,16 +231,38 @@ const DocumentFlow = () => {
         }
       })();
     } else {
-      // No slug — fetch catalog and show picker
+      // No slug — fetch catalog and load first round, or show picker if empty
       (async () => {
         setCatalogLoading(true);
         setCatalogError(null);
         try {
           const entries = await getJSON<CatalogEntry[]>("rounds_catalog.json");
           setCatalog(entries ?? []);
-          setShowRoundPicker(true);
+          if (entries && entries.length > 0) {
+            // Load the first round automatically
+            const first = entries[0];
+            const data = await getJSON<{
+              title: string;
+              description?: string;
+              link?: string;
+              nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
+              edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
+            }>(`rounds/${first.slug}`);
+            if (data) {
+              loadRound(data.title, data.nodes as never[], data.edges as never[]);
+              setRoundDescription(data.description ?? "");
+              setRoundLink(data.link ?? "");
+              lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
+              const url = new URL(window.location.href);
+              url.searchParams.set("round", first.slug);
+              window.history.replaceState({}, "", url.toString());
+            } else {
+              setShowRoundPicker(true);
+            }
+          } else {
+            setShowRoundPicker(true);
+          }
         } catch {
-          // Catalog doesn't exist yet or fetch failed — just show empty state
           setShowRoundPicker(true);
         } finally {
           setCatalogLoading(false);
@@ -242,11 +277,16 @@ const DocumentFlow = () => {
       try {
         const data = await getJSON<{
           title: string;
+          description?: string;
+          link?: string;
           nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
           edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
         }>(`rounds/${slug}`);
         if (data) {
           loadRound(data.title, data.nodes as never[], data.edges as never[]);
+          setRoundDescription(data.description ?? "");
+          setRoundLink(data.link ?? "");
+          lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
           // Update URL without reload
           const url = new URL(window.location.href);
           url.searchParams.set("round", slug);
@@ -262,8 +302,14 @@ const DocumentFlow = () => {
   // Save modal
   const [showSave, setShowSave] = useState(false);
   const [saveSlug, setSaveSlug] = useState("");
+  const [saveDescription, setSaveDescription] = useState("");
+  const [saveLink, setSaveLink] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Round metadata (persisted across loads)
+  const [roundDescription, setRoundDescription] = useState("");
+  const [roundLink, setRoundLink] = useState("");
 
   // Hamburger menu & persona picker
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
@@ -288,10 +334,20 @@ const DocumentFlow = () => {
   const [tagNodeId, setTagNodeId] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState("");
 
+  // Edit metadata modal
+  const [showEditMetadata, setShowEditMetadata] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editLink, setEditLink] = useState("");
+
   // Reaction leaderboard
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboardEmoji, setLeaderboardEmoji] = useState<string>(REACTION_EMOJIS[0]);
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null);
+
+  // Tag browser panel
+  const [showTagPanel, setShowTagPanel] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // Floating highlight button — rendered here (outside ReactFlow's transform layer)
   const [highlightSelection, setHighlightSelection] = useState<{
@@ -300,6 +356,7 @@ const DocumentFlow = () => {
     startIdx: number;
     endIdx: number;
     rect: { top: number; bottom: number; left: number; right: number };
+    isTextEntry?: boolean;
   } | null>(null);
 
   // ── Sync store → local ReactFlow state (with dimming + highlight) ──────────
@@ -361,15 +418,18 @@ const DocumentFlow = () => {
     pendingInitialNav.current = null;
 
     const h =
-      node.data.nodeType === "paragraph"
-        ? estimateHeight(node.data.content as string)
-        : estimateAnnotationHeight(node.data.content as string);
+      node.data.nodeType === "textentry"
+        ? estimateTextEntryHeight(node.data.content as string)
+        : node.data.nodeType === "paragraph"
+          ? estimateHeight(node.data.content as string)
+          : estimateAnnotationHeight(node.data.content as string);
     const zoom = 1;
     const headerH = 52;
     const availW = window.innerWidth;
     const availH = window.innerHeight - headerH;
     const viewportH = availH / zoom;
-    const centerX = node.position.x + COLUMN_WIDTH / 2;
+    const nodeWidth = node.data.nodeType === "textentry" ? 640 : COLUMN_WIDTH;
+    const centerX = node.position.x + nodeWidth / 2;
     const targetY = h > viewportH
       ? node.position.y + viewportH / 2
       : node.position.y + h / 2;
@@ -396,9 +456,11 @@ const DocumentFlow = () => {
       currentNodeIdx.current = 0;
       nodeScrollOffset.current = 0;
 
-      // Find the topmost node and center on it
-      const sorted = [...storeNodes].sort((a, b) => a.position.y - b.position.y);
-      const node = sorted[0];
+      // Find the first paragraph node and center on it
+      const paragraphs = storeNodes
+        .filter((n) => n.data.depth === 0)
+        .sort((a, b) => a.position.y - b.position.y);
+      const node = paragraphs[0];
       if (node) {
         pendingInitialNav.current = node;
         if (rfInitialized.current) {
@@ -446,13 +508,17 @@ const DocumentFlow = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { text, sourceNodeId, startIdx, endIdx } = (e as CustomEvent).detail;
+      const { text, sourceNodeId, startIdx, endIdx, isTextEntry } = (e as CustomEvent).detail;
       if (!username) { setShowUsernameModal(true); return; }
-      createHighlight(text, sourceNodeId, startIdx, endIdx, username);
+      if (isTextEntry) {
+        createParagraphFromHighlight(text, sourceNodeId, startIdx, endIdx, username);
+      } else {
+        createHighlight(text, sourceNodeId, startIdx, endIdx, username);
+      }
     };
     document.addEventListener("docCreateHighlight", handler);
     return () => document.removeEventListener("docCreateHighlight", handler);
-  }, [createHighlight, username]);
+  }, [createHighlight, createParagraphFromHighlight, username]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -491,6 +557,11 @@ const DocumentFlow = () => {
       }
 
       const connected = getConnectedIds(nodeId, storeEdges);
+      // Exclude the source (textentry) node from the focused thread
+      for (const cid of connected) {
+        const n = storeNodes.find((nd) => nd.id === cid);
+        if (n && n.data.nodeType === "textentry") connected.delete(cid);
+      }
       savedViewport.current = getViewport();
       setFocusedNodeIds(connected);
 
@@ -510,7 +581,7 @@ const DocumentFlow = () => {
     };
     document.addEventListener("docFocusThread", handler);
     return () => document.removeEventListener("docFocusThread", handler);
-  }, [focusedNodeIds, storeEdges, fitView, getViewport, setViewport]);
+  }, [focusedNodeIds, storeEdges, storeNodes, fitView, getViewport, setViewport]);
 
   const handleNodeClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
     const url = new URL(window.location.href);
@@ -539,18 +610,28 @@ const DocumentFlow = () => {
       e.stopPropagation();
       if (!username) { setShowUsernameModal(true); return; }
       if (highlightSelection) {
-        createHighlight(
-          highlightSelection.text,
-          highlightSelection.sourceNodeId,
-          highlightSelection.startIdx,
-          highlightSelection.endIdx,
-          username,
-        );
+        if (highlightSelection.isTextEntry) {
+          createParagraphFromHighlight(
+            highlightSelection.text,
+            highlightSelection.sourceNodeId,
+            highlightSelection.startIdx,
+            highlightSelection.endIdx,
+            username,
+          );
+        } else {
+          createHighlight(
+            highlightSelection.text,
+            highlightSelection.sourceNodeId,
+            highlightSelection.startIdx,
+            highlightSelection.endIdx,
+            username,
+          );
+        }
         setHighlightSelection(null);
         window.getSelection()?.removeAllRanges();
       }
     },
-    [highlightSelection, createHighlight, username],
+    [highlightSelection, createHighlight, createParagraphFromHighlight, username],
   );
 
   const handleCreateDocument = useCallback(() => {
@@ -810,8 +891,12 @@ const DocumentFlow = () => {
   /** Click a row in the leaderboard → focus its thread and highlight the node. */
   const handleLeaderboardClick = useCallback(
     (nodeId: string) => {
-      // Focus the thread containing this node
+      // Focus the thread containing this node (exclude source node)
       const connected = getConnectedIds(nodeId, storeEdges);
+      for (const cid of connected) {
+        const n = storeNodes.find((nd) => nd.id === cid);
+        if (n && n.data.nodeType === "textentry") connected.delete(cid);
+      }
       savedViewport.current = getViewport();
       setFocusedNodeIds(connected);
       setHighlightedNodeId(nodeId);
@@ -828,7 +913,60 @@ const DocumentFlow = () => {
         if (idx >= 0) navigateToNode(idx);
       }, 80);
     },
-    [storeEdges, getViewport, setFocusedNodeIds, sortedNavNodes, navigateToNode],
+    [storeEdges, storeNodes, getViewport, setFocusedNodeIds, sortedNavNodes, navigateToNode],
+  );
+
+  // ── Tag browser ─────────────────────────────────────────────────────────────
+
+  /** All unique tags across all nodes. */
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    for (const n of storeNodes) {
+      const tags = n.data.tags as string[] | undefined;
+      if (tags) for (const t of tags) tagSet.add(t);
+    }
+    return [...tagSet].sort();
+  }, [storeNodes]);
+
+  // Auto-select first tag when panel opens or tags change
+  useEffect(() => {
+    if (showTagPanel && allTags.length > 0 && (!selectedTag || !allTags.includes(selectedTag))) {
+      setSelectedTag(allTags[0]);
+    }
+  }, [showTagPanel, allTags, selectedTag]);
+
+  /** Nodes that have the selected tag. */
+  const taggedNodes = useMemo(() => {
+    if (!selectedTag) return [];
+    return storeNodes.filter((n) => {
+      const tags = n.data.tags as string[] | undefined;
+      return tags?.includes(selectedTag);
+    });
+  }, [storeNodes, selectedTag]);
+
+  /** Click a row in the tag panel → focus its thread and highlight the node. */
+  const handleTagPanelClick = useCallback(
+    (nodeId: string) => {
+      const connected = getConnectedIds(nodeId, storeEdges);
+      for (const cid of connected) {
+        const n = storeNodes.find((nd) => nd.id === cid);
+        if (n && n.data.nodeType === "textentry") connected.delete(cid);
+      }
+      savedViewport.current = getViewport();
+      setFocusedNodeIds(connected);
+      setHighlightedNodeId(nodeId);
+      setShowTagPanel(false);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("node", nodeId);
+      window.history.replaceState({}, "", url.toString());
+
+      setTimeout(() => {
+        const idx = sortedNavNodes.findIndex((n) => n.id === nodeId);
+        if (idx >= 0) navigateToNode(idx);
+      }, 80);
+    },
+    [storeEdges, storeNodes, getViewport, setFocusedNodeIds, sortedNavNodes, navigateToNode],
   );
 
   // Clear the highlighted node when thread focus is removed
@@ -855,9 +993,14 @@ const DocumentFlow = () => {
     setSaving(true);
     setSaveError(null);
     try {
+      const desc = saveDescription.trim();
+      const lnk = saveLink.trim();
+
       // Build document JSON
       const docJSON = {
         title: documentTitle,
+        description: desc || undefined,
+        link: lnk || undefined,
         slug,
         creator: username,
         savedAt: new Date().toISOString(),
@@ -879,7 +1022,7 @@ const DocumentFlow = () => {
         /* first save — catalog doesn't exist yet */
       }
       const existing = catalog.findIndex((c) => c.slug === slug);
-      const entry: CatalogEntry = { slug, name: documentTitle, creator: username, tags: allTags };
+      const entry: CatalogEntry = { slug, name: documentTitle, description: desc || undefined, link: lnk || undefined, creator: username, tags: allTags };
       if (existing >= 0) {
         catalog[existing] = entry;
       } else {
@@ -892,14 +1035,19 @@ const DocumentFlow = () => {
       url.searchParams.set("round", slug);
       window.history.replaceState({}, "", url.toString());
 
+      setRoundDescription(desc);
+      setRoundLink(lnk);
       setShowSave(false);
       setSaveSlug("");
+      setSaveDescription("");
+      setSaveLink("");
+      lastSavedSnapshot.current = JSON.stringify({ nodes: storeNodes, edges: storeEdges });
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : "Save failed");
     } finally {
       setSaving(false);
     }
-  }, [saveSlug, username, documentTitle, storeNodes, storeEdges]);
+  }, [saveSlug, saveDescription, saveLink, username, documentTitle, storeNodes, storeEdges]);
 
   // Close hamburger menu on outside click
   useEffect(() => {
@@ -951,41 +1099,70 @@ const DocumentFlow = () => {
         }}
       >
         {/* Title */}
-        <div style={{ flex: 1, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+        <div style={{ flex: 1, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "flex", alignItems: "baseline", gap: "8px" }}>
           {hasContent ? (
-            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0f172a" }}>
-              {documentTitle}
-            </span>
+            <>
+              <span style={{ fontWeight: 600, fontSize: "15px", color: "#0f172a" }}>
+                {documentTitle}
+              </span>
+              {roundDescription && (
+                <span style={{ fontSize: "12px", color: "#94a3b8", flexShrink: 1, overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {roundDescription}
+                </span>
+              )}
+              {roundLink && (
+                <a
+                  href={roundLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: "11px", color: "#3b82f6", textDecoration: "none", flexShrink: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  link
+                </a>
+              )}
+            </>
           ) : (
             <>
               <span style={{ fontWeight: 700, fontSize: "16px", color: "#0f172a" }}>
                 Riboflavin
               </span>
-              <span style={{ fontSize: "12px", color: "#94a3b8", marginLeft: "8px" }}>
+              <span style={{ fontSize: "12px", color: "#94a3b8" }}>
                 The name doesn't mean anything
               </span>
             </>
           )}
         </div>
 
-        {/* Save button — always visible when applicable */}
-        {hasContent && authReady ? (
-          <button
-            onClick={() => { setShowSave(true); setSaveSlug(slugify(documentTitle)); setSaveError(null); }}
-            style={primaryBtn}
-          >
-            Save
-          </button>
-        ) : hasContent && !authReady ? (
-          <button
-            onClick={() => {
-              if (!username) setShowUsernameModal(true);
-            }}
-            style={secondaryBtn}
-          >
-            Set Username to Save
-          </button>
-        ) : null}
+        {/* Save button — only when there are unsaved changes */}
+        {(() => {
+          const isDirty = hasContent && lastSavedSnapshot.current !== JSON.stringify({ nodes: storeNodes, edges: storeEdges });
+          if (!isDirty) return null;
+          if (!authReady) {
+            return (
+              <button
+                onClick={() => { if (!username) setShowUsernameModal(true); }}
+                style={secondaryBtn}
+              >
+                Set Username to Save
+              </button>
+            );
+          }
+          return (
+            <button
+              onClick={() => {
+                setShowSave(true);
+                setSaveSlug(slugify(documentTitle));
+                setSaveDescription(roundDescription);
+                setSaveLink(roundLink);
+                setSaveError(null);
+              }}
+              style={primaryBtn}
+            >
+              Save
+            </button>
+          );
+        })()}
 
         {/* Hamburger menu */}
         <div ref={personaRef} style={{ position: "relative" }}>
@@ -1101,18 +1278,57 @@ const DocumentFlow = () => {
               {/* Actions */}
               {hasContent && (
                 <button
-                  onClick={() => { setShowLeaderboard((v) => !v); setHamburgerOpen(false); }}
+                  onClick={() => { setShowLeaderboard((v) => !v); setShowTagPanel(false); setHamburgerOpen(false); }}
                   style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
                 >
                   Reactions
                 </button>
               )}
+              {hasContent && allTags.length > 0 && (
+                <button
+                  onClick={() => { setShowTagPanel((v) => !v); setShowLeaderboard(false); setHamburgerOpen(false); }}
+                  style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
+                >
+                  Tags
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setCatalogLoading(true);
+                  setCatalogError(null);
+                  getJSON<CatalogEntry[]>("rounds_catalog.json").then((entries) => {
+                    setCatalog(entries ?? []);
+                    setCatalogLoading(false);
+                  }).catch(() => {
+                    setCatalogLoading(false);
+                  });
+                  setShowRoundPicker(true);
+                  setHamburgerOpen(false);
+                }}
+                style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
+              >
+                Load Document
+              </button>
               <button
                 onClick={() => { setShowNewDoc(true); setHamburgerOpen(false); }}
-                style={{ ...secondaryBtn, width: "100%", textAlign: "left" }}
+                style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
               >
-                {hasContent ? "+ New Document" : "Open Document"}
+                + New Document
               </button>
+              {hasContent && (
+                <button
+                  onClick={() => {
+                    setEditTitle(documentTitle);
+                    setEditDescription(roundDescription);
+                    setEditLink(roundLink);
+                    setShowEditMetadata(true);
+                    setHamburgerOpen(false);
+                  }}
+                  style={{ ...secondaryBtn, width: "100%", textAlign: "left" }}
+                >
+                  Edit Metadata
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -1120,9 +1336,11 @@ const DocumentFlow = () => {
         {/* ── Progress bar ─────────────────────────────────────────────── */}
         {hasContent && sortedNavNodes.length > 0 && (() => {
           const heights = sortedNavNodes.map((n) =>
-            n.data.nodeType === "paragraph"
-              ? estimateHeight(n.data.content as string)
-              : estimateAnnotationHeight(n.data.content as string),
+            n.data.nodeType === "textentry"
+              ? estimateTextEntryHeight(n.data.content as string)
+              : n.data.nodeType === "paragraph"
+                ? estimateHeight(n.data.content as string)
+                : estimateAnnotationHeight(n.data.content as string),
           );
           const totalH = heights.reduce((s, h) => s + h, 0);
           if (totalH === 0) return null;
@@ -1330,7 +1548,7 @@ const DocumentFlow = () => {
           onMouseDown={(e) => e.stopPropagation()}
           onClick={handleHighlightClick}
         >
-          ✎ Highlight
+          {highlightSelection.isTextEntry ? "¶ Create Paragraph" : "✎ Highlight"}
         </div>
       )}
 
@@ -1366,7 +1584,7 @@ const DocumentFlow = () => {
             <textarea
               autoFocus
               placeholder={
-                "Paste your document here.\n\nParagraphs are separated by blank lines.\nEach paragraph becomes a node you can highlight, annotate, and reply to."
+                "Paste your document here.\n\nThe text will appear as a single node. Select passages to create paragraph nodes linked to the source."
               }
               value={docText}
               onChange={(e) => setDocText(e.target.value)}
@@ -1406,6 +1624,64 @@ const DocumentFlow = () => {
                 }}
               >
                 Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Metadata Modal ─────────────────────────────────────────── */}
+      {showEditMetadata && (
+        <div style={overlayStyle} onClick={() => setShowEditMetadata(false)}>
+          <div
+            style={{ ...cardStyle, width: "440px", maxWidth: "92vw", padding: "24px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontWeight: 700, fontSize: "17px", color: "#0f172a", marginBottom: "8px" }}>
+              Edit Metadata
+            </div>
+            <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Title
+            </label>
+            <input
+              autoFocus
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              placeholder="Document title"
+              style={{ ...inputStyle, marginBottom: "8px" }}
+            />
+            <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Description
+            </label>
+            <input
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              placeholder="Brief description (optional)"
+              style={{ ...inputStyle, marginBottom: "8px" }}
+            />
+            <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Link
+            </label>
+            <input
+              value={editLink}
+              onChange={(e) => setEditLink(e.target.value)}
+              placeholder="https://… (optional)"
+              style={{ ...inputStyle, marginBottom: "12px" }}
+            />
+            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+              <button onClick={() => setShowEditMetadata(false)} style={secondaryBtn}>
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setDocumentTitle(editTitle.trim() || "Untitled Document");
+                  setRoundDescription(editDescription.trim());
+                  setRoundLink(editLink.trim());
+                  setShowEditMetadata(false);
+                }}
+                style={primaryBtn}
+              >
+                Save
               </button>
             </div>
           </div>
@@ -1483,45 +1759,106 @@ const DocumentFlow = () => {
       )}
 
       {/* ── Tag Modal ─────────────────────────────────────────────────────── */}
-      {tagNodeId && (
-        <div style={overlayStyle} onClick={() => setTagNodeId(null)}>
-          <div
-            style={{ ...cardStyle, width: "300px", maxWidth: "92vw", padding: "18px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, fontSize: "14px", color: "#0f172a" }}>
-              Add Tag
-            </div>
-            <input
-              autoFocus
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSubmitTag();
-                if (e.key === "Escape") setTagNodeId(null);
-              }}
-              placeholder="Enter tag name…"
-              style={inputStyle}
-            />
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-              <button onClick={() => setTagNodeId(null)} style={secondaryBtn}>
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitTag}
-                disabled={!tagInput.trim()}
-                style={{
-                  ...primaryBtn,
-                  opacity: tagInput.trim() ? 1 : 0.45,
-                  cursor: tagInput.trim() ? "pointer" : "default",
-                }}
-              >
+      {tagNodeId && (() => {
+        const allTags = Array.from(
+          new Set(storeNodes.flatMap((n) => (n.data.tags as string[]) ?? [])),
+        ).sort();
+        const currentNodeTags = new Set(
+          (storeNodes.find((n) => n.id === tagNodeId)?.data.tags as string[]) ?? [],
+        );
+        const suggestions = allTags.filter(
+          (t) => !currentNodeTags.has(t) && t.toLowerCase().includes(tagInput.trim().toLowerCase()),
+        );
+        const isNewTag = tagInput.trim() && !allTags.includes(tagInput.trim());
+
+        return (
+          <div style={overlayStyle} onClick={() => setTagNodeId(null)}>
+            <div
+              style={{ ...cardStyle, width: "300px", maxWidth: "92vw", padding: "18px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ fontWeight: 700, fontSize: "14px", color: "#0f172a" }}>
                 Add Tag
-              </button>
+              </div>
+              <input
+                autoFocus
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmitTag();
+                  if (e.key === "Escape") setTagNodeId(null);
+                }}
+                placeholder="Search or create tag…"
+                style={inputStyle}
+              />
+              {/* Suggestions */}
+              {(suggestions.length > 0 || isNewTag) && (
+                <div style={{
+                  maxHeight: "150px",
+                  overflowY: "auto",
+                  marginBottom: "8px",
+                  border: "1px solid #e2e8f0",
+                }}>
+                  {suggestions.map((tag) => (
+                    <div
+                      key={tag}
+                      onClick={() => {
+                        addTag(tagNodeId, tag);
+                        setTagNodeId(null);
+                        setTagInput("");
+                      }}
+                      style={{
+                        padding: "6px 10px",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        color: "#334155",
+                        borderBottom: "1px solid #f1f5f9",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      #{tag}
+                    </div>
+                  ))}
+                  {isNewTag && (
+                    <div
+                      onClick={handleSubmitTag}
+                      style={{
+                        padding: "6px 10px",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        color: "#3b82f6",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      + create "{tagInput.trim()}"
+                    </div>
+                  )}
+                </div>
+              )}
+              <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                <button onClick={() => setTagNodeId(null)} style={secondaryBtn}>
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitTag}
+                  disabled={!tagInput.trim()}
+                  style={{
+                    ...primaryBtn,
+                    opacity: tagInput.trim() ? 1 : 0.45,
+                    cursor: tagInput.trim() ? "pointer" : "default",
+                  }}
+                >
+                  Add Tag
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── Reaction Leaderboard Panel ────────────────────────────────────── */}
       {showLeaderboard && (
@@ -1707,6 +2044,185 @@ const DocumentFlow = () => {
         </div>
       )}
 
+      {/* ── Tag Browser Panel ───────────────────────────────────────────── */}
+      {showTagPanel && (
+        <div
+          style={{
+            position: "fixed",
+            top: 52,
+            right: 0,
+            width: "340px",
+            maxWidth: "100vw",
+            height: "calc(100vh - 52px)",
+            background: "#fff",
+            borderLeft: "1px solid #d1d5db",
+            boxShadow: "-4px 0 16px rgba(0,0,0,0.06)",
+            zIndex: 200,
+            display: "flex",
+            flexDirection: "column",
+            fontFamily: "inherit",
+          }}
+        >
+          {/* Panel header */}
+          <div
+            style={{
+              padding: "14px 16px 10px",
+              borderBottom: "1px solid #e5e7eb",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span style={{ fontWeight: 700, fontSize: "14px", color: "#0f172a" }}>
+              Tags
+            </span>
+            <button
+              onClick={() => setShowTagPanel(false)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "16px",
+                color: "#94a3b8",
+                lineHeight: 1,
+                padding: "2px 4px",
+              }}
+            >
+              &times;
+            </button>
+          </div>
+
+          {/* Tag tabs */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "4px",
+              padding: "10px 12px",
+              borderBottom: "1px solid #e5e7eb",
+            }}
+          >
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(tag)}
+                style={{
+                  background: tag === selectedTag ? "#f1f5f9" : "none",
+                  border:
+                    tag === selectedTag
+                      ? "1px solid #94a3b8"
+                      : "1px solid transparent",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  padding: "4px 8px",
+                  lineHeight: 1,
+                  fontFamily: "inherit",
+                  color: tag === selectedTag ? "#0f172a" : "#475569",
+                  fontWeight: tag === selectedTag ? 600 : 400,
+                }}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+
+          {/* Tagged nodes list */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+            {taggedNodes.length === 0 && (
+              <div
+                style={{
+                  padding: "24px 16px",
+                  textAlign: "center",
+                  color: "#94a3b8",
+                  fontSize: "13px",
+                }}
+              >
+                No nodes have this tag.
+              </div>
+            )}
+            {taggedNodes.map((node) => {
+              const preview =
+                node.data.content && (node.data.content as string).length > 0
+                  ? (node.data.content as string).slice(0, 80) +
+                    ((node.data.content as string).length > 80 ? "\u2026" : "")
+                  : node.data.sourceText
+                    ? `"${(node.data.sourceText as string).slice(0, 60)}\u2026"`
+                    : "(empty)";
+              const typeLabel =
+                node.data.nodeType === "paragraph" ? "Paragraph" : "Annotation";
+
+              return (
+                <div
+                  key={node.id}
+                  onClick={() => handleTagPanelClick(node.id)}
+                  style={{
+                    padding: "8px 16px",
+                    cursor: "pointer",
+                    borderBottom: "1px solid #f1f5f9",
+                    transition: "background 0.1s",
+                    display: "flex",
+                    gap: "10px",
+                    alignItems: "flex-start",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "#f8fafc";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "none";
+                  }}
+                >
+                  {/* Tag icon */}
+                  <div
+                    style={{
+                      flexShrink: 0,
+                      width: "36px",
+                      textAlign: "center",
+                      paddingTop: "2px",
+                      fontSize: "14px",
+                      color: "#6366f1",
+                      fontWeight: 700,
+                    }}
+                  >
+                    #
+                  </div>
+
+                  {/* Node preview */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        color: "#94a3b8",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {typeLabel}
+                      {node.data.author ? ` · ${node.data.author}` : ""}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#334155",
+                        lineHeight: 1.4,
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {preview}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* ── Username Modal ────────────────────────────────────────────── */}
       {showUsernameModal && (
         <div style={overlayStyle} onClick={() => { if (username) setShowUsernameModal(false); }}>
@@ -1760,7 +2276,7 @@ const DocumentFlow = () => {
             <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>
               Save to Spaces
             </div>
-            <div style={{ fontSize: "12px", color: "#64748b" }}>
+            <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
               Saves to <code>rounds/{slugify(saveSlug) || "…"}</code>
             </div>
             <input
@@ -1768,6 +2284,18 @@ const DocumentFlow = () => {
               value={saveSlug}
               onChange={(e) => setSaveSlug(e.target.value)}
               placeholder="Document slug (e.g. my-document)"
+              style={inputStyle}
+            />
+            <input
+              value={saveDescription}
+              onChange={(e) => setSaveDescription(e.target.value)}
+              placeholder="Brief description (optional)"
+              style={inputStyle}
+            />
+            <input
+              value={saveLink}
+              onChange={(e) => setSaveLink(e.target.value)}
+              placeholder="Link URL (optional)"
               style={inputStyle}
               onKeyDown={(e) => { if (e.key === "Enter" && slugify(saveSlug)) handleSave(); }}
             />

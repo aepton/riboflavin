@@ -1,6 +1,6 @@
-import { memo, useRef, useState, useCallback, useEffect } from "react";
+import { memo, useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { Handle, Position } from "reactflow";
-import { useDocumentStore, type HighlightRange } from "../store/documentStore";
+import { useDocumentStore, estimateHeight, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import { ReactionBar } from "./EmojiReactions";
@@ -29,6 +29,24 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
+
+  // Compute per-highlight handle positions (as % of node height)
+  const highlightHandles = useMemo(() => {
+    const highlights = data.highlights ?? [];
+    if (highlights.length === 0) return [];
+    const totalH = estimateHeight(data.content);
+    const charsPerLine = 32;
+    const lineH = 30; // px per line (matches estimateHeight)
+    const padTop = 16; // top padding inside the node
+
+    return highlights.map((hl, i) => {
+      const midChar = (hl.startIdx + hl.endIdx) / 2;
+      const midLine = midChar / charsPerLine;
+      const yPx = padTop + midLine * lineH;
+      const topPct = Math.min(Math.max((yPx / totalH) * 100, 5), 95);
+      return { id: `hl-${i}`, topPct };
+    });
+  }, [data.highlights, data.content]);
 
   // Auto-focus new nodes into editing mode
   useEffect(() => {
@@ -166,6 +184,17 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
         onMouseLeave={() => setIsHovered(false)}
         style={{ padding: "16px", position: "relative" }}
       >
+      {/* Per-highlight source handles positioned at the highlight's vertical midpoint */}
+      {highlightHandles.map((h) => (
+        <Handle
+          key={h.id}
+          id={h.id}
+          type="source"
+          position={Position.Right}
+          style={{ opacity: 0, pointerEvents: "none", right: -4, top: `${h.topPct}%` }}
+        />
+      ))}
+      {/* Fallback source handle for edges without a specific highlight handle */}
       <Handle id="right" type="source" position={Position.Right}
         style={{ opacity: 0, pointerEvents: "none", right: -4 }} />
       <Handle id="left" type="target" position={Position.Left}

@@ -1,6 +1,6 @@
-import { memo, useRef, useState, useCallback, useEffect } from "react";
+import { memo, useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { Handle, Position } from "reactflow";
-import { useDocumentStore, THREAD_COLORS, type AnnotationType, type HighlightRange } from "../store/documentStore";
+import { useDocumentStore, THREAD_COLORS, estimateAnnotationHeight, type AnnotationType, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import { ReactionBar } from "./EmojiReactions";
@@ -50,6 +50,24 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       : TYPE_COLORS[data.annotationType] ?? TYPE_COLORS.reply;
 
   const placeholder = PLACEHOLDERS[data.annotationType] ?? "Type here…";
+
+  // Compute per-highlight handle positions
+  const highlightHandles = useMemo(() => {
+    const highlights = data.highlights ?? [];
+    if (highlights.length === 0) return [];
+    const totalH = estimateAnnotationHeight(data.content);
+    const charsPerLine = 36;
+    const lineH = 26;
+    const padTop = 12 + (data.sourceText ? 40 : 0); // padding + quoted text height
+
+    return highlights.map((hl, i) => {
+      const midChar = (hl.startIdx + hl.endIdx) / 2;
+      const midLine = midChar / charsPerLine;
+      const yPx = padTop + midLine * lineH;
+      const topPct = Math.min(Math.max((yPx / totalH) * 100, 5), 95);
+      return { id: `hl-${i}`, topPct };
+    });
+  }, [data.highlights, data.content, data.sourceText]);
 
   // Snapshot current content into local draft when editing begins
   useEffect(() => {
@@ -215,6 +233,16 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           userSelect: isEditing ? "text" : "none",
         }}
       >
+      {/* Per-highlight source handles */}
+      {highlightHandles.map((h) => (
+        <Handle
+          key={h.id}
+          id={h.id}
+          type="source"
+          position={Position.Right}
+          style={{ opacity: 0, pointerEvents: "none", right: -4, top: `${h.topPct}%` }}
+        />
+      ))}
       <Handle id="right" type="source" position={Position.Right}
         style={{ opacity: 0, pointerEvents: "none", right: -4 }} />
       <Handle id="left" type="target" position={Position.Left}
