@@ -4,6 +4,7 @@ import { useDocumentStore, THREAD_COLORS, estimateAnnotationHeight, type Annotat
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import { ReactionBar } from "./EmojiReactions";
+import Markdown from "react-markdown";
 
 const TYPE_COLORS: Record<
   AnnotationType,
@@ -314,10 +315,42 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           onDoubleClick={handleDoubleClick}
         >
           {data.content ? (
-            <HighlightedContent
-              content={data.content}
-              highlights={data.highlights ?? []}
-            />
+            data.highlights && data.highlights.length > 0 ? (
+              <HighlightedContent
+                content={data.content}
+                highlights={data.highlights}
+              />
+            ) : (
+              <Markdown
+                components={{
+                  p: ({ children }) => <p style={{ margin: "0 0 8px" }}>{children}</p>,
+                  a: ({ href, children }) => (
+                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+                      {children}
+                    </a>
+                  ),
+                  ul: ({ children }) => <ul style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ul>,
+                  ol: ({ children }) => <ol style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ol>,
+                  code: ({ children }) => (
+                    <code style={{ background: "#f1f5f9", padding: "1px 4px", fontSize: "13px", borderRadius: "2px" }}>
+                      {children}
+                    </code>
+                  ),
+                  pre: ({ children }) => (
+                    <pre style={{ background: "#f1f5f9", padding: "8px", overflow: "auto", fontSize: "13px", margin: "4px 0" }}>
+                      {children}
+                    </pre>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote style={{ borderLeft: "3px solid #cbd5e1", paddingLeft: "10px", margin: "4px 0", color: "#64748b" }}>
+                      {children}
+                    </blockquote>
+                  ),
+                }}
+              >
+                {data.content}
+              </Markdown>
+            )
           ) : (
             <span style={{ color: "#94a3b8", fontStyle: "italic" }}>
               Double-click to add notes…

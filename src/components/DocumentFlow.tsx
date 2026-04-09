@@ -103,18 +103,37 @@ const inputStyle: React.CSSProperties = {
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
 /** BFS through edges to find every node in the same connected component. */
-function getConnectedIds(startId: string, edges: { source: string; target: string }[]): Set<string> {
+function getConnectedIds(
+  startId: string,
+  edges: { source: string; target: string }[],
+  nodes?: { id: string; data: Record<string, unknown> }[],
+): Set<string> {
+  // Build a set of node IDs to skip during traversal (source/textentry nodes)
+  const skipIds = new Set<string>();
+  if (nodes) {
+    for (const n of nodes) {
+      if (n.data.nodeType === "textentry") skipIds.add(n.id);
+    }
+  }
+
   const connected = new Set<string>();
   const queue = [startId];
   while (queue.length > 0) {
     const cur = queue.pop()!;
     if (connected.has(cur)) continue;
+    // Don't traverse through source nodes (but still mark them so edges stop)
+    if (skipIds.has(cur)) {
+      connected.add(cur);
+      continue;
+    }
     connected.add(cur);
     for (const e of edges) {
       if (e.source === cur && !connected.has(e.target)) queue.push(e.target);
       if (e.target === cur && !connected.has(e.source)) queue.push(e.source);
     }
   }
+  // Remove source nodes from the result
+  for (const id of skipIds) connected.delete(id);
   return connected;
 }
 
@@ -556,12 +575,7 @@ const DocumentFlow = () => {
         return;
       }
 
-      const connected = getConnectedIds(nodeId, storeEdges);
-      // Exclude the source (textentry) node from the focused thread
-      for (const cid of connected) {
-        const n = storeNodes.find((nd) => nd.id === cid);
-        if (n && n.data.nodeType === "textentry") connected.delete(cid);
-      }
+      const connected = getConnectedIds(nodeId, storeEdges, storeNodes);
       savedViewport.current = getViewport();
       setFocusedNodeIds(connected);
 
@@ -892,11 +906,7 @@ const DocumentFlow = () => {
   const handleLeaderboardClick = useCallback(
     (nodeId: string) => {
       // Focus the thread containing this node (exclude source node)
-      const connected = getConnectedIds(nodeId, storeEdges);
-      for (const cid of connected) {
-        const n = storeNodes.find((nd) => nd.id === cid);
-        if (n && n.data.nodeType === "textentry") connected.delete(cid);
-      }
+      const connected = getConnectedIds(nodeId, storeEdges, storeNodes);
       savedViewport.current = getViewport();
       setFocusedNodeIds(connected);
       setHighlightedNodeId(nodeId);
@@ -947,11 +957,7 @@ const DocumentFlow = () => {
   /** Click a row in the tag panel → focus its thread and highlight the node. */
   const handleTagPanelClick = useCallback(
     (nodeId: string) => {
-      const connected = getConnectedIds(nodeId, storeEdges);
-      for (const cid of connected) {
-        const n = storeNodes.find((nd) => nd.id === cid);
-        if (n && n.data.nodeType === "textentry") connected.delete(cid);
-      }
+      const connected = getConnectedIds(nodeId, storeEdges, storeNodes);
       savedViewport.current = getViewport();
       setFocusedNodeIds(connected);
       setHighlightedNodeId(nodeId);
