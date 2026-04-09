@@ -220,17 +220,19 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
     return (a.data.depth as number) - (b.data.depth as number);
   });
 
-  // Greedy placement for non-textentry nodes
-  let cursor = 20;
+  // Greedy placement per column — nodes only avoid overlapping within their own depth
+  const cursorByDepth = new Map<number, number>();
   const finalY = new Map<string, number>();
   if (textEntryNode) {
     finalY.set(textEntryNode.id, 20);
   }
   for (const n of allSorted) {
+    const depth = n.data.depth as number;
+    const cursor = cursorByDepth.get(depth) ?? 20;
     const idealY = idealYMap.get(n.id) ?? 20;
     const y = Math.max(idealY, cursor);
     finalY.set(n.id, y);
-    cursor = y + nodeHeight(n) + NODE_GAP;
+    cursorByDepth.set(depth, y + nodeHeight(n) + NODE_GAP);
   }
 
   // Apply positions
