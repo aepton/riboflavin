@@ -7,6 +7,12 @@ export const COLUMN_WIDTH = 360;  // wider to accommodate Merriweather
 const COLUMN_SPACING = 60; // gap between columns
 const NODE_GAP = 32;       // minimum vertical gap between nodes
 
+// PR review mode: monospace, 140 chars wide
+// At 13px monospace, 1ch ≈ 7.8px → 140 * 7.8 = 1092 + line-number gutter (~56px) + padding (32px * 2)
+export const PR_REVIEW_WIDTH = 1200;
+
+export type DocumentMode = "document" | "pr-review";
+
 // ── Thread color palette ─────────────────────────────────────────────────────
 // Each highlight (and its reply chain) gets one of these colors.
 // light  = background used on the source text <mark>
@@ -29,7 +35,13 @@ export const TEXT_ENTRY_WIDTH = 640;
 // ── Height estimation ────────────────────────────────────────────────────────
 
 /** Estimate rendered height of a TextEntryNode given its text content. */
-export function estimateTextEntryHeight(content: string): number {
+export function estimateTextEntryHeight(content: string, isPRReview = false): number {
+  if (isPRReview) {
+    // PR review: monospace, no wrapping, 13px font at line-height 1.5 ≈ 20px/line
+    if (!content) return 200;
+    const lines = content.split("\n").length;
+    return lines * 20 + 80; // 80 = top/bottom padding + label
+  }
   // 640px wide, 32px padding each side → 576px content area.
   // 15px font at line-height 1.8 ≈ 30px/line, ~64 chars/line.
   if (!content) return 200;
@@ -74,16 +86,21 @@ function getColumnX(depth: number, isTextEntry?: boolean): number {
 }
 
 /** Get column X accounting for textentry nodes in the graph. */
-function getColumnXForNode(node: Node, hasTextEntry: boolean): number {
+function getColumnXForNode(node: Node, hasTextEntry: boolean, isPRReview = false): number {
+  const sourceWidth = isPRReview ? PR_REVIEW_WIDTH : TEXT_ENTRY_WIDTH;
   if (node.data.nodeType === "textentry") return COLUMN_X_BASE;
   if (hasTextEntry) {
     // Paragraphs go to the right of the textentry node
     if (node.data.nodeType === "paragraph") {
-      return COLUMN_X_BASE + TEXT_ENTRY_WIDTH + COLUMN_SPACING;
+      return COLUMN_X_BASE + sourceWidth + COLUMN_SPACING;
     }
     // Annotations go further right: depth 1+ relative to paragraph column
     const depth = node.data.depth as number;
-    return COLUMN_X_BASE + TEXT_ENTRY_WIDTH + COLUMN_SPACING + Math.max(0, depth) * (COLUMN_WIDTH + COLUMN_SPACING);
+    if (isPRReview) {
+      // PR review: no paragraph column, annotations start directly after source
+      return COLUMN_X_BASE + sourceWidth + COLUMN_SPACING + Math.max(0, depth - 1) * (COLUMN_WIDTH + COLUMN_SPACING);
+    }
+    return COLUMN_X_BASE + sourceWidth + COLUMN_SPACING + Math.max(0, depth) * (COLUMN_WIDTH + COLUMN_SPACING);
   }
   return COLUMN_X_BASE + (node.data.depth as number) * (COLUMN_WIDTH + COLUMN_SPACING);
 }
@@ -96,8 +113,16 @@ function estimateCharY(
   content: string,
   charIdx: number,
   nodeType: "paragraph" | "annotation" | "textentry",
+  isPRReview = false,
 ): number {
   if (!content || charIdx <= 0) return 0;
+
+  // PR review: monospace, no wrapping, 20px line height
+  if (isPRReview && nodeType === "textentry") {
+    const textBefore = content.slice(0, charIdx);
+    const line = textBefore.split("\n").length - 1;
+    return 32 + line * 20;
+  }
 
   const topPad = nodeType === "textentry" ? 32 : nodeType === "paragraph" ? 16 : 56;
   const cpl = nodeType === "textentry" ? 64 : nodeType === "paragraph" ? 32 : 34;
@@ -116,18 +141,18 @@ function estimateCharY(
 // ── Column layout ───────────────────────────────────────────────────────────
 
 /** Compute the ideal Y for an annotation based on its source node. */
-function idealYForNode(node: Node, sourceNode: Node): number {
+function idealYForNode(node: Node, sourceNode: Node, isPRReview = false): number {
   const nodeType = sourceNode.data.nodeType as "paragraph" | "annotation" | "textentry";
 
   // Highlights: align with the character position in the source text
   if (node.data.highlightStartIdx !== undefined) {
-    const charY = estimateCharY(sourceNode.data.content, node.data.highlightStartIdx, nodeType);
+    const charY = estimateCharY(sourceNode.data.content, node.data.highlightStartIdx, nodeType, isPRReview);
     return Math.max(20, sourceNode.position.y + charY);
   }
 
   // Replies: align with the vertical center of the source node
   const sourceH = nodeType === "textentry"
-    ? estimateTextEntryHeight(sourceNode.data.content)
+    ? estimateTextEntryHeight(sourceNode.data.content, isPRReview)
     : nodeType === "paragraph"
       ? estimateHeight(sourceNode.data.content)
       : estimateAnnotationHeight(sourceNode.data.content);
@@ -135,11 +160,45 @@ function idealYForNode(node: Node, sourceNode: Node): number {
 }
 
 /** Estimate the height of any node based on its type. */
-function nodeHeight(node: Node): number {
-  if (node.data.nodeType === "textentry") return estimateTextEntryHeight(node.data.content);
+function nodeHeight(node: Node, isPRReview = false): number {
+  if (node.data.nodeType === "textentry") return estimateTextEntryHeight(node.data.content, isPRReview);
   return node.data.nodeType === "paragraph"
     ? estimateHeight(node.data.content)
     : estimateAnnotationHeight(node.data.content);
+}
+
+/**
+ * Sort comparator for nodes within a single depth column.
+ * Orders by source node's final Y (prevents edge crossings), then by
+ * highlightStartIdx (text-order within same source), then ideal Y, then ID.
+ */
+function depthSort(
+  a: Node,
+  b: Node,
+  sourceOf: Map<string, string>,
+  finalY: Map<string, number>,
+  idealYMap: Map<string, number>,
+): number {
+  // Primary: source node's final Y position — keeps child order matching parent order
+  const srcA = sourceOf.get(a.id);
+  const srcB = sourceOf.get(b.id);
+  const srcYA = srcA ? (finalY.get(srcA) ?? 0) : 0;
+  const srcYB = srcB ? (finalY.get(srcB) ?? 0) : 0;
+  if (srcYA !== srcYB) return srcYA - srcYB;
+
+  // Secondary: highlight start index — orders by position in source text
+  const hlA = a.data.highlightStartIdx as number | undefined;
+  const hlB = b.data.highlightStartIdx as number | undefined;
+  if (hlA !== undefined && hlB !== undefined && hlA !== hlB) return hlA - hlB;
+  if (hlA !== undefined && hlB === undefined) return -1;
+  if (hlA === undefined && hlB !== undefined) return 1;
+
+  // Tertiary: ideal Y
+  const idealDiff = (idealYMap.get(a.id) ?? 0) - (idealYMap.get(b.id) ?? 0);
+  if (idealDiff !== 0) return idealDiff;
+
+  // Final: deterministic by node ID
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
 /**
@@ -147,9 +206,10 @@ function nodeHeight(node: Node): number {
  * vertical space, regardless of which column (depth) they are in.
  *
  * Algorithm:
- *  1. Compute an ideal Y for each node (paragraphs: sequential; annotations:
- *     aligned with their source).
- *  2. Sort *all* nodes by ideal Y.
+ *  1. Process each depth column in order (0, 1, 2, …) so that source
+ *     positions are finalized before their children are sorted.
+ *  2. Within each column, sort nodes by their source's final Y, then by
+ *     highlightStartIdx — this keeps edges from crossing.
  *  3. Greedy top-to-bottom placement: each node gets max(idealY, cursor),
  *     where cursor tracks the bottom of the last placed node + gap.
  */
@@ -157,88 +217,103 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
   if (nodes.length === 0) return nodes;
 
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
-  const idealYMap = new Map<string, number>();
   const hasTextEntry = nodes.some((n) => n.data.nodeType === "textentry");
+  const isPRReview = nodes.some((n) => n.data.nodeType === "textentry" && n.data.language);
 
-  // Find max depth
   let maxDepth = 0;
   for (const n of nodes) {
     if ((n.data.depth as number) > maxDepth) maxDepth = n.data.depth as number;
   }
 
+  // Build source map: target nodeId → source nodeId
+  const sourceOf = new Map<string, string>();
+  for (const e of edges) {
+    sourceOf.set(e.target, e.source);
+  }
+
+  const finalY = new Map<string, number>();
+  const idealYMap = new Map<string, number>();
+
   // TextEntry node: always at top
   const textEntryNode = nodes.find((n) => n.data.nodeType === "textentry");
   if (textEntryNode) {
+    finalY.set(textEntryNode.id, 20);
     idealYMap.set(textEntryNode.id, 20);
   }
 
-  // Depth 0 paragraphs: if there's a textentry, position based on their link to it
-  const depth0 = nodes
-    .filter((n) => n.data.depth === 0 && n.data.nodeType === "paragraph")
-    .sort((a, b) => a.position.y - b.position.y);
+  // ── Depth 0 paragraphs ─────────────────────────────────────────────────
+  const depth0 = nodes.filter(
+    (n) => n.data.depth === 0 && n.data.nodeType === "paragraph",
+  );
 
   if (hasTextEntry && textEntryNode) {
-    // Paragraphs linked to textentry: align with highlighted char position
     for (const n of depth0) {
-      const inEdge = edges.find((e) => e.target === n.id);
-      if (inEdge && inEdge.source === textEntryNode.id && n.data.highlightStartIdx !== undefined) {
-        const charY = estimateCharY(textEntryNode.data.content, n.data.highlightStartIdx, "textentry");
+      if (n.data.highlightStartIdx !== undefined) {
+        const charY = estimateCharY(
+          textEntryNode.data.content,
+          n.data.highlightStartIdx,
+          "textentry",
+          isPRReview,
+        );
         idealYMap.set(n.id, Math.max(20, 20 + charY));
       } else {
         idealYMap.set(n.id, n.position.y);
       }
     }
   } else {
+    const sorted = [...depth0].sort((a, b) => a.position.y - b.position.y);
     let seqCursor = 20;
-    for (const n of depth0) {
+    for (const n of sorted) {
       idealYMap.set(n.id, seqCursor);
-      seqCursor += nodeHeight(n) + NODE_GAP;
+      seqCursor += nodeHeight(n, isPRReview) + NODE_GAP;
     }
   }
 
-  // Deeper depths: ideal Y based on source node's ideal position
+  depth0.sort((a, b) => depthSort(a, b, sourceOf, finalY, idealYMap));
+
+  let cursor0 = 20;
+  for (const n of depth0) {
+    const idealY = idealYMap.get(n.id) ?? 20;
+    const y = Math.max(idealY, cursor0);
+    finalY.set(n.id, y);
+    cursor0 = y + nodeHeight(n, isPRReview) + NODE_GAP;
+  }
+
+  // ── Deeper depths — processed in order so sources are already placed ───
   for (let depth = 1; depth <= maxDepth; depth++) {
     const atDepth = nodes.filter((n) => n.data.depth === depth);
+
+    // Compute ideal Y based on source's FINAL position
     for (const n of atDepth) {
-      const inEdge = edges.find((e) => e.target === n.id);
-      const sourceNode = inEdge ? nodeById.get(inEdge.source) : undefined;
+      const srcId = sourceOf.get(n.id);
+      const sourceNode = srcId ? nodeById.get(srcId) : undefined;
       if (sourceNode) {
-        const sourceIdealY = idealYMap.get(sourceNode.id) ?? sourceNode.position.y;
-        const tempSource = { ...sourceNode, position: { ...sourceNode.position, y: sourceIdealY } };
-        idealYMap.set(n.id, idealYForNode(n, tempSource));
+        const sourceY = finalY.get(sourceNode.id) ?? sourceNode.position.y;
+        const tempSource = {
+          ...sourceNode,
+          position: { ...sourceNode.position, y: sourceY },
+        };
+        idealYMap.set(n.id, idealYForNode(n, tempSource, isPRReview));
       } else {
         idealYMap.set(n.id, n.position.y);
       }
     }
-  }
 
-  // Sort non-textentry nodes by ideal Y
-  const nonTextEntry = nodes.filter((n) => n.data.nodeType !== "textentry");
-  const allSorted = [...nonTextEntry].sort((a, b) => {
-    const diff = (idealYMap.get(a.id) ?? 0) - (idealYMap.get(b.id) ?? 0);
-    if (diff !== 0) return diff;
-    return (a.data.depth as number) - (b.data.depth as number);
-  });
+    atDepth.sort((a, b) => depthSort(a, b, sourceOf, finalY, idealYMap));
 
-  // Greedy placement per column — nodes only avoid overlapping within their own depth
-  const cursorByDepth = new Map<number, number>();
-  const finalY = new Map<string, number>();
-  if (textEntryNode) {
-    finalY.set(textEntryNode.id, 20);
-  }
-  for (const n of allSorted) {
-    const depth = n.data.depth as number;
-    const cursor = cursorByDepth.get(depth) ?? 20;
-    const idealY = idealYMap.get(n.id) ?? 20;
-    const y = Math.max(idealY, cursor);
-    finalY.set(n.id, y);
-    cursorByDepth.set(depth, y + nodeHeight(n) + NODE_GAP);
+    let cursor = 20;
+    for (const n of atDepth) {
+      const idealY = idealYMap.get(n.id) ?? 20;
+      const y = Math.max(idealY, cursor);
+      finalY.set(n.id, y);
+      cursor = y + nodeHeight(n, isPRReview) + NODE_GAP;
+    }
   }
 
   // Apply positions
   return nodes.map((n) => {
     const newY = finalY.get(n.id)!;
-    return { ...n, position: { x: getColumnXForNode(n, hasTextEntry), y: newY } };
+    return { ...n, position: { x: getColumnXForNode(n, hasTextEntry, isPRReview), y: newY } };
   });
 }
 
@@ -265,6 +340,15 @@ export interface DocNodeData {
   highlightStartIdx?: number;     // char offset in source — used by layout to position near the highlight
   reactions?: Record<string, number>;  // emoji → count
   author?: string;                     // username who created this node
+  language?: string;                   // programming language (PR review mode)
+  codeMode?: boolean;                  // true = entire content is code (monospace + syntax highlight)
+}
+
+// ── Citations ───────────────────────────────────────────────────────────────
+
+export interface CitationMeta {
+  url: string;
+  description: string;
 }
 
 interface DocumentStore {
@@ -272,9 +356,16 @@ interface DocumentStore {
   edges: Edge[];
   documentTitle: string;
   nextColorIndex: number;
+  citations: Record<string, CitationMeta>;
+
+  documentMode: DocumentMode;
+  language: string;
 
   loadDocument: (text: string, title?: string, author?: string) => void;
-  loadRound: (title: string, nodes: Node[], edges: Edge[]) => void;
+  loadPRReview: (code: string, language: string, title?: string, author?: string) => void;
+  loadRound: (title: string, nodes: Node[], edges: Edge[], citations?: Record<string, CitationMeta>, mode?: DocumentMode, language?: string) => void;
+  addCitation: (name: string, url: string, description: string) => void;
+  createLineComment: (lineNumber: number, sourceNodeId: string, author?: string) => void;
   createHighlight: (
     selectedText: string,
     sourceNodeId: string,
@@ -306,6 +397,9 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
   edges: [],
   documentTitle: "",
   nextColorIndex: 0,
+  citations: {},
+  documentMode: "document" as DocumentMode,
+  language: "",
 
   loadDocument: (text, title = "Untitled Document", author) => {
     const textEntryNode: Node = {
@@ -323,10 +417,30 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       } as DocNodeData,
     };
 
-    set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0 });
+    set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "document", language: "" });
   },
 
-  loadRound: (title, nodes, edges) => {
+  loadPRReview: (code, language, title = "Untitled PR Review", author) => {
+    const textEntryNode: Node = {
+      id: `textentry-${Date.now()}`,
+      type: "textEntryNode",
+      position: { x: COLUMN_X_BASE, y: 20 },
+      data: {
+        content: code.trimEnd(),
+        nodeType: "textentry",
+        tags: [],
+        depth: -1,
+        highlights: [],
+        reactions: {},
+        author,
+        language,
+      } as DocNodeData,
+    };
+
+    set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "pr-review", language });
+  },
+
+  loadRound: (title, nodes, edges, citations, mode, language) => {
     // Determine the next color index from existing nodes
     let maxColor = -1;
     for (const n of nodes) {
@@ -338,8 +452,91 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       edges,
       documentTitle: title,
       nextColorIndex: maxColor + 1,
+      citations: citations ?? {},
+      documentMode: mode ?? "document",
+      language: language ?? "",
     });
   },
+
+  addCitation: (name, url, description) =>
+    set((state) => ({
+      citations: { ...state.citations, [name]: { url, description } },
+    })),
+
+  createLineComment: (lineNumber, sourceNodeId, author) =>
+    set((state) => {
+      const sourceNode = state.nodes.find((n) => n.id === sourceNodeId);
+      if (!sourceNode) return state;
+
+      const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
+      const content = sourceNode.data.content as string;
+      const lines = content.split("\n");
+      const lineText = lines[lineNumber] ?? "";
+
+      // Compute character index at start of line for positioning
+      let charIdx = 0;
+      for (let i = 0; i < lineNumber && i < lines.length; i++) {
+        charIdx += lines[i].length + 1; // +1 for \n
+      }
+
+      const newId = `anno-${Date.now()}`;
+      const existingHighlights = (sourceNode.data.highlights ?? []) as HighlightRange[];
+      const highlightIndex = existingHighlights.length;
+
+      const updatedNodes = state.nodes.map((n) =>
+        n.id === sourceNodeId
+          ? {
+              ...n,
+              data: {
+                ...n.data,
+                highlights: [
+                  ...existingHighlights,
+                  { startIdx: charIdx, endIdx: charIdx + lineText.length, colorIndex },
+                ],
+              },
+            }
+          : n,
+      );
+
+      const newNode: Node = {
+        id: newId,
+        type: "annotationNode",
+        position: { x: 0, y: 0 },
+        data: {
+          content: "",
+          nodeType: "annotation",
+          annotationType: "highlight",
+          sourceText: lineText.trim().slice(0, 100),
+          tags: [],
+          depth: 0,
+          colorIndex,
+          isNew: true,
+          highlightStartIdx: charIdx,
+          reactions: {},
+          author,
+          codeMode: true,
+          language: sourceNode.data.language as string | undefined,
+        } as DocNodeData,
+      };
+
+      const newEdge: Edge = {
+        id: `edge-${sourceNodeId}-${newId}`,
+        source: sourceNodeId,
+        target: newId,
+        type: "articleLink",
+        sourceHandle: `hl-${highlightIndex}`,
+        targetHandle: "left",
+        data: { colorIndex },
+      };
+
+      const allEdges = [...state.edges, newEdge];
+
+      return {
+        nodes: relayoutAll([...updatedNodes, newNode], allEdges),
+        edges: allEdges,
+        nextColorIndex: state.nextColorIndex + 1,
+      };
+    }),
 
   createHighlight: (selectedText, sourceNodeId, startIdx, endIdx, author) =>
     set((state) => {

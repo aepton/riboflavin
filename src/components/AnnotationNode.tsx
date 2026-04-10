@@ -5,6 +5,8 @@ import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import { ReactionBar } from "./EmojiReactions";
 import Markdown from "react-markdown";
+import { extractCitation, detectPartialCitation } from "./citationUtils";
+import hljs, { ensureHljsTheme } from "./hljs";
 
 const TYPE_COLORS: Record<
   AnnotationType,
@@ -34,16 +36,37 @@ interface AnnotationNodeProps {
     reactions?: Record<string, number>;
     highlighted?: boolean;
     author?: string;
+    codeMode?: boolean;
+    language?: string;
   };
   id: string;
 }
 
+const MONO_FONT = "'SF Mono', 'Fira Code', 'Cascadia Code', monospace";
+
 const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
-  const { updateNode, removeTag, toggleReaction, deleteNode } = useDocumentStore();
+  const { updateNode, removeTag, toggleReaction, deleteNode, addCitation, citations, documentMode, language: docLanguage } = useDocumentStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
+
+  const isPRReview = documentMode === "pr-review";
+  const isCodeMode = !!data.codeMode;
+  const codeLang = data.language || docLanguage || "";
+
+  useEffect(() => {
+    if (isPRReview || isCodeMode) ensureHljsTheme();
+  }, [isPRReview, isCodeMode]);
+
+  // Citation prompt state (shown after saving with a new citation)
+  const [citationPrompt, setCitationPrompt] = useState<{ name: string } | null>(null);
+  const [citationUrl, setCitationUrl] = useState("");
+  const [citationDesc, setCitationDesc] = useState("");
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestionIdx, setSuggestionIdx] = useState(0);
 
   const color =
     data.colorIndex !== undefined
@@ -101,31 +124,124 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
   const saveEdit = useCallback(() => {
     updateNode(id, draft);
     setIsEditing(false);
-  }, [id, draft, updateNode]);
+    setSuggestions([]);
+
+    // If the draft contains a citation not yet registered, prompt for details
+    const parsed = extractCitation(draft);
+    if (parsed && !citations[parsed.citeName]) {
+      setCitationPrompt({ name: parsed.citeName });
+      setCitationUrl("");
+      setCitationDesc("");
+    }
+  }, [id, draft, updateNode, citations]);
 
   const handleDoubleClick = useCallback(() => setIsEditing(true), []);
   const handleBlur = useCallback(() => saveEdit(), [saveEdit]);
 
+  const citationNames = useMemo(() => Object.keys(citations), [citations]);
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setDraft(e.target.value);
+      const val = e.target.value;
+      setDraft(val);
       adjustHeight();
+
+      // Autocomplete: detect partial citation at end of text
+      const partial = detectPartialCitation(val);
+      if (partial && citationNames.length > 0) {
+        const lower = partial.toLowerCase();
+        const matches = citationNames.filter((n) => n.toLowerCase().startsWith(lower));
+        setSuggestions(matches);
+        setSuggestionIdx(0);
+      } else {
+        setSuggestions([]);
+      }
     },
-    [adjustHeight],
+    [adjustHeight, citationNames],
+  );
+
+  const applyCitationAutocomplete = useCallback(
+    (name: string) => {
+      // Replace the partial citation text with the full name
+      const partial = detectPartialCitation(draft);
+      if (!partial) return;
+      const idx = draft.lastIndexOf(partial);
+      const newDraft = draft.slice(0, idx) + name;
+      setDraft(newDraft);
+      setSuggestions([]);
+    },
+    [draft],
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        saveEdit();
+      // Tab: accept autocomplete suggestion, or insert indent in code mode
+      if (e.key === "Tab") {
+        if (suggestions.length > 0) {
+          e.preventDefault();
+          applyCitationAutocomplete(suggestions[suggestionIdx]);
+          return;
+        }
+        if (isCodeMode) {
+          e.preventDefault();
+          const ta = e.currentTarget;
+          const start = ta.selectionStart;
+          const end = ta.selectionEnd;
+          const newDraft = draft.slice(0, start) + "  " + draft.slice(end);
+          setDraft(newDraft);
+          requestAnimationFrame(() => {
+            ta.selectionStart = ta.selectionEnd = start + 2;
+          });
+          return;
+        }
+      }
+      if (suggestions.length > 0) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setSuggestionIdx((i) => Math.min(i + 1, suggestions.length - 1));
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setSuggestionIdx((i) => Math.max(i - 1, 0));
+          return;
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setSuggestions([]);
+          return;
+        }
+      }
+      // PR review mode: Enter saves, Shift+Enter inserts newline
+      // Code mode (non-PR): Enter inserts newline, Cmd/Ctrl+Enter saves
+      if (e.key === "Enter") {
+        if (isPRReview) {
+          if (e.shiftKey) {
+            // Shift+Enter: insert newline
+            return;
+          }
+          e.preventDefault();
+          saveEdit();
+          return;
+        }
+        if (isCodeMode) {
+          if (e.metaKey || e.ctrlKey) {
+            e.preventDefault();
+            saveEdit();
+            return;
+          }
+          // Let Enter pass through for normal newlines in code mode
+        } else if (!e.shiftKey) {
+          e.preventDefault();
+          saveEdit();
+        }
       }
       if (e.key === "Escape") {
         e.preventDefault();
         setIsEditing(false);
       }
     },
-    [saveEdit],
+    [saveEdit, suggestions, suggestionIdx, applyCitationAutocomplete, isCodeMode, draft],
   );
 
   // Single-click → open reply modal (via custom event to DocumentFlow)
@@ -281,81 +397,309 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
       {/* Content — editable textarea or rendered text with highlights */}
       {isEditing ? (
-        <textarea
-          ref={textareaRef}
-          className="nodrag"
-          value={draft}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          style={{
-            width: "100%",
-            minHeight: "56px",
-            border: "none",
-            resize: "none",
-            outline: "none",
-            fontFamily: "inherit",
-            fontSize: "15px",
-            lineHeight: "1.65",
-            color: "#1e293b",
-            background: "transparent",
-            overflow: "hidden",
-            display: "block",
-            boxSizing: "border-box",
-            userSelect: "text",
-            WebkitUserSelect: "text",
-          }}
-        />
-      ) : (
-        <div
-          ref={contentRef}
-          className="nodrag"
-          style={{ minHeight: "36px", userSelect: "text", WebkitUserSelect: "text" }}
-          onDoubleClick={handleDoubleClick}
-        >
-          {data.content ? (
-            data.highlights && data.highlights.length > 0 ? (
-              <HighlightedContent
-                content={data.content}
-                highlights={data.highlights}
-              />
-            ) : (
-              <Markdown
-                components={{
-                  p: ({ children }) => <p style={{ margin: "0 0 8px" }}>{children}</p>,
-                  a: ({ href, children }) => (
-                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
-                      {children}
-                    </a>
-                  ),
-                  ul: ({ children }) => <ul style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ul>,
-                  ol: ({ children }) => <ol style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ol>,
-                  code: ({ children }) => (
-                    <code style={{ background: "#f1f5f9", padding: "1px 4px", fontSize: "13px", borderRadius: "2px" }}>
-                      {children}
-                    </code>
-                  ),
-                  pre: ({ children }) => (
-                    <pre style={{ background: "#f1f5f9", padding: "8px", overflow: "auto", fontSize: "13px", margin: "4px 0" }}>
-                      {children}
-                    </pre>
-                  ),
-                  blockquote: ({ children }) => (
-                    <blockquote style={{ borderLeft: "3px solid #cbd5e1", paddingLeft: "10px", margin: "4px 0", color: "#64748b" }}>
-                      {children}
-                    </blockquote>
-                  ),
+        <div style={{ position: "relative" }}>
+          <textarea
+            ref={textareaRef}
+            className="nodrag"
+            value={draft}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            style={{
+              width: "100%",
+              minHeight: "56px",
+              border: "none",
+              resize: "none",
+              outline: "none",
+              fontFamily: isCodeMode ? MONO_FONT : "inherit",
+              fontSize: isCodeMode ? "13px" : "15px",
+              lineHeight: isCodeMode ? "1.5" : "1.65",
+              color: "#1e293b",
+              background: "transparent",
+              overflow: "hidden",
+              display: "block",
+              boxSizing: "border-box",
+              userSelect: "text",
+              WebkitUserSelect: "text",
+              tabSize: 2,
+              whiteSpace: isCodeMode ? "pre" : undefined,
+            }}
+          />
+          {/* Autocomplete dropdown */}
+          {suggestions.length > 0 && (
+            <div
+              className="nodrag"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: -4,
+                transform: "translateY(100%)",
+                background: "#fff",
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                maxHeight: "120px",
+                overflowY: "auto",
+              }}
+            >
+              {suggestions.map((name, i) => (
+                <div
+                  key={name}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    applyCitationAutocomplete(name);
+                  }}
+                  style={{
+                    padding: "6px 10px",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    background: i === suggestionIdx ? "#f1f5f9" : "transparent",
+                    color: "#334155",
+                  }}
+                >
+                  {name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (() => {
+        const parsed = data.content ? extractCitation(data.content) : null;
+        const displayContent = parsed ? parsed.body : data.content;
+        const citeName = parsed?.citeName;
+        const citeMeta = citeName ? citations[citeName] : undefined;
+
+        // Syntax-highlight code for code-mode nodes
+        const codeHtml = isCodeMode && displayContent
+          ? (() => {
+              try {
+                return codeLang && hljs.getLanguage(codeLang)
+                  ? hljs.highlight(displayContent, { language: codeLang }).value
+                  : hljs.highlightAuto(displayContent).value;
+              } catch {
+                return displayContent.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+              }
+            })()
+          : null;
+
+        // Markdown components — with syntax-highlighted code blocks in PR review mode
+        const mdCodeComponent = isPRReview
+          ? ({ className, children }: { className?: string; children?: React.ReactNode }) => {
+              const text = String(children).replace(/\n$/, "");
+              const langMatch = className?.match(/language-(\w+)/);
+              const lang = langMatch?.[1] || codeLang;
+              if (className) {
+                // Fenced code block (```): syntax highlight it
+                try {
+                  const highlighted = lang && hljs.getLanguage(lang)
+                    ? hljs.highlight(text, { language: lang }).value
+                    : hljs.highlightAuto(text).value;
+                  return (
+                    <code
+                      style={{ fontFamily: MONO_FONT, fontSize: "12px" }}
+                      dangerouslySetInnerHTML={{ __html: highlighted }}
+                    />
+                  );
+                } catch {
+                  return <code style={{ fontFamily: MONO_FONT, fontSize: "12px" }}>{children}</code>;
+                }
+              }
+              // Inline code
+              return (
+                <code style={{ background: "#f1f5f9", padding: "1px 4px", fontSize: "12px", fontFamily: MONO_FONT }}>
+                  {children}
+                </code>
+              );
+            }
+          : ({ children }: { children?: React.ReactNode }) => (
+              <code style={{ background: "#f1f5f9", padding: "1px 4px", fontSize: "13px", borderRadius: "2px" }}>
+                {children}
+              </code>
+            );
+
+        return (
+          <>
+            <div
+              ref={contentRef}
+              className="nodrag"
+              style={{ minHeight: "36px", userSelect: "text", WebkitUserSelect: "text" }}
+              onDoubleClick={handleDoubleClick}
+            >
+              {displayContent ? (
+                isCodeMode ? (
+                  <pre
+                    style={{
+                      fontFamily: MONO_FONT,
+                      fontSize: "13px",
+                      lineHeight: "1.5",
+                      margin: 0,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      color: "#1e293b",
+                    }}
+                    dangerouslySetInnerHTML={{ __html: codeHtml! }}
+                  />
+                ) : data.highlights && data.highlights.length > 0 ? (
+                  <HighlightedContent
+                    content={displayContent}
+                    highlights={data.highlights}
+                  />
+                ) : (
+                  <Markdown
+                    components={{
+                      p: ({ children }) => <p style={{ margin: "0 0 8px" }}>{children}</p>,
+                      a: ({ href, children }) => (
+                        <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+                          {children}
+                        </a>
+                      ),
+                      ul: ({ children }) => <ul style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ul>,
+                      ol: ({ children }) => <ol style={{ margin: "4px 0", paddingLeft: "20px" }}>{children}</ol>,
+                      code: mdCodeComponent,
+                      pre: ({ children }) => (
+                        <pre style={{ background: "#f1f5f9", padding: "8px", overflow: "auto", fontSize: "13px", fontFamily: isPRReview ? MONO_FONT : undefined, margin: "4px 0" }}>
+                          {children}
+                        </pre>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote style={{ borderLeft: "3px solid #cbd5e1", paddingLeft: "10px", margin: "4px 0", color: "#64748b" }}>
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                  >
+                    {displayContent}
+                  </Markdown>
+                )
+              ) : (
+                <span style={{ color: "#94a3b8", fontStyle: "italic" }}>
+                  {isCodeMode ? "Double-click to add code…" : "Double-click to add notes…"}
+                </span>
+              )}
+            </div>
+
+            {/* Citation box */}
+            {citeName && (
+              <div
+                data-no-reply
+                style={{
+                  marginTop: "8px",
+                  paddingTop: "6px",
+                  borderTop: `1px solid ${color.border}`,
+                  fontSize: "12px",
+                  color: "#64748b",
+                  fontStyle: "italic",
                 }}
               >
-                {data.content}
-              </Markdown>
-            )
-          ) : (
-            <span style={{ color: "#94a3b8", fontStyle: "italic" }}>
-              Double-click to add notes…
-            </span>
-          )}
+                {citeMeta ? (
+                  <a
+                    href={citeMeta.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={citeMeta.description}
+                    style={{ color: "#3b82f6", textDecoration: "underline" }}
+                  >
+                    {citeName}
+                  </a>
+                ) : (
+                  <span>{citeName}</span>
+                )}
+              </div>
+            )}
+          </>
+        );
+      })()}
+
+      {/* Citation prompt modal */}
+      {citationPrompt && (
+        <div
+          data-no-reply
+          className="nodrag"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            marginTop: "8px",
+            padding: "10px",
+            border: `1px solid ${color.border}`,
+            background: "#fff",
+            fontSize: "12px",
+          }}
+        >
+          <div style={{ fontWeight: 600, marginBottom: "6px", color: "#334155" }}>
+            New citation: {citationPrompt.name}
+          </div>
+          <input
+            type="url"
+            placeholder="URL"
+            value={citationUrl}
+            onChange={(e) => setCitationUrl(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "4px 6px",
+              fontSize: "12px",
+              border: "1px solid #d1d5db",
+              marginBottom: "4px",
+              boxSizing: "border-box",
+              fontFamily: "inherit",
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            value={citationDesc}
+            onChange={(e) => setCitationDesc(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && citationUrl.trim()) {
+                addCitation(citationPrompt.name, citationUrl.trim(), citationDesc.trim());
+                setCitationPrompt(null);
+              }
+              if (e.key === "Escape") setCitationPrompt(null);
+            }}
+            style={{
+              width: "100%",
+              padding: "4px 6px",
+              fontSize: "12px",
+              border: "1px solid #d1d5db",
+              marginBottom: "6px",
+              boxSizing: "border-box",
+              fontFamily: "inherit",
+            }}
+          />
+          <div style={{ display: "flex", gap: "4px" }}>
+            <button
+              onClick={() => {
+                if (citationUrl.trim()) {
+                  addCitation(citationPrompt.name, citationUrl.trim(), citationDesc.trim());
+                }
+                setCitationPrompt(null);
+              }}
+              style={{
+                padding: "3px 8px",
+                fontSize: "11px",
+                background: "#f1f5f9",
+                border: "1px solid #d1d5db",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setCitationPrompt(null)}
+              style={{
+                padding: "3px 8px",
+                fontSize: "11px",
+                background: "none",
+                border: "1px solid #d1d5db",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                color: "#64748b",
+              }}
+            >
+              Skip
+            </button>
+          </div>
         </div>
       )}
 
@@ -415,7 +759,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           fontSize: "10px",
           color: "#94a3b8",
         }}>
-          <span>click to reply · double-click to edit</span>
+          <span>{isPRReview ? "click to reply · double-click to edit · ⇧↵ newline" : isCodeMode ? "click to reply · double-click to edit · ⌘↵ to save" : "click to reply · double-click to edit"}</span>
           <div data-no-reply style={{ display: "flex", gap: "4px" }}>
             <button
               data-no-reply

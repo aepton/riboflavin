@@ -3,6 +3,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   useReactFlow,
+  useUpdateNodeInternals,
   Background,
   BackgroundVariant,
 } from "reactflow";
@@ -13,11 +14,12 @@ import {
   estimateAnnotationHeight,
   estimateTextEntryHeight,
   COLUMN_WIDTH,
+  PR_REVIEW_WIDTH,
 } from "../store/documentStore";
 import ParagraphNode from "./ParagraphNode";
 import AnnotationNode from "./AnnotationNode";
 import AddParagraphNode from "./AddParagraphNode";
-import TextEntryNode from "./TextEntryNode";
+import TextEntryNode, { SUPPORTED_LANGUAGES } from "./TextEntryNode";
 import { CustomEdge, EdgeNo, EdgeYes, EllipsisEdge } from "./EdgeComponents";
 import { REACTION_EMOJIS } from "./EmojiReactions";
 import { useAuthStore } from "../store/authStore";
@@ -162,10 +164,13 @@ const DocumentFlow = () => {
     nodes: storeNodes,
     edges: storeEdges,
     documentTitle,
+    documentMode,
     loadDocument,
+    loadPRReview,
     loadRound,
     createHighlight,
     createParagraphFromHighlight,
+    createLineComment,
     addReply,
     addTag,
     setDocumentTitle,
@@ -185,6 +190,7 @@ const DocumentFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { setViewport, fitView, getViewport } = useReactFlow();
+  const updateNodeInternals = useUpdateNodeInternals();
   const lastDocTitle = useRef<string>("");
   const pannedToNodes = useRef(new Set<string>());
   const lastSavedSnapshot = useRef<string>("");
@@ -229,9 +235,12 @@ const DocumentFlow = () => {
             link?: string;
             nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
             edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
+            citations?: Record<string, { url: string; description: string }>;
+            documentMode?: string;
+            language?: string;
           }>(`rounds/${slug}`);
           if (data) {
-            loadRound(data.title, data.nodes as never[], data.edges as never[]);
+            loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
             setRoundDescription(data.description ?? "");
             setRoundLink(data.link ?? "");
             lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
@@ -266,9 +275,12 @@ const DocumentFlow = () => {
               link?: string;
               nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
               edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
+              citations?: Record<string, { url: string; description: string }>;
+              documentMode?: string;
+              language?: string;
             }>(`rounds/${first.slug}`);
             if (data) {
-              loadRound(data.title, data.nodes as never[], data.edges as never[]);
+              loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
               setRoundDescription(data.description ?? "");
               setRoundLink(data.link ?? "");
               lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
@@ -300,9 +312,12 @@ const DocumentFlow = () => {
           link?: string;
           nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
           edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
+          citations?: Record<string, { url: string; description: string }>;
+          documentMode?: string;
+          language?: string;
         }>(`rounds/${slug}`);
         if (data) {
-          loadRound(data.title, data.nodes as never[], data.edges as never[]);
+          loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
           setRoundDescription(data.description ?? "");
           setRoundLink(data.link ?? "");
           lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
@@ -343,6 +358,12 @@ const DocumentFlow = () => {
   const [showNewDoc, setShowNewDoc] = useState(false);
   const [docText, setDocText] = useState("");
   const [docTitle, setDocTitle] = useState("");
+
+  // PR review modal
+  const [showPRReview, setShowPRReview] = useState(false);
+  const [prCode, setPRCode] = useState("");
+  const [prTitle, setPRTitle] = useState("");
+  const [prLanguage, setPRLanguage] = useState("typescript");
 
   // Reply modal
   const [replyNodeId, setReplyNodeId] = useState<string | null>(null);
@@ -391,8 +412,8 @@ const DocumentFlow = () => {
       },
     }));
 
-    // Append an "add paragraph" node after the last paragraph
-    if (storeNodes.length > 0) {
+    // Append an "add paragraph" node after the last paragraph (not in PR review mode)
+    if (storeNodes.length > 0 && documentMode !== "pr-review") {
       const paragraphs = storeNodes
         .filter((n) => n.data.depth === 0)
         .sort((a, b) => a.position.y - b.position.y);
@@ -411,7 +432,7 @@ const DocumentFlow = () => {
     }
 
     setNodes(mapped);
-  }, [storeNodes, focusedNodeIds, highlightedNodeId, setNodes]);
+  }, [storeNodes, focusedNodeIds, highlightedNodeId, documentMode, setNodes]);
 
   useEffect(() => {
     setEdges(
@@ -426,6 +447,23 @@ const DocumentFlow = () => {
         : storeEdges,
     );
   }, [storeEdges, focusedNodeIds, setEdges]);
+
+  // When edges change, re-measure handle positions on source nodes so
+  // ReactFlow can route edges to newly-created dynamic handles (hl-0, hl-1, …).
+  const prevEdgeCount = useRef(0);
+  useEffect(() => {
+    if (storeEdges.length > prevEdgeCount.current) {
+      // Collect unique source node IDs from newly added edges
+      const sourceIds = new Set(storeEdges.slice(prevEdgeCount.current).map((e) => e.source));
+      // Also include target nodes (they may also have dynamic handles)
+      for (const e of storeEdges.slice(prevEdgeCount.current)) sourceIds.add(e.target);
+      // Delay to ensure handles are in the DOM after React commits
+      requestAnimationFrame(() => {
+        updateNodeInternals([...sourceIds]);
+      });
+    }
+    prevEdgeCount.current = storeEdges.length;
+  }, [storeEdges, updateNodeInternals]);
 
   // When a new document loads, center the viewport on the first node.
   const pendingInitialNav = useRef<{ position: { x: number; y: number }; data: Record<string, unknown> } | null>(null);
@@ -447,7 +485,9 @@ const DocumentFlow = () => {
     const availW = window.innerWidth;
     const availH = window.innerHeight - headerH;
     const viewportH = availH / zoom;
-    const nodeWidth = node.data.nodeType === "textentry" ? 640 : COLUMN_WIDTH;
+    const nodeWidth = node.data.nodeType === "textentry"
+      ? (node.data.language ? PR_REVIEW_WIDTH : 640)
+      : COLUMN_WIDTH;
     const centerX = node.position.x + nodeWidth / 2;
     const targetY = h > viewportH
       ? node.position.y + viewportH / 2
@@ -529,7 +569,7 @@ const DocumentFlow = () => {
     const handler = (e: Event) => {
       const { text, sourceNodeId, startIdx, endIdx, isTextEntry } = (e as CustomEvent).detail;
       if (!username) { setShowUsernameModal(true); return; }
-      if (isTextEntry) {
+      if (isTextEntry && documentMode !== "pr-review") {
         createParagraphFromHighlight(text, sourceNodeId, startIdx, endIdx, username);
       } else {
         createHighlight(text, sourceNodeId, startIdx, endIdx, username);
@@ -537,7 +577,18 @@ const DocumentFlow = () => {
     };
     document.addEventListener("docCreateHighlight", handler);
     return () => document.removeEventListener("docCreateHighlight", handler);
-  }, [createHighlight, createParagraphFromHighlight, username]);
+  }, [createHighlight, createParagraphFromHighlight, username, documentMode]);
+
+  // Line comment event listener (PR review mode)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { lineNumber, sourceNodeId } = (e as CustomEvent).detail;
+      if (!username) { setShowUsernameModal(true); return; }
+      createLineComment(lineNumber, sourceNodeId, username);
+    };
+    document.addEventListener("docLineComment", handler);
+    return () => document.removeEventListener("docLineComment", handler);
+  }, [createLineComment, username]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -565,7 +616,7 @@ const DocumentFlow = () => {
       if (focusedNodeIds?.has(nodeId)) {
         setFocusedNodeIds(null);
         if (savedViewport.current) {
-          setViewport(savedViewport.current, { duration: 250 });
+          setViewport(savedViewport.current, { duration: 125 });
           savedViewport.current = null;
         }
         // Remove node param from URL
@@ -589,7 +640,7 @@ const DocumentFlow = () => {
         fitView({
           nodes: [...connected].map((id) => ({ id })),
           padding: 0.12,
-          duration: 300,
+          duration: 150,
         });
       }, 50);
     };
@@ -607,7 +658,7 @@ const DocumentFlow = () => {
     if (focusedNodeIds) {
       setFocusedNodeIds(null);
       if (savedViewport.current) {
-        setViewport(savedViewport.current, { duration: 250 });
+        setViewport(savedViewport.current, { duration: 125 });
         savedViewport.current = null;
       }
       // Remove node param from URL
@@ -624,7 +675,7 @@ const DocumentFlow = () => {
       e.stopPropagation();
       if (!username) { setShowUsernameModal(true); return; }
       if (highlightSelection) {
-        if (highlightSelection.isTextEntry) {
+        if (highlightSelection.isTextEntry && documentMode !== "pr-review") {
           createParagraphFromHighlight(
             highlightSelection.text,
             highlightSelection.sourceNodeId,
@@ -645,7 +696,7 @@ const DocumentFlow = () => {
         window.getSelection()?.removeAllRanges();
       }
     },
-    [highlightSelection, createHighlight, createParagraphFromHighlight, username],
+    [highlightSelection, createHighlight, createParagraphFromHighlight, username, documentMode],
   );
 
   const handleCreateDocument = useCallback(() => {
@@ -656,6 +707,15 @@ const DocumentFlow = () => {
       setDocTitle("");
     }
   }, [docText, docTitle, loadDocument, username]);
+
+  const handleCreatePRReview = useCallback(() => {
+    if (prCode.trim()) {
+      loadPRReview(prCode.trim(), prLanguage, prTitle.trim() || "Untitled PR Review", username ?? undefined);
+      setShowPRReview(false);
+      setPRCode("");
+      setPRTitle("");
+    }
+  }, [prCode, prTitle, prLanguage, loadPRReview, username]);
 
   const handleSubmitReply = useCallback(() => {
     if (!username) { setShowUsernameModal(true); return; }
@@ -699,7 +759,7 @@ const DocumentFlow = () => {
       const prevNode = sortedNavNodes[currentNodeIdx.current];
       const prevDepth = prevNode ? (prevNode.data.depth as number) : 0;
       const nextDepth = node.data.depth as number;
-      const duration = nextDepth < prevDepth ? 400 : 250;
+      const duration = nextDepth < prevDepth ? 200 : 125;
 
       currentNodeIdx.current = idx;
       setCurrentNavIdx(idx);
@@ -756,9 +816,10 @@ const DocumentFlow = () => {
   }, [sortedNavNodes]);
 
   // Wheel handler: scroll down → next node, scroll up → previous node
+  // Disabled in PR review mode — free scrolling/panning instead
   useEffect(() => {
     const el = canvasRef.current;
-    if (!el) return;
+    if (!el || documentMode === "pr-review") return;
 
     const handler = (e: WheelEvent) => {
       // Don't intercept if a modal is open or an input/textarea is focused
@@ -873,10 +934,12 @@ const DocumentFlow = () => {
       el.removeEventListener("wheel", handler);
       document.removeEventListener("keydown", keyHandler);
     };
-  }, [sortedNavNodes, navigateToNode]);
+  }, [sortedNavNodes, navigateToNode, documentMode]);
 
   // When a new annotation is created, navigate to it in the scroll sequence.
+  // In PR review mode, skip — user controls viewport via free panning/scrolling.
   useEffect(() => {
+    if (documentMode === "pr-review") return;
     const fresh = storeNodes.find(
       (n) => n.data.nodeType === "annotation" && n.data.isNew && !pannedToNodes.current.has(n.id),
     );
@@ -887,7 +950,7 @@ const DocumentFlow = () => {
     if (idx >= 0) {
       navigateToNode(idx);
     }
-  }, [storeNodes, sortedNavNodes, navigateToNode]);
+  }, [storeNodes, sortedNavNodes, navigateToNode, documentMode]);
 
   // ── Reaction leaderboard ───────────────────────────────────────────────────
 
@@ -1012,6 +1075,9 @@ const DocumentFlow = () => {
         savedAt: new Date().toISOString(),
         nodes: storeNodes.map((n) => ({ id: n.id, type: n.type, position: n.position, data: n.data })),
         edges: storeEdges.map((e) => ({ id: e.id, source: e.source, target: e.target, type: e.type, data: e.data, sourceHandle: e.sourceHandle, targetHandle: e.targetHandle })),
+        citations: useDocumentStore.getState().citations,
+        documentMode: useDocumentStore.getState().documentMode,
+        language: useDocumentStore.getState().language,
       };
       await putJSON(`rounds/${slug}`, docJSON);
 
@@ -1321,6 +1387,12 @@ const DocumentFlow = () => {
               >
                 + New Document
               </button>
+              <button
+                onClick={() => { setShowPRReview(true); setHamburgerOpen(false); }}
+                style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
+              >
+                + PR Review
+              </button>
               {hasContent && (
                 <button
                   onClick={() => {
@@ -1411,13 +1483,13 @@ const DocumentFlow = () => {
             defaultViewport={{ x: 40, y: 20, zoom: 1 }}
             minZoom={0.15}
             maxZoom={2}
-            zoomOnScroll={false}
-            zoomOnPinch={false}
+            zoomOnScroll={documentMode === "pr-review"}
+            zoomOnPinch={documentMode === "pr-review"}
             zoomOnDoubleClick={false}
             defaultEdgeOptions={{ style: { strokeWidth: 1.5 } }}
             nodesDraggable={false}
-            panOnDrag={false}
-            panOnScroll={false}
+            panOnDrag={documentMode === "pr-review"}
+            panOnScroll={documentMode === "pr-review"}
             selectionOnDrag={false}
             proOptions={{ hideAttribution: true }}
           >
@@ -1554,7 +1626,9 @@ const DocumentFlow = () => {
           onMouseDown={(e) => e.stopPropagation()}
           onClick={handleHighlightClick}
         >
-          {highlightSelection.isTextEntry ? "¶ Create Paragraph" : "✎ Highlight"}
+          {highlightSelection.isTextEntry
+            ? (documentMode === "pr-review" ? "💬 Comment" : "¶ Create Paragraph")
+            : "✎ Highlight"}
         </div>
       )}
 
@@ -1627,6 +1701,113 @@ const DocumentFlow = () => {
                   ...primaryBtn,
                   opacity: docText.trim() ? 1 : 0.45,
                   cursor: docText.trim() ? "pointer" : "default",
+                }}
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PR Review Modal ────────────────────────────────────────────── */}
+      {showPRReview && (
+        <div style={overlayStyle} onClick={() => setShowPRReview(false)}>
+          <div
+            style={{
+              ...cardStyle,
+              width: "700px",
+              maxWidth: "92vw",
+              maxHeight: "85vh",
+              padding: "24px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: "17px",
+                color: "#0f172a",
+                marginBottom: "2px",
+              }}
+            >
+              New PR Review
+            </div>
+            <input
+              placeholder="Title (optional)"
+              value={prTitle}
+              onChange={(e) => setPRTitle(e.target.value)}
+              style={inputStyle}
+            />
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+              <label style={{ fontSize: "13px", color: "#475569", fontWeight: 500 }}>Language:</label>
+              <select
+                value={prLanguage}
+                onChange={(e) => setPRLanguage(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  flex: 1,
+                  marginBottom: 0,
+                  padding: "6px 8px",
+                  fontSize: "13px",
+                }}
+              >
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
+            </div>
+            <textarea
+              autoFocus
+              placeholder="Paste your code here."
+              value={prCode}
+              onChange={(e) => setPRCode(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setShowPRReview(false);
+                // Allow Tab in code input
+                if (e.key === "Tab") {
+                  e.preventDefault();
+                  const ta = e.currentTarget;
+                  const start = ta.selectionStart;
+                  const end = ta.selectionEnd;
+                  setPRCode(prCode.slice(0, start) + "  " + prCode.slice(end));
+                  requestAnimationFrame(() => {
+                    ta.selectionStart = ta.selectionEnd = start + 2;
+                  });
+                }
+              }}
+              style={{
+                ...inputStyle,
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
+                lineHeight: "1.5",
+                resize: "vertical",
+                minHeight: "320px",
+                fontSize: "13px",
+                tabSize: 2,
+                whiteSpace: "pre",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                justifyContent: "flex-end",
+                marginTop: "4px",
+              }}
+            >
+              <button
+                onClick={() => setShowPRReview(false)}
+                style={secondaryBtn}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreatePRReview}
+                disabled={!prCode.trim()}
+                style={{
+                  ...primaryBtn,
+                  opacity: prCode.trim() ? 1 : 0.45,
+                  cursor: prCode.trim() ? "pointer" : "default",
                 }}
               >
                 Create
