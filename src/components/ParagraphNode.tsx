@@ -15,6 +15,7 @@ interface ParagraphNodeProps {
     threadFocused?: boolean;
     reactions?: Record<string, number>;
     highlighted?: boolean;
+    currentNav?: boolean;
     author?: string;
     isNew?: boolean;
   };
@@ -30,7 +31,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
 
-  // Compute per-highlight handle positions (as % of node height)
+  // Compute per-highlight handle positions (pixel offsets from the node's top edge)
   const highlightHandles = useMemo(() => {
     const highlights = data.highlights ?? [];
     if (highlights.length === 0) return [];
@@ -42,9 +43,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
     return highlights.map((hl, i) => {
       const midChar = (hl.startIdx + hl.endIdx) / 2;
       const midLine = midChar / charsPerLine;
-      const yPx = padTop + midLine * lineH;
-      const topPct = Math.min(Math.max((yPx / totalH) * 100, 5), 95);
-      return { id: `hl-${i}`, topPct };
+      const topPx = Math.min(Math.max(padTop + midLine * lineH, 10), totalH - 10);
+      return { id: `hl-${i}`, topPx };
     });
   }, [data.highlights, data.content]);
 
@@ -169,10 +169,10 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
 
   return (
     <NodeFrame
-      borderColor={data.highlighted ? "#3b82f6" : isEditing ? "#94a3b8" : "#d1d5db"}
-      bracketColor={data.highlighted ? "#2563eb" : isEditing ? "#475569" : "#64748b"}
+      borderColor={data.highlighted ? "#3b82f6" : data.currentNav ? "#94a3b8" : isEditing ? "#94a3b8" : "#d1d5db"}
+      bracketColor={data.highlighted ? "#2563eb" : data.currentNav ? "#64748b" : isEditing ? "#475569" : "#64748b"}
       background="#fff"
-      innerRuleColor={data.highlighted ? "#93c5fd" : isEditing ? "#cbd5e1" : "#e5e7eb"}
+      innerRuleColor={data.highlighted ? "#93c5fd" : data.currentNav ? "#cbd5e1" : isEditing ? "#cbd5e1" : "#e5e7eb"}
       width={360}
       opacity={data.dimmed ? 0.18 : 1}
       style={{ cursor: isEditing ? "text" : "default" }}
@@ -191,7 +191,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
           id={h.id}
           type="source"
           position={Position.Right}
-          style={{ opacity: 0, pointerEvents: "none", right: -4, top: `${h.topPct}%` }}
+          style={{ opacity: 0, pointerEvents: "none", right: -4, top: h.topPx, transform: "translateY(-50%)" }}
         />
       ))}
       {/* Fallback source handle for edges without a specific highlight handle */}
@@ -241,7 +241,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
       ) : (
         <div
           ref={contentRef}
-          className="nodrag"
+          className="nodrag nopan"
           style={{
             fontFamily: "inherit",
             fontSize: "15px",

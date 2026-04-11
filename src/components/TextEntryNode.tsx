@@ -12,6 +12,7 @@ interface TextEntryNodeProps {
     content: string;
     highlights?: HighlightRange[];
     dimmed?: boolean;
+    currentNav?: boolean;
     author?: string;
     language?: string;
   };
@@ -22,34 +23,33 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const isPRReview = !!data.language;
 
-  // Compute per-highlight handle positions
+  // Compute per-highlight handle positions (pixel offsets from the padding div's top edge)
   const highlightHandles = useMemo(() => {
     const highlights = data.highlights ?? [];
     if (highlights.length === 0) return [];
-    const totalH = estimateTextEntryHeight(data.content, isPRReview);
 
     if (isPRReview) {
-      // PR review: line-based positioning, 20px per line
+      // Exact: the code area starts at padTop=32, each line is 20px tall.
       const padTop = 32;
       return highlights.map((hl, i) => {
-        const textBefore = data.content.slice(0, (hl.startIdx + hl.endIdx) / 2);
+        const textBefore = data.content.slice(0, Math.floor((hl.startIdx + hl.endIdx) / 2));
         const line = textBefore.split("\n").length - 1;
-        const yPx = padTop + line * 20 + 10; // +10 for mid-line
-        const topPct = Math.min(Math.max((yPx / totalH) * 100, 5), 95);
-        return { id: `hl-${i}`, topPct };
+        const topPx = padTop + line * 20 + 10; // vertical center of the highlighted line
+        return { id: `hl-${i}`, topPx };
       });
     }
 
+    // Document mode: wrap at ~64 chars/line, 30px line height, 32px top padding
     const charsPerLine = 64;
     const lineH = 30;
     const padTop = 32;
+    const totalH = estimateTextEntryHeight(data.content, false);
 
     return highlights.map((hl, i) => {
       const midChar = (hl.startIdx + hl.endIdx) / 2;
       const midLine = midChar / charsPerLine;
-      const yPx = padTop + midLine * lineH;
-      const topPct = Math.min(Math.max((yPx / totalH) * 100, 5), 95);
-      return { id: `hl-${i}`, topPct };
+      const topPx = Math.min(Math.max(padTop + midLine * lineH, 10), totalH - 10);
+      return { id: `hl-${i}`, topPx };
     });
   }, [data.highlights, data.content, isPRReview]);
 
@@ -141,10 +141,10 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
 
   return (
     <NodeFrame
-      borderColor="#cbd5e1"
-      bracketColor="#475569"
+      borderColor={data.currentNav ? "#94a3b8" : "#cbd5e1"}
+      bracketColor={data.currentNav ? "#64748b" : "#475569"}
       background="#fff"
-      innerRuleColor="#e2e8f0"
+      innerRuleColor={data.currentNav ? "#cbd5e1" : "#e2e8f0"}
       width={nodeWidth}
       opacity={data.dimmed ? 0.18 : 1}
       style={{ cursor: "text" }}
@@ -160,7 +160,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
             id={h.id}
             type="source"
             position={Position.Right}
-            style={{ opacity: 0, pointerEvents: "none", right: -4, top: `${h.topPct}%` }}
+            style={{ opacity: 0, pointerEvents: "none", right: -4, top: h.topPx, transform: "translateY(-50%)" }}
           />
         ))}
         <Handle
@@ -207,7 +207,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
         {/* Content */}
         {isPRReview ? (
           <div
-            className="nodrag"
+            className="nodrag nopan"
             onMouseUp={handleMouseUp}
             style={{
               fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
@@ -215,6 +215,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
               lineHeight: "20px",
               color: "#1e293b",
               display: "flex",
+              overflow: "hidden",
             }}
           >
             {/* Line numbers — outside contentRef so absOffset ignores them */}
@@ -298,7 +299,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
         ) : (
           <div
             ref={contentRef}
-            className="nodrag"
+            className="nodrag nopan"
             style={{
               fontFamily: "inherit",
               fontSize: "15px",

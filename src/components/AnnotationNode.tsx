@@ -35,6 +35,7 @@ interface AnnotationNodeProps {
     threadFocused?: boolean;
     reactions?: Record<string, number>;
     highlighted?: boolean;
+    currentNav?: boolean;
     author?: string;
     codeMode?: boolean;
     language?: string;
@@ -82,7 +83,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     const totalH = estimateAnnotationHeight(data.content);
     const charsPerLine = 36;
     const lineH = 26;
-    const padTop = 12 + (data.sourceText ? 40 : 0); // padding + quoted text height
+    const padTop = 12 + (data.sourceText && !isCodeMode ? 40 : 0); // padding + quoted text height
 
     return highlights.map((hl, i) => {
       const midChar = (hl.startIdx + hl.endIdx) / 2;
@@ -328,10 +329,10 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
   return (
     <NodeFrame
-      borderColor={data.highlighted ? "#3b82f6" : color.border}
-      bracketColor={data.highlighted ? "#2563eb" : color.border}
+      borderColor={data.highlighted ? "#3b82f6" : data.currentNav ? "#94a3b8" : color.border}
+      bracketColor={data.highlighted ? "#2563eb" : data.currentNav ? "#64748b" : color.border}
       background={color.nodeBg}
-      innerRuleColor={data.highlighted ? "#93c5fd" : color.border}
+      innerRuleColor={data.highlighted ? "#93c5fd" : data.currentNav ? "#cbd5e1" : color.border}
       width={340}
       opacity={data.dimmed ? 0.18 : 1}
       style={{ cursor: isEditing ? "text" : "pointer" }}
@@ -378,8 +379,8 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
         </div>
       )}
 
-      {/* Quoted source text (highlights only) */}
-      {data.annotationType === "highlight" && data.sourceText && (
+      {/* Quoted source text (highlights only — not in code/PR-review mode) */}
+      {data.annotationType === "highlight" && data.sourceText && !isCodeMode && (
         <div style={{
           borderLeft: `2.5px solid ${color.border}`,
           paddingLeft: "8px",
@@ -523,7 +524,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
           <>
             <div
               ref={contentRef}
-              className="nodrag"
+              className="nodrag nopan"
               style={{ minHeight: "36px", userSelect: "text", WebkitUserSelect: "text" }}
               onDoubleClick={handleDoubleClick}
             >

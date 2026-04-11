@@ -280,8 +280,14 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
   }
 
   // ── Deeper depths — processed in order so sources are already placed ───
-  for (let depth = 1; depth <= maxDepth; depth++) {
-    const atDepth = nodes.filter((n) => n.data.depth === depth);
+  // Start at 0 to catch annotation nodes from textentry sources (depth -1 + 1 = 0).
+  for (let depth = 0; depth <= maxDepth; depth++) {
+    const atDepth = nodes.filter(
+      (n) => n.data.depth === depth &&
+             n.data.nodeType !== "paragraph" &&
+             n.data.nodeType !== "textentry",
+    );
+    if (atDepth.length === 0) continue;
 
     // Compute ideal Y based on source's FINAL position
     for (const n of atDepth) {
@@ -508,7 +514,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
           annotationType: "highlight",
           sourceText: lineText.trim().slice(0, 100),
           tags: [],
-          depth: 0,
+          depth: 1,
           colorIndex,
           isNew: true,
           highlightStartIdx: charIdx,
@@ -544,7 +550,8 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       if (!sourceNode) return state;
 
       const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
-      const newDepth = (sourceNode.data.depth as number) + 1;
+      // textentry nodes have depth -1; clamp to 1 so annotations always enter the layout loop
+      const newDepth = Math.max(1, (sourceNode.data.depth as number) + 1);
       const newId = `anno-${Date.now()}`;
 
       // Persist the highlight range on the source node

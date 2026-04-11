@@ -194,6 +194,9 @@ const DocumentFlow = () => {
   const lastDocTitle = useRef<string>("");
   const pannedToNodes = useRef(new Set<string>());
   const lastSavedSnapshot = useRef<string>("");
+  const currentNodeIdx = useRef(0);
+  const [currentNavIdx, setCurrentNavIdx] = useState(0);
+  const currentNavNodeId = useRef<string | null>(null);
 
   // Hydrate auth from localStorage on mount
   const hydrated = useRef(false);
@@ -409,6 +412,7 @@ const DocumentFlow = () => {
         dimmed: focusedNodeIds ? !focusedNodeIds.has(n.id) : false,
         threadFocused: focusedNodeIds ? focusedNodeIds.has(n.id) : false,
         highlighted: n.id === highlightedNodeId,
+        currentNav: !focusedNodeIds && n.id === currentNavNodeId.current,
       },
     }));
 
@@ -432,7 +436,7 @@ const DocumentFlow = () => {
     }
 
     setNodes(mapped);
-  }, [storeNodes, focusedNodeIds, highlightedNodeId, documentMode, setNodes]);
+  }, [storeNodes, focusedNodeIds, highlightedNodeId, documentMode, setNodes, currentNavIdx]);
 
   useEffect(() => {
     setEdges(
@@ -742,8 +746,6 @@ const DocumentFlow = () => {
     [storeNodes],
   );
 
-  const currentNodeIdx = useRef(0);
-  const [currentNavIdx, setCurrentNavIdx] = useState(0);
   const navAnimating = useRef(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   /** For tall nodes: how far we've scrolled within the current node (0 = top). */
@@ -762,6 +764,7 @@ const DocumentFlow = () => {
       const duration = nextDepth < prevDepth ? 200 : 125;
 
       currentNodeIdx.current = idx;
+      currentNavNodeId.current = node.id;
       setCurrentNavIdx(idx);
       nodeScrollOffset.current = scrollY;
 
@@ -815,76 +818,10 @@ const DocumentFlow = () => {
     }
   }, [sortedNavNodes]);
 
-  // Wheel handler: scroll down → next node, scroll up → previous node
-  // Disabled in PR review mode — free scrolling/panning instead
+  // Arrow-key handler: navigate between nodes
   useEffect(() => {
     const el = canvasRef.current;
-    if (!el || documentMode === "pr-review") return;
-
-    const handler = (e: WheelEvent) => {
-      // Don't intercept if a modal is open or an input/textarea is focused
-      const active = document.activeElement;
-      if (
-        active instanceof HTMLTextAreaElement ||
-        active instanceof HTMLInputElement ||
-        active instanceof HTMLSelectElement
-      ) {
-        return;
-      }
-
-      if (navAnimating.current) {
-        e.preventDefault();
-        return;
-      }
-
-      // Determine direction — treat both vertical and horizontal scroll
-      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (Math.abs(delta) < 10) return; // ignore tiny ticks
-
-      e.preventDefault();
-
-      const idx = currentNodeIdx.current;
-      const node = sortedNavNodes[idx];
-      if (!node) return;
-
-      const nodeH =
-        node.data.nodeType === "paragraph"
-          ? estimateHeight(node.data.content)
-          : estimateAnnotationHeight(node.data.content);
-      const headerH = 52;
-      const zoom = 1;
-      const viewportH = (window.innerHeight - headerH) / zoom;
-      const scrollStep = viewportH * 0.7;
-
-      if (nodeH > viewportH) {
-        const maxScroll = nodeH - viewportH;
-        if (delta > 0) {
-          // Scrolling down within tall node
-          if (nodeScrollOffset.current < maxScroll) {
-            const next = Math.min(nodeScrollOffset.current + scrollStep, maxScroll);
-            navigateToNode(idx, next);
-            return;
-          }
-          // At bottom of tall node — move to next node
-        } else {
-          // Scrolling up within tall node
-          if (nodeScrollOffset.current > 0) {
-            const next = Math.max(nodeScrollOffset.current - scrollStep, 0);
-            navigateToNode(idx, next);
-            return;
-          }
-          // At top of tall node — move to previous node
-        }
-      }
-
-      if (delta > 0 && idx < sortedNavNodes.length - 1) {
-        navigateToNode(idx + 1);
-      } else if (delta < 0 && idx > 0) {
-        navigateToNode(idx - 1);
-      }
-    };
-
-    el.addEventListener("wheel", handler, { passive: false });
+    if (!el) return;
 
     const keyHandler = (e: KeyboardEvent) => {
       const active = document.activeElement;
@@ -931,10 +868,9 @@ const DocumentFlow = () => {
 
     document.addEventListener("keydown", keyHandler);
     return () => {
-      el.removeEventListener("wheel", handler);
       document.removeEventListener("keydown", keyHandler);
     };
-  }, [sortedNavNodes, navigateToNode, documentMode]);
+  }, [sortedNavNodes, navigateToNode]);
 
   // When a new annotation is created, navigate to it in the scroll sequence.
   // In PR review mode, skip — user controls viewport via free panning/scrolling.
@@ -1483,13 +1419,13 @@ const DocumentFlow = () => {
             defaultViewport={{ x: 40, y: 20, zoom: 1 }}
             minZoom={0.15}
             maxZoom={2}
-            zoomOnScroll={documentMode === "pr-review"}
-            zoomOnPinch={documentMode === "pr-review"}
+            zoomOnScroll
+            zoomOnPinch
             zoomOnDoubleClick={false}
             defaultEdgeOptions={{ style: { strokeWidth: 1.5 } }}
             nodesDraggable={false}
-            panOnDrag={documentMode === "pr-review"}
-            panOnScroll={documentMode === "pr-review"}
+            panOnDrag
+            panOnScroll
             selectionOnDrag={false}
             proOptions={{ hideAttribution: true }}
           >
