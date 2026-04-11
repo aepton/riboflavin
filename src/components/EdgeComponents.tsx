@@ -1,4 +1,4 @@
-import { THREAD_COLORS } from "../store/documentStore";
+import { threadColor as getThreadColor } from "../store/documentStore";
 
 export interface EdgeProps {
   sourceX: number;
@@ -11,7 +11,7 @@ export interface EdgeProps {
 
 function threadColor(colorIndex: number | undefined): string {
   if (colorIndex === undefined) return "#94a3b8";
-  return THREAD_COLORS[colorIndex % THREAD_COLORS.length].border;
+  return getThreadColor(colorIndex).border;
 }
 
 const createBezierPath = (

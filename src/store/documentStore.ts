@@ -18,16 +18,19 @@ export type DocumentMode = "document" | "pr-review";
 // light  = background used on the source text <mark>
 // nodeBg = annotation card background
 // border = annotation card border & edge stroke
-export const THREAD_COLORS = [
-  { light: "#fef9c3", nodeBg: "#fffbeb", border: "#fde047" }, // amber
-  { light: "#dbeafe", nodeBg: "#eff6ff", border: "#93c5fd" }, // blue
-  { light: "#f3e8ff", nodeBg: "#f5f3ff", border: "#c4b5fd" }, // violet
-  { light: "#dcfce7", nodeBg: "#ecfdf5", border: "#86efac" }, // green
-  { light: "#ffe4e6", nodeBg: "#fff1f2", border: "#fca5a5" }, // red
-  { light: "#e0f2fe", nodeBg: "#f0f9ff", border: "#7dd3fc" }, // sky
-  { light: "#fce7f3", nodeBg: "#fdf2f8", border: "#f9a8d4" }, // pink
-  { light: "#d1fae5", nodeBg: "#f0fdf4", border: "#6ee7b7" }, // emerald
-] as const;
+/**
+ * Generate a thread color for the given index using golden-ratio hue rotation.
+ * Adjacent indices produce maximally-spaced hues; all colors are pastels so
+ * they always look good together regardless of how many threads exist.
+ */
+export function threadColor(index: number): { light: string; nodeBg: string; border: string } {
+  const hue = Math.round((index * 137.508) % 360);
+  return {
+    light:  `hsl(${hue}, 75%, 91%)`,
+    nodeBg: `hsl(${hue}, 60%, 97%)`,
+    border: `hsl(${hue}, 65%, 72%)`,
+  };
+}
 
 // ── Text entry node constants ───────────────────────────────────────────────
 export const TEXT_ENTRY_WIDTH = 640;
@@ -329,7 +332,7 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
   for (const ten of textEntryNodes) {
     finalY.set(ten.id, teCursor);
     idealYMap.set(ten.id, teCursor);
-    teCursor += nodeHeight(ten, isPRReview) + NODE_GAP;
+    teCursor += nodeHeight(ten, isPRReview) + (isPRReview ? 120 : NODE_GAP);
   }
 
   // ── Depth 0 paragraphs ─────────────────────────────────────────────────
@@ -611,7 +614,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       const sourceNode = state.nodes.find((n) => n.id === sourceNodeId);
       if (!sourceNode) return state;
 
-      const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
+      const colorIndex = state.nextColorIndex;
       const content = sourceNode.data.content as string;
       const lines = content.split("\n");
       const lineText = lines[lineNumber] ?? "";
@@ -686,7 +689,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       const sourceNode = state.nodes.find((n) => n.id === sourceNodeId);
       if (!sourceNode) return state;
 
-      const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
+      const colorIndex = state.nextColorIndex;
       // textentry nodes have depth -1; clamp to 1 so annotations always enter the layout loop
       const newDepth = Math.max(1, (sourceNode.data.depth as number) + 1);
       const newId = `anno-${Date.now()}`;
@@ -753,7 +756,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
       const sourceNode = state.nodes.find((n) => n.id === sourceNodeId);
       if (!sourceNode || sourceNode.data.nodeType !== "textentry") return state;
 
-      const colorIndex = state.nextColorIndex % THREAD_COLORS.length;
+      const colorIndex = state.nextColorIndex;
       const newId = `para-${Date.now()}`;
 
       // Persist the highlight range on the textentry node

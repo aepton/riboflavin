@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { Handle, Position } from "reactflow";
-import { useDocumentStore, THREAD_COLORS, estimateAnnotationHeight, type AnnotationType, type HighlightRange } from "../store/documentStore";
+import { useDocumentStore, threadColor, estimateAnnotationHeight, type AnnotationType, type HighlightRange } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import { ReactionBar } from "./EmojiReactions";
@@ -71,7 +71,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
   const color =
     data.colorIndex !== undefined
-      ? THREAD_COLORS[data.colorIndex % THREAD_COLORS.length]
+      ? threadColor(data.colorIndex)
       : TYPE_COLORS[data.annotationType] ?? TYPE_COLORS.reply;
 
   const placeholder = PLACEHOLDERS[data.annotationType] ?? "Type here…";

@@ -1,6 +1,6 @@
 import { memo, useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
-import { type HighlightRange, type DiffLine, TEXT_ENTRY_WIDTH, PR_REVIEW_WIDTH, estimateTextEntryHeight, THREAD_COLORS } from "../store/documentStore";
+import { type HighlightRange, type DiffLine, TEXT_ENTRY_WIDTH, PR_REVIEW_WIDTH, estimateTextEntryHeight, threadColor } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import hljs, { SUPPORTED_LANGUAGES, ensureHljsTheme } from "./hljs";
@@ -238,7 +238,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
               {highlightedLines.map((_, i) => {
                 const hlColorIndex = highlightedLineMap.get(i);
                 const isHighlighted = hlColorIndex !== undefined;
-                const hlBg = isHighlighted ? THREAD_COLORS[hlColorIndex! % THREAD_COLORS.length].light : undefined;
+                const hlBg = isHighlighted ? threadColor(hlColorIndex!).light : undefined;
                 const dl = data.diffLines?.[i];
                 const diffType = dl?.type;
                 const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
@@ -291,7 +291,7 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
               {highlightedLines.map((lineHtml, i) => {
                 const hlColorIndex = highlightedLineMap.get(i);
                 const isHighlighted = hlColorIndex !== undefined;
-                const hlBg = isHighlighted ? THREAD_COLORS[hlColorIndex! % THREAD_COLORS.length].light : undefined;
+                const hlBg = isHighlighted ? threadColor(hlColorIndex!).light : undefined;
                 const diffType = data.diffLines?.[i]?.type;
                 const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
                 const bg = isHighlighted ? hlBg! : hoverLine === i ? "#f8fafc" : diffBg;

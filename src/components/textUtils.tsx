@@ -1,4 +1,4 @@
-import { THREAD_COLORS, type HighlightRange } from "../store/documentStore";
+import { threadColor, type HighlightRange } from "../store/documentStore";
 
 /**
  * Walk the text nodes inside a container to get the absolute character offset
@@ -39,7 +39,7 @@ export function HighlightedContent({
     if (h.startIdx > pos) {
       parts.push(<span key={`t-${pos}`}>{content.slice(pos, h.startIdx)}</span>);
     }
-    const color = THREAD_COLORS[h.colorIndex % THREAD_COLORS.length];
+    const color = threadColor(h.colorIndex);
     parts.push(
       <mark
         key={`h-${h.startIdx}`}
