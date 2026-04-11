@@ -17,6 +17,7 @@ interface TextEntryNodeProps {
     language?: string;
     filename?: string;
     diffLines?: DiffLine[];
+    committed?: boolean;
   };
   id: string;
 }
@@ -188,9 +189,31 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
             overflow: "hidden",
             whiteSpace: "nowrap",
             textAlign: "right",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "6px",
           }}
         >
-          {data.filename ?? (isPRReview ? "code" : "source")}
+          {data.committed === false && (
+            <span style={{
+              fontSize: "9px",
+              fontFamily: "inherit",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              color: "#d97706",
+              background: "#fffbeb",
+              border: "1px solid #fcd34d",
+              borderRadius: "3px",
+              padding: "1px 4px",
+              flexShrink: 0,
+            }}>
+              uncommitted
+            </span>
+          )}
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+            {data.filename ?? (isPRReview ? "code" : "source")}
+          </span>
         </div>
 
         {/* Hint text */}
@@ -241,10 +264,19 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
                 const hlBg = isHighlighted ? threadColor(hlColorIndex!).light : undefined;
                 const dl = data.diffLines?.[i];
                 const diffType = dl?.type;
-                const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
+                const isCommitted = dl?.committed !== false;
+                const diffBg = diffType === "add"
+                  ? (isCommitted ? "#f0fdf4" : "#fffbeb")
+                  : diffType === "remove"
+                  ? (isCommitted ? "#fef2f2" : "#fff7ed")
+                  : "transparent";
                 const bg = isHighlighted ? hlBg! : hoverLine === i ? "#f8fafc" : diffBg;
                 const lineNo = dl ? (diffType === "remove" ? dl.oldLineNo : dl.newLineNo) : i + 1;
-                const diffColor = diffType === "add" ? "#16a34a" : diffType === "remove" ? "#dc2626" : "#94a3b8";
+                const diffColor = diffType === "add"
+                  ? (isCommitted ? "#16a34a" : "#d97706")
+                  : diffType === "remove"
+                  ? (isCommitted ? "#dc2626" : "#ea580c")
+                  : "#94a3b8";
                 return (
                   <div
                     key={i}
@@ -292,8 +324,14 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
                 const hlColorIndex = highlightedLineMap.get(i);
                 const isHighlighted = hlColorIndex !== undefined;
                 const hlBg = isHighlighted ? threadColor(hlColorIndex!).light : undefined;
-                const diffType = data.diffLines?.[i]?.type;
-                const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
+                const dl = data.diffLines?.[i];
+                const diffType = dl?.type;
+                const isCommitted = dl?.committed !== false;
+                const diffBg = diffType === "add"
+                  ? (isCommitted ? "#f0fdf4" : "#fffbeb")
+                  : diffType === "remove"
+                  ? (isCommitted ? "#fef2f2" : "#fff7ed")
+                  : "transparent";
                 const bg = isHighlighted ? hlBg! : hoverLine === i ? "#f8fafc" : diffBg;
                 return (
                   <div

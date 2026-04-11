@@ -14,19 +14,26 @@ set -euo pipefail
 BASE="${1:-main}"
 PORT="${2:-5173}"
 
-DIFF=$(git diff "${BASE}...HEAD" 2>/dev/null || git diff "${BASE}" 2>/dev/null)
+# Committed changes on this branch vs base
+COMMITTED=$(git diff "${BASE}...HEAD" 2>/dev/null || git diff "${BASE}" 2>/dev/null)
+# Uncommitted changes (staged + unstaged)
+UNCOMMITTED=$(git diff HEAD 2>/dev/null)
+
+DIFF="${COMMITTED}${UNCOMMITTED}"
 
 if [ -z "$DIFF" ]; then
-  echo "No diff found vs '${BASE}'. Are you on a feature branch with commits?"
+  echo "No diff found vs '${BASE}'. No committed or uncommitted changes detected."
   exit 1
 fi
 
-LINES=$(echo "$DIFF" | wc -l | tr -d ' ')
-echo "Encoding diff (${LINES} lines) vs '${BASE}'..."
+COMMITTED_LINES=$(echo "$COMMITTED" | wc -l | tr -d ' ')
+UNCOMMITTED_LINES=$(echo "$UNCOMMITTED" | wc -l | tr -d ' ')
+echo "Encoding diff vs '${BASE}' (${COMMITTED_LINES} committed lines, ${UNCOMMITTED_LINES} uncommitted lines)..."
 
-ENCODED=$(printf '%s' "$DIFF" | base64 | tr -d '\n')
+ENCODED_COMMITTED=$(printf '%s' "$COMMITTED" | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
+ENCODED_UNCOMMITTED=$(printf '%s' "$UNCOMMITTED" | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 
-URL="http://localhost:${PORT}/#diff=${ENCODED}"
+URL="http://localhost:${PORT}/#committed=${ENCODED_COMMITTED}&uncommitted=${ENCODED_UNCOMMITTED}"
 
 # Start dev server if not already running
 if ! curl -sf "http://localhost:${PORT}" > /dev/null 2>&1; then

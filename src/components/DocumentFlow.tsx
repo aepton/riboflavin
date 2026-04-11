@@ -226,13 +226,29 @@ const DocumentFlow = () => {
     if (!authHydrated || roundLoadAttempted.current) return;
     roundLoadAttempted.current = true;
 
-    // Check for hash-based diff: #diff=<base64-encoded-unified-diff>
-    if (window.location.hash.startsWith("#diff=")) {
+    // Check for hash-based diff: #committed=<b64>&uncommitted=<b64>
+    // Legacy format also supported: #diff=<b64> (treated as all-committed)
+    // Supports both URL-safe base64 (-/_) and standard base64 (spaces come from
+    // URLSearchParams converting + to space).
+    const decodeB64 = (s: string) => {
+      const b64 = s.replace(/ /g, '+').replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64.padEnd(b64.length + (4 - b64.length % 4) % 4, '=');
+      const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+      return new TextDecoder("utf-8").decode(bytes);
+    };
+    if (window.location.hash.startsWith("#committed=") || window.location.hash.startsWith("#diff=")) {
       try {
-        const encoded = window.location.hash.slice(6);
-        const bytes = Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0));
-        const decoded = new TextDecoder("utf-8").decode(bytes);
-        loadDiff(decoded, "Diff Review", username ?? undefined);
+        let committedDiff = "";
+        let uncommittedDiff = "";
+        if (window.location.hash.startsWith("#committed=")) {
+          const hashParams = new URLSearchParams(window.location.hash.slice(1));
+          committedDiff = hashParams.get("committed") ? decodeB64(hashParams.get("committed")!) : "";
+          uncommittedDiff = hashParams.get("uncommitted") ? decodeB64(hashParams.get("uncommitted")!) : "";
+        } else {
+          // Legacy #diff= — treat as all-committed
+          committedDiff = decodeB64(window.location.hash.slice(6));
+        }
+        loadDiff(committedDiff, uncommittedDiff, "Diff Review", username ?? undefined);
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
       } catch (err) {
         console.error("Failed to decode diff from URL hash:", err);

@@ -23,12 +23,15 @@ export type DocumentMode = "document" | "pr-review";
  * Adjacent indices produce maximally-spaced hues; all colors are pastels so
  * they always look good together regardless of how many threads exist.
  */
-export function threadColor(index: number): { light: string; nodeBg: string; border: string } {
+export function threadColor(index: number, depth = 1): { light: string; nodeBg: string; border: string } {
   const hue = Math.round((index * 137.508) % 360);
+  // depth=1 is a highlight (lightest/palest); each reply level (depth 2, 3, …)
+  // darkens the shade so ancestry is visible while staying in the same hue family.
+  const step = Math.max(0, depth - 1);
   return {
-    light:  `hsl(${hue}, 75%, 91%)`,
-    nodeBg: `hsl(${hue}, 60%, 97%)`,
-    border: `hsl(${hue}, 65%, 72%)`,
+    light:  `hsl(${hue}, 75%, ${91 - step * 4}%)`,
+    nodeBg: `hsl(${hue}, ${60 + step * 5}%, ${97 - step * 3}%)`,
+    border: `hsl(${hue}, ${65 + step * 5}%, ${72 - step * 6}%)`,
   };
 }
 
@@ -101,9 +104,10 @@ interface ParsedDiffFile {
   language: string;
   content: string;
   diffLines: DiffLine[];
+  committed: boolean;
 }
 
-export function parseDiff(diffText: string): ParsedDiffFile[] {
+export function parseDiff(diffText: string, committed = true): ParsedDiffFile[] {
   // Split on file headers (lookahead keeps "diff --git" at start of each section)
   const sections = diffText.split(/(?=^diff --git )/m).filter((s) => s.trim());
   const files: ParsedDiffFile[] = [];
@@ -142,18 +146,18 @@ export function parseDiff(diffText: string): ParsedDiffFile[] {
 
       if (line.startsWith("+")) {
         newNo++;
-        diffLines.push({ type: "add", content: line.slice(1), newLineNo: newNo });
+        diffLines.push({ type: "add", content: line.slice(1), newLineNo: newNo, committed });
       } else if (line.startsWith("-")) {
         oldNo++;
-        diffLines.push({ type: "remove", content: line.slice(1), oldLineNo: oldNo });
+        diffLines.push({ type: "remove", content: line.slice(1), oldLineNo: oldNo, committed });
       } else {
         oldNo++; newNo++;
-        diffLines.push({ type: "context", content: line.slice(1), oldLineNo: oldNo, newLineNo: newNo });
+        diffLines.push({ type: "context", content: line.slice(1), oldLineNo: oldNo, newLineNo: newNo, committed });
       }
     }
 
     if (diffLines.length > 0) {
-      files.push({ filename, language, diffLines, content: diffLines.map((l) => l.content).join("\n") });
+      files.push({ filename, language, diffLines, content: diffLines.map((l) => l.content).join("\n"), committed });
     }
   }
 
@@ -436,6 +440,7 @@ export interface DiffLine {
   content: string;      // line text, prefix char stripped
   oldLineNo?: number;   // line number in the old file (remove/context)
   newLineNo?: number;   // line number in the new file (add/context)
+  committed?: boolean;  // true = part of a committed change; false = uncommitted (staged/working)
 }
 
 export interface DocNodeData {
@@ -455,6 +460,7 @@ export interface DocNodeData {
   codeMode?: boolean;                  // true = entire content is code (monospace + syntax highlight)
   filename?: string;                   // file path (diff mode, one node per file)
   diffLines?: DiffLine[];             // per-line diff metadata (diff mode)
+  committed?: boolean;                 // false = node contains uncommitted changes
 }
 
 // ── Citations ───────────────────────────────────────────────────────────────
@@ -476,7 +482,7 @@ interface DocumentStore {
 
   loadDocument: (text: string, title?: string, author?: string) => void;
   loadPRReview: (code: string, language: string, title?: string, author?: string) => void;
-  loadDiff: (diffText: string, title?: string, author?: string) => void;
+  loadDiff: (committedDiff: string, uncommittedDiff: string, title?: string, author?: string) => void;
   loadRound: (title: string, nodes: Node[], edges: Edge[], citations?: Record<string, CitationMeta>, mode?: DocumentMode, language?: string) => void;
   addCitation: (name: string, url: string, description: string) => void;
   createLineComment: (lineNumber: number, sourceNodeId: string, author?: string) => void;
@@ -554,8 +560,11 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
     set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "pr-review", language });
   },
 
-  loadDiff: (diffText, title = "Untitled Diff Review", author) => {
-    const parsed = parseDiff(diffText);
+  loadDiff: (committedDiff, uncommittedDiff, title = "Untitled Diff Review", author) => {
+    const parsed = [
+      ...parseDiff(committedDiff, true),
+      ...parseDiff(uncommittedDiff, false),
+    ];
     if (parsed.length === 0) return;
     const now = Date.now();
     const textEntryNodes: Node[] = parsed.map((file, i) => ({
@@ -573,6 +582,7 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
         language: file.language,
         filename: file.filename,
         diffLines: file.diffLines,
+        committed: file.committed,
       } as DocNodeData,
     }));
     set({

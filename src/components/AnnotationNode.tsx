@@ -71,7 +71,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
 
   const color =
     data.colorIndex !== undefined
-      ? threadColor(data.colorIndex)
+      ? threadColor(data.colorIndex, data.depth)
       : TYPE_COLORS[data.annotationType] ?? TYPE_COLORS.reply;
 
   const placeholder = PLACEHOLDERS[data.annotationType] ?? "Type here…";
