@@ -83,7 +83,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     const totalH = estimateAnnotationHeight(data.content);
     const charsPerLine = 36;
     const lineH = 26;
-    const padTop = 12 + (data.sourceText && !isCodeMode ? 40 : 0); // padding + quoted text height
+    const padTop = 12 + (data.sourceText && !isCodeMode && !isPRReview ? 40 : 0); // padding + quoted text height
 
     return highlights.map((hl, i) => {
       const midChar = (hl.startIdx + hl.endIdx) / 2;
@@ -380,7 +380,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
       )}
 
       {/* Quoted source text (highlights only — not in code/PR-review mode) */}
-      {data.annotationType === "highlight" && data.sourceText && !isCodeMode && (
+      {data.annotationType === "highlight" && data.sourceText && !isCodeMode && !isPRReview && (
         <div style={{
           borderLeft: `2.5px solid ${color.border}`,
           paddingLeft: "8px",
