@@ -1,6 +1,6 @@
 import { memo, useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
-import { type HighlightRange, TEXT_ENTRY_WIDTH, PR_REVIEW_WIDTH, estimateTextEntryHeight } from "../store/documentStore";
+import { type HighlightRange, type DiffLine, TEXT_ENTRY_WIDTH, PR_REVIEW_WIDTH, estimateTextEntryHeight, THREAD_COLORS } from "../store/documentStore";
 import { absOffset, HighlightedContent } from "./textUtils";
 import { NodeFrame } from "./NodeChrome";
 import hljs, { SUPPORTED_LANGUAGES, ensureHljsTheme } from "./hljs";
@@ -15,6 +15,8 @@ interface TextEntryNodeProps {
     currentNav?: boolean;
     author?: string;
     language?: string;
+    filename?: string;
+    diffLines?: DiffLine[];
   };
   id: string;
 }
@@ -111,23 +113,23 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
     }
   }, [data.content, data.language, isPRReview]);
 
-  // Build a set of highlighted line numbers from highlight ranges
-  const highlightedLineSet = useMemo(() => {
-    const set = new Set<number>();
-    if (!data.highlights || !data.content) return set;
+  // Build a map of highlighted line numbers → colorIndex from highlight ranges
+  const highlightedLineMap = useMemo(() => {
+    const map = new Map<number, number>();
+    if (!data.highlights || !data.content) return map;
     const lines = data.content.split("\n");
     for (const hl of data.highlights) {
-      // Find which lines this highlight spans
+      const colorIndex = hl.colorIndex ?? 0;
       let charCount = 0;
       for (let i = 0; i < lines.length; i++) {
         const lineEnd = charCount + lines[i].length;
         if (charCount <= hl.endIdx && lineEnd >= hl.startIdx) {
-          set.add(i);
+          map.set(i, colorIndex);
         }
         charCount = lineEnd + 1; // +1 for \n
       }
     }
-    return set;
+    return map;
   }, [data.highlights, data.content]);
 
   // Hovering line number state
@@ -170,21 +172,25 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
           style={{ opacity: 0, pointerEvents: "none", right: -4 }}
         />
 
-        {/* Document label */}
+        {/* File label */}
         <div
           style={{
             position: "absolute",
             top: 10,
             right: 14,
+            left: 60,
             fontSize: "10px",
             color: "#94a3b8",
-            fontFamily: "inherit",
+            fontFamily: data.filename ? "'SF Mono', 'Fira Code', 'Cascadia Code', monospace" : "inherit",
             lineHeight: 1,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
+            letterSpacing: "0.03em",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textAlign: "right",
           }}
         >
-          {isPRReview ? "code" : "source"}
+          {data.filename ?? (isPRReview ? "code" : "source")}
         </div>
 
         {/* Hint text */}
@@ -221,8 +227,8 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
             {/* Line numbers — outside contentRef so absOffset ignores them */}
             <div
               style={{
-                width: "44px",
-                minWidth: "44px",
+                width: "52px",
+                minWidth: "52px",
                 flexShrink: 0,
                 borderRight: "1px solid #e2e8f0",
                 userSelect: "none",
@@ -230,34 +236,43 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
               }}
             >
               {highlightedLines.map((_, i) => {
-                const isHighlighted = highlightedLineSet.has(i);
+                const hlColorIndex = highlightedLineMap.get(i);
+                const isHighlighted = hlColorIndex !== undefined;
+                const hlBg = isHighlighted ? THREAD_COLORS[hlColorIndex! % THREAD_COLORS.length].light : undefined;
+                const dl = data.diffLines?.[i];
+                const diffType = dl?.type;
+                const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
+                const bg = isHighlighted ? hlBg! : hoverLine === i ? "#f8fafc" : diffBg;
+                const lineNo = dl ? (diffType === "remove" ? dl.oldLineNo : dl.newLineNo) : i + 1;
+                const diffColor = diffType === "add" ? "#16a34a" : diffType === "remove" ? "#dc2626" : "#94a3b8";
                 return (
                   <div
                     key={i}
                     data-no-reply
                     onMouseDown={(e) => e.preventDefault()}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLineClick(i);
-                    }}
+                    onClick={(e) => { e.stopPropagation(); handleLineClick(i); }}
                     onMouseEnter={() => setHoverLine(i)}
                     onMouseLeave={() => setHoverLine(null)}
                     style={{
                       height: "20px",
-                      textAlign: "right",
-                      paddingRight: "12px",
-                      color: hoverLine === i ? "#3b82f6" : "#94a3b8",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      paddingRight: "8px",
+                      gap: "2px",
+                      color: hoverLine === i && !diffType ? "#3b82f6" : diffColor,
                       cursor: "pointer",
-                      fontSize: "12px",
+                      fontSize: "11px",
                       lineHeight: "20px",
-                      background: isHighlighted
-                        ? "#fef9c3"
-                        : hoverLine === i
-                          ? "#f8fafc"
-                          : "transparent",
+                      background: bg,
                     }}
                   >
-                    {i + 1}
+                    {dl && (
+                      <span style={{ width: "10px", textAlign: "center", fontWeight: 600 }}>
+                        {diffType === "add" ? "+" : diffType === "remove" ? "−" : ""}
+                      </span>
+                    )}
+                    <span>{lineNo}</span>
                   </div>
                 );
               })}
@@ -274,20 +289,16 @@ const TextEntryNode = memo(({ data, id }: TextEntryNodeProps) => {
               }}
             >
               {highlightedLines.map((lineHtml, i) => {
-                const isHighlighted = highlightedLineSet.has(i);
+                const hlColorIndex = highlightedLineMap.get(i);
+                const isHighlighted = hlColorIndex !== undefined;
+                const hlBg = isHighlighted ? THREAD_COLORS[hlColorIndex! % THREAD_COLORS.length].light : undefined;
+                const diffType = data.diffLines?.[i]?.type;
+                const diffBg = diffType === "add" ? "#f0fdf4" : diffType === "remove" ? "#fef2f2" : "transparent";
+                const bg = isHighlighted ? hlBg! : hoverLine === i ? "#f8fafc" : diffBg;
                 return (
                   <div
                     key={i}
-                    style={{
-                      height: "20px",
-                      whiteSpace: "pre",
-                      overflow: "visible",
-                      background: isHighlighted
-                        ? "#fef9c3"
-                        : hoverLine === i
-                          ? "#f8fafc"
-                          : "transparent",
-                    }}
+                    style={{ height: "20px", whiteSpace: "pre", overflow: "visible", background: bg }}
                     onMouseEnter={() => setHoverLine(i)}
                     onMouseLeave={() => setHoverLine(null)}
                     dangerouslySetInnerHTML={{ __html: lineHtml || "&nbsp;" }}

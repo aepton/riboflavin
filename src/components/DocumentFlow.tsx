@@ -15,6 +15,7 @@ import {
   estimateTextEntryHeight,
   COLUMN_WIDTH,
   PR_REVIEW_WIDTH,
+  looksLikeDiff,
 } from "../store/documentStore";
 import ParagraphNode from "./ParagraphNode";
 import AnnotationNode from "./AnnotationNode";
@@ -167,6 +168,7 @@ const DocumentFlow = () => {
     documentMode,
     loadDocument,
     loadPRReview,
+    loadDiff,
     loadRound,
     createHighlight,
     createParagraphFromHighlight,
@@ -189,7 +191,7 @@ const DocumentFlow = () => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { setViewport, fitView, getViewport } = useReactFlow();
+  const { setViewport, fitView, getViewport, setCenter } = useReactFlow();
   const updateNodeInternals = useUpdateNodeInternals();
   const lastDocTitle = useRef<string>("");
   const pannedToNodes = useRef(new Set<string>());
@@ -223,6 +225,20 @@ const DocumentFlow = () => {
   useEffect(() => {
     if (!authHydrated || roundLoadAttempted.current) return;
     roundLoadAttempted.current = true;
+
+    // Check for hash-based diff: #diff=<base64-encoded-unified-diff>
+    if (window.location.hash.startsWith("#diff=")) {
+      try {
+        const encoded = window.location.hash.slice(6);
+        const bytes = Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0));
+        const decoded = new TextDecoder("utf-8").decode(bytes);
+        loadDiff(decoded, "Diff Review", username ?? undefined);
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      } catch (err) {
+        console.error("Failed to decode diff from URL hash:", err);
+      }
+      return;
+    }
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("round");
@@ -303,7 +319,7 @@ const DocumentFlow = () => {
         }
       })();
     }
-  }, [authHydrated, loadRound]);
+  }, [authHydrated, loadRound, loadDiff, username]);
 
   const handlePickRound = useCallback(
     async (slug: string) => {
@@ -713,13 +729,16 @@ const DocumentFlow = () => {
   }, [docText, docTitle, loadDocument, username]);
 
   const handleCreatePRReview = useCallback(() => {
-    if (prCode.trim()) {
+    if (!prCode.trim()) return;
+    if (looksLikeDiff(prCode)) {
+      loadDiff(prCode.trim(), prTitle.trim() || "Untitled Diff Review", username ?? undefined);
+    } else {
       loadPRReview(prCode.trim(), prLanguage, prTitle.trim() || "Untitled PR Review", username ?? undefined);
-      setShowPRReview(false);
-      setPRCode("");
-      setPRTitle("");
     }
-  }, [prCode, prTitle, prLanguage, loadPRReview, username]);
+    setShowPRReview(false);
+    setPRCode("");
+    setPRTitle("");
+  }, [prCode, prTitle, prLanguage, loadPRReview, loadDiff, username]);
 
   const handleSubmitReply = useCallback(() => {
     if (!username) { setShowUsernameModal(true); return; }
@@ -817,6 +836,25 @@ const DocumentFlow = () => {
       currentNodeIdx.current = Math.max(0, sortedNavNodes.length - 1);
     }
   }, [sortedNavNodes]);
+
+  // File nodes for diff navigator (textentry nodes that have a filename)
+  const fileNodes = useMemo(
+    () => nodes.filter((n) => n.data?.nodeType === "textentry" && n.data?.filename),
+    [nodes],
+  );
+
+  const navigateToFileNode = useCallback(
+    (nodeId: string) => {
+      const node = nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+      setCenter(
+        (node.position.x as number) + PR_REVIEW_WIDTH / 2,
+        (node.position.y as number) + 160,
+        { zoom: 1, duration: 400 },
+      );
+    },
+    [nodes, setCenter],
+  );
 
   // Arrow-key handler: navigate between nodes
   useEffect(() => {
@@ -1405,6 +1443,60 @@ const DocumentFlow = () => {
 
       {/* ── Canvas ────────────────────────────────────────────────────────── */}
       <div ref={canvasRef} style={{ flex: 1, position: "relative" }}>
+
+        {/* ── Diff file navigator ─────────────────────────────────────────── */}
+        {fileNodes.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              top: 12,
+              left: 12,
+              zIndex: 10,
+              background: "#fff",
+              border: "1px solid #d1d5db",
+              overflow: "hidden",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
+              minWidth: "160px",
+              maxWidth: "300px",
+              pointerEvents: "auto",
+            }}
+          >
+            <div style={{
+              padding: "5px 10px",
+              borderBottom: "1px solid #f1f5f9",
+              fontSize: "9px",
+              color: "#94a3b8",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.07em",
+            }}>
+              Files changed
+            </div>
+            {fileNodes.map((n) => (
+              <div
+                key={n.id}
+                onClick={() => navigateToFileNode(n.id)}
+                style={{
+                  padding: "5px 10px",
+                  fontSize: "11px",
+                  fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
+                  cursor: "pointer",
+                  color: "#334155",
+                  borderBottom: "1px solid #f8fafc",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  userSelect: "none",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f8fafc"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+              >
+                {n.data.filename as string}
+              </div>
+            ))}
+          </div>
+        )}
+
         {hasContent ? (
           <ReactFlow
             nodes={nodes}
@@ -1675,27 +1767,34 @@ const DocumentFlow = () => {
               onChange={(e) => setPRTitle(e.target.value)}
               style={inputStyle}
             />
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-              <label style={{ fontSize: "13px", color: "#475569", fontWeight: 500 }}>Language:</label>
-              <select
-                value={prLanguage}
-                onChange={(e) => setPRLanguage(e.target.value)}
-                style={{
-                  ...inputStyle,
-                  flex: 1,
-                  marginBottom: 0,
-                  padding: "6px 8px",
-                  fontSize: "13px",
-                }}
-              >
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <option key={lang} value={lang}>{lang}</option>
-                ))}
-              </select>
-            </div>
+            {!looksLikeDiff(prCode) && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                <label style={{ fontSize: "13px", color: "#475569", fontWeight: 500 }}>Language:</label>
+                <select
+                  value={prLanguage}
+                  onChange={(e) => setPRLanguage(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    flex: 1,
+                    marginBottom: 0,
+                    padding: "6px 8px",
+                    fontSize: "13px",
+                  }}
+                >
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {looksLikeDiff(prCode) && (
+              <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "8px" }}>
+                Diff detected — language auto-detected per file
+              </div>
+            )}
             <textarea
               autoFocus
-              placeholder="Paste your code here."
+              placeholder="Paste code or a git diff (diff --git …)."
               value={prCode}
               onChange={(e) => setPRCode(e.target.value)}
               onKeyDown={(e) => {

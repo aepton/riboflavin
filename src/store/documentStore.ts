@@ -75,6 +75,93 @@ export function estimateAnnotationHeight(content: string): number {
   return Math.max(190, totalLines * 26 + 130);
 }
 
+// ── Diff parsing ────────────────────────────────────────────────────────────
+
+function detectLangFromFilename(filename: string): string {
+  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  const m: Record<string, string> = {
+    ts: "typescript", tsx: "typescript", js: "javascript", jsx: "javascript",
+    py: "python", rb: "ruby", go: "go", rs: "rust", java: "java",
+    cpp: "cpp", cc: "cpp", cxx: "cpp", c: "c", h: "c", cs: "csharp",
+    swift: "swift", kt: "kotlin", php: "php", html: "xml", xml: "xml",
+    css: "css", scss: "scss", sass: "css", json: "json",
+    yaml: "yaml", yml: "yaml", md: "markdown", sh: "bash", bash: "bash",
+    zsh: "bash", sql: "sql", graphql: "graphql", gql: "graphql",
+    ex: "elixir", exs: "elixir", erl: "erlang", hs: "haskell",
+    lua: "lua", dart: "dart", r: "r", pl: "perl", pm: "perl",
+  };
+  return m[ext] ?? "plaintext";
+}
+
+interface ParsedDiffFile {
+  filename: string;
+  language: string;
+  content: string;
+  diffLines: DiffLine[];
+}
+
+export function parseDiff(diffText: string): ParsedDiffFile[] {
+  // Split on file headers (lookahead keeps "diff --git" at start of each section)
+  const sections = diffText.split(/(?=^diff --git )/m).filter((s) => s.trim());
+  const files: ParsedDiffFile[] = [];
+
+  for (const section of sections) {
+    const lines = section.split("\n");
+
+    // Extract filename from "+++ b/..." line
+    let filename = "unknown";
+    for (const line of lines) {
+      if (line.startsWith("+++ b/")) { filename = line.slice(6).trim(); break; }
+      if (line.startsWith("+++ ") && !line.startsWith("+++ /dev/null")) {
+        filename = line.slice(4).trim(); break;
+      }
+    }
+
+    const language = detectLangFromFilename(filename);
+    const diffLines: DiffLine[] = [];
+    let inHunk = false;
+    let oldNo = 0, newNo = 0;
+
+    for (const line of lines) {
+      if (line.startsWith("@@")) {
+        inHunk = true;
+        const m = line.match(/^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+        if (m) { oldNo = parseInt(m[1]) - 1; newNo = parseInt(m[2]) - 1; }
+        continue;
+      }
+      if (!inHunk) continue;
+      // Skip meta-lines that can appear inside a section
+      if (line.startsWith("diff --git") || line.startsWith("index ") ||
+          line.startsWith("--- ") || line.startsWith("+++ ") ||
+          line.startsWith("new file") || line.startsWith("deleted file") ||
+          line.startsWith("old mode") || line.startsWith("new mode") ||
+          line.startsWith("Binary") || line.startsWith("\\ No newline")) continue;
+
+      if (line.startsWith("+")) {
+        newNo++;
+        diffLines.push({ type: "add", content: line.slice(1), newLineNo: newNo });
+      } else if (line.startsWith("-")) {
+        oldNo++;
+        diffLines.push({ type: "remove", content: line.slice(1), oldLineNo: oldNo });
+      } else {
+        oldNo++; newNo++;
+        diffLines.push({ type: "context", content: line.slice(1), oldLineNo: oldNo, newLineNo: newNo });
+      }
+    }
+
+    if (diffLines.length > 0) {
+      files.push({ filename, language, diffLines, content: diffLines.map((l) => l.content).join("\n") });
+    }
+  }
+
+  return files;
+}
+
+export function looksLikeDiff(text: string): boolean {
+  return /^diff --git /m.test(text) ||
+    (/^--- [ab]\//m.test(text) && /^\+\+\+ [ab]\//m.test(text));
+}
+
 function getColumnX(depth: number, isTextEntry?: boolean): number {
   if (isTextEntry || depth === 0) {
     // Depth 0 with textentry: the textentry node itself
@@ -234,11 +321,15 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
   const finalY = new Map<string, number>();
   const idealYMap = new Map<string, number>();
 
-  // TextEntry node: always at top
-  const textEntryNode = nodes.find((n) => n.data.nodeType === "textentry");
-  if (textEntryNode) {
-    finalY.set(textEntryNode.id, 20);
-    idealYMap.set(textEntryNode.id, 20);
+  // TextEntry nodes: stack vertically in creation order (sorted by ID)
+  const textEntryNodes = nodes
+    .filter((n) => n.data.nodeType === "textentry")
+    .sort((a, b) => a.id.localeCompare(b.id));
+  let teCursor = 20;
+  for (const ten of textEntryNodes) {
+    finalY.set(ten.id, teCursor);
+    idealYMap.set(ten.id, teCursor);
+    teCursor += nodeHeight(ten, isPRReview) + NODE_GAP;
   }
 
   // ── Depth 0 paragraphs ─────────────────────────────────────────────────
@@ -246,16 +337,19 @@ function relayoutAll(nodes: Node[], edges: Edge[]): Node[] {
     (n) => n.data.depth === 0 && n.data.nodeType === "paragraph",
   );
 
-  if (hasTextEntry && textEntryNode) {
+  if (hasTextEntry) {
     for (const n of depth0) {
-      if (n.data.highlightStartIdx !== undefined) {
+      const srcId = sourceOf.get(n.id);
+      const srcNode = srcId ? nodeById.get(srcId) : undefined;
+      if (srcNode && n.data.highlightStartIdx !== undefined) {
+        const srcY = finalY.get(srcId!) ?? srcNode.position.y;
         const charY = estimateCharY(
-          textEntryNode.data.content,
+          srcNode.data.content,
           n.data.highlightStartIdx,
           "textentry",
           isPRReview,
         );
-        idealYMap.set(n.id, Math.max(20, 20 + charY));
+        idealYMap.set(n.id, Math.max(20, srcY + charY));
       } else {
         idealYMap.set(n.id, n.position.y);
       }
@@ -333,6 +427,14 @@ export interface HighlightRange {
 
 export type AnnotationType = "highlight" | "reply";
 
+/** A single line in a unified diff, used for coloring in the TextEntryNode. */
+export interface DiffLine {
+  type: "add" | "remove" | "context";
+  content: string;      // line text, prefix char stripped
+  oldLineNo?: number;   // line number in the old file (remove/context)
+  newLineNo?: number;   // line number in the new file (add/context)
+}
+
 export interface DocNodeData {
   content: string;
   nodeType: "paragraph" | "annotation" | "textentry";
@@ -348,6 +450,8 @@ export interface DocNodeData {
   author?: string;                     // username who created this node
   language?: string;                   // programming language (PR review mode)
   codeMode?: boolean;                  // true = entire content is code (monospace + syntax highlight)
+  filename?: string;                   // file path (diff mode, one node per file)
+  diffLines?: DiffLine[];             // per-line diff metadata (diff mode)
 }
 
 // ── Citations ───────────────────────────────────────────────────────────────
@@ -369,6 +473,7 @@ interface DocumentStore {
 
   loadDocument: (text: string, title?: string, author?: string) => void;
   loadPRReview: (code: string, language: string, title?: string, author?: string) => void;
+  loadDiff: (diffText: string, title?: string, author?: string) => void;
   loadRound: (title: string, nodes: Node[], edges: Edge[], citations?: Record<string, CitationMeta>, mode?: DocumentMode, language?: string) => void;
   addCitation: (name: string, url: string, description: string) => void;
   createLineComment: (lineNumber: number, sourceNodeId: string, author?: string) => void;
@@ -444,6 +549,38 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
     };
 
     set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "pr-review", language });
+  },
+
+  loadDiff: (diffText, title = "Untitled Diff Review", author) => {
+    const parsed = parseDiff(diffText);
+    if (parsed.length === 0) return;
+    const now = Date.now();
+    const textEntryNodes: Node[] = parsed.map((file, i) => ({
+      id: `textentry-${now + i}`,
+      type: "textEntryNode",
+      position: { x: COLUMN_X_BASE, y: 20 },
+      data: {
+        content: file.content,
+        nodeType: "textentry",
+        tags: [],
+        depth: -1,
+        highlights: [],
+        reactions: {},
+        author,
+        language: file.language,
+        filename: file.filename,
+        diffLines: file.diffLines,
+      } as DocNodeData,
+    }));
+    set({
+      nodes: relayoutAll(textEntryNodes, []),
+      edges: [],
+      documentTitle: title,
+      nextColorIndex: 0,
+      citations: {},
+      documentMode: "pr-review",
+      language: "",
+    });
   },
 
   loadRound: (title, nodes, edges, citations, mode, language) => {
