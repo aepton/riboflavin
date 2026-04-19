@@ -522,22 +522,24 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
   language: "",
 
   loadDocument: (text, title = "Untitled Document", author) => {
-    const textEntryNode: Node = {
-      id: `textentry-${Date.now()}`,
-      type: "textEntryNode",
-      position: { x: COLUMN_X_BASE, y: 20 },
+    const paragraphs = text.trim().split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    const now = Date.now();
+    const nodes: Node[] = paragraphs.map((para, i) => ({
+      id: `para-${now + i}`,
+      type: "paragraphNode",
+      position: { x: COLUMN_X_BASE, y: 0 },
       data: {
-        content: text.trim(),
-        nodeType: "textentry",
+        content: para,
+        nodeType: "paragraph",
         tags: [],
-        depth: -1, // special depth for textentry — not in the paragraph column
+        depth: 0,
         highlights: [],
         reactions: {},
         author,
       } as DocNodeData,
-    };
+    }));
 
-    set({ nodes: relayoutAll([textEntryNode], []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "document", language: "" });
+    set({ nodes: relayoutAll(nodes, []), edges: [], documentTitle: title, nextColorIndex: 0, citations: {}, documentMode: "document", language: "" });
   },
 
   loadPRReview: (code, language, title = "Untitled PR Review", author) => {

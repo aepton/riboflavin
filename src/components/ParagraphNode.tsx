@@ -27,6 +27,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
@@ -135,6 +136,37 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
     [saveEdit],
   );
 
+  const handleNodeClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (isEditing) return;
+      if ((e.target as HTMLElement).closest("[data-no-reply]")) return;
+      if (!window.getSelection()?.toString().trim()) {
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        clickTimerRef.current = setTimeout(() => {
+          clickTimerRef.current = null;
+          document.dispatchEvent(
+            new CustomEvent("docAnnotationAction", {
+              detail: { nodeId: id, depth: data.depth },
+            }),
+          );
+        }, 250);
+      }
+    },
+    [isEditing, id, data.depth],
+  );
+
+  const handleDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest("[data-no-reply]")) return;
+      if (clickTimerRef.current) {
+        clearTimeout(clickTimerRef.current);
+        clickTimerRef.current = null;
+      }
+      setIsEditing(true);
+    },
+    [],
+  );
+
   const dispatchTag = useCallback(() => {
     document.dispatchEvent(
       new CustomEvent("docParagraphAction", {
@@ -180,6 +212,8 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
       <div
         ref={containerRef}
         onMouseUp={handleMouseUp}
+        onClick={handleNodeClick}
+        onDoubleClick={handleDoubleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{ padding: "16px", position: "relative" }}
@@ -301,6 +335,7 @@ const ParagraphNode = memo(({ data, id }: ParagraphNodeProps) => {
       {/* Action bar */}
       {!isEditing && (
         <div
+          data-no-reply
           className="nodrag"
           style={{
             display: "flex", gap: "4px",

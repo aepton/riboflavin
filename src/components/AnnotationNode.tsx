@@ -49,6 +49,7 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
   const { updateNode, removeTag, toggleReaction, deleteNode, addCitation, citations, documentMode, language: docLanguage } = useDocumentStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
 
@@ -136,7 +137,13 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     }
   }, [id, draft, updateNode, citations]);
 
-  const handleDoubleClick = useCallback(() => setIsEditing(true), []);
+  const handleDoubleClick = useCallback(() => {
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
+    setIsEditing(true);
+  }, []);
   const handleBlur = useCallback(() => saveEdit(), [saveEdit]);
 
   const citationNames = useMemo(() => Object.keys(citations), [citations]);
@@ -245,17 +252,21 @@ const AnnotationNode = memo(({ data, id }: AnnotationNodeProps) => {
     [saveEdit, suggestions, suggestionIdx, applyCitationAutocomplete, isCodeMode, draft],
   );
 
-  // Single-click → open reply modal (via custom event to DocumentFlow)
+  // Single-click → open reply modal after short delay (allows double-click to cancel)
   const handleNodeClick = useCallback(
     (e: React.MouseEvent) => {
       if (isEditing) return;
       if ((e.target as HTMLElement).closest("[data-no-reply]")) return;
       if (!window.getSelection()?.toString().trim()) {
-        document.dispatchEvent(
-          new CustomEvent("docAnnotationAction", {
-            detail: { nodeId: id, depth: data.depth },
-          }),
-        );
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        clickTimerRef.current = setTimeout(() => {
+          clickTimerRef.current = null;
+          document.dispatchEvent(
+            new CustomEvent("docAnnotationAction", {
+              detail: { nodeId: id, depth: data.depth },
+            }),
+          );
+        }, 250);
       }
     },
     [isEditing, id, data.depth],
