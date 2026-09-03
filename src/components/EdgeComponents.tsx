@@ -94,6 +94,27 @@ export const EdgeYes = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps)
   );
 };
 
+/**
+ * Claim → counter connector for the Argument Canvas. Control points sit at
+ * 50% of the horizontal delta (vs. CustomEdge's 40%) per the design handoff,
+ * and opacity is driven by `data.dimmed` rather than a boolean thread match.
+ */
+export const ArgumentEdge = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps & { data?: { stroke?: string; dimmed?: boolean } }) => {
+  const deltaX = targetX - sourceX;
+  const path = `M ${sourceX} ${sourceY} C ${sourceX + deltaX * 0.5} ${sourceY}, ${targetX - deltaX * 0.5} ${targetY}, ${targetX} ${targetY}`;
+  return (
+    <path
+      d={path}
+      stroke={data?.stroke ?? "#201e1d"}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      fill="none"
+      opacity={data?.dimmed ? 0.1 : 0.8}
+      style={{ transition: "opacity 0.25s ease" }}
+    />
+  );
+};
+
 export const EdgeNo = ({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) => {
   const stroke = threadColor(data?.colorIndex);
   const symbolX = sourceX + (targetX - sourceX) * 0.33;

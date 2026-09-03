@@ -11,7 +11,7 @@ const NODE_GAP = 32;       // minimum vertical gap between nodes
 // At 13px monospace, 1ch ≈ 7.8px → 140 * 7.8 = 1092 + line-number gutter (~56px) + padding (32px * 2)
 export const PR_REVIEW_WIDTH = 1200;
 
-export type DocumentMode = "document" | "pr-review";
+export type DocumentMode = "document" | "pr-review" | "argument";
 
 // ── Thread color palette ─────────────────────────────────────────────────────
 // Each highlight (and its reply chain) gets one of these colors.

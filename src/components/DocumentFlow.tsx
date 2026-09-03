@@ -26,6 +26,8 @@ import { REACTION_EMOJIS } from "./EmojiReactions";
 import { useAuthStore } from "../store/authStore";
 import { putJSON, getJSON } from "../store/spacesClient";
 import { useFontStore, FONT_OPTIONS } from "../store/fontStore";
+import { useArgumentStore, type Claim as ArgumentClaim, type Speaker as ArgumentSpeaker } from "../store/argumentStore";
+import ArgumentCanvas from "./argument/ArgumentCanvas";
 
 // Static registrations — outside component to avoid recreation
 const nodeTypes = {
@@ -160,6 +162,24 @@ interface CatalogEntry {
   tags: string[];
 }
 
+// ─── Round JSON shape ───────────────────────────────────────────────────────
+// Covers both the classic nodes/edges rounds and argument-mode rounds
+// (claims/speakers/kicker/sources) fetched from `rounds/{slug}`.
+interface RoundJSON {
+  title: string;
+  description?: string;
+  link?: string;
+  nodes?: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
+  edges?: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
+  citations?: Record<string, { url: string; description: string }>;
+  documentMode?: string;
+  language?: string;
+  claims?: ArgumentClaim[];
+  speakers?: ArgumentSpeaker[];
+  kicker?: string;
+  sources?: { label: string; url: string }[];
+}
+
 const DocumentFlow = () => {
   const {
     nodes: storeNodes,
@@ -188,6 +208,11 @@ const DocumentFlow = () => {
   } = useAuthStore();
 
   const { current: currentFont, setFont } = useFontStore();
+
+  const argClaims = useArgumentStore((s) => s.claims);
+  const argSpeakers = useArgumentStore((s) => s.speakers);
+  const argKicker = useArgumentStore((s) => s.kicker);
+  const argSources = useArgumentStore((s) => s.sources);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -220,6 +245,36 @@ const DocumentFlow = () => {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const roundLoadAttempted = useRef(false);
+
+  // Hydrate a fetched round (from a slug, the catalog, or the round picker)
+  // into whichever store its documentMode belongs to.
+  const applyRound = useCallback(
+    (data: RoundJSON) => {
+      if (data.documentMode === "argument") {
+        const claims = data.claims ?? [];
+        const speakers = data.speakers ?? [];
+        const kicker = data.kicker ?? "";
+        const sources = data.sources ?? [];
+        useDocumentStore.setState({ documentMode: "argument", nodes: [], edges: [], citations: {} });
+        setDocumentTitle(data.title);
+        useArgumentStore.getState().loadArgumentDoc(claims, speakers, kicker, sources);
+        lastSavedSnapshot.current = JSON.stringify({ claims, speakers, kicker, sources });
+      } else {
+        loadRound(
+          data.title,
+          (data.nodes ?? []) as never[],
+          (data.edges ?? []) as never[],
+          data.citations,
+          (data.documentMode as "document" | "pr-review") ?? "document",
+          data.language,
+        );
+        setRoundDescription(data.description ?? "");
+        setRoundLink(data.link ?? "");
+        lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
+      }
+    },
+    [loadRound, setDocumentTitle],
+  );
 
   // On mount (once hydrated), check the URL for a slug or show the round picker
   useEffect(() => {
@@ -264,21 +319,9 @@ const DocumentFlow = () => {
       const nodeParam = params.get("node");
       (async () => {
         try {
-          const data = await getJSON<{
-            title: string;
-            description?: string;
-            link?: string;
-            nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
-            edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
-            citations?: Record<string, { url: string; description: string }>;
-            documentMode?: string;
-            language?: string;
-          }>(`rounds/${slug}`);
+          const data = await getJSON<RoundJSON>(`rounds/${slug}`);
           if (data) {
-            loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
-            setRoundDescription(data.description ?? "");
-            setRoundLink(data.link ?? "");
-            lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
+            applyRound(data);
 
             // If a node param is present, focus its thread after a brief delay
             if (nodeParam) {
@@ -304,21 +347,9 @@ const DocumentFlow = () => {
           if (entries && entries.length > 0) {
             // Load the first round automatically
             const first = entries[0];
-            const data = await getJSON<{
-              title: string;
-              description?: string;
-              link?: string;
-              nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
-              edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
-              citations?: Record<string, { url: string; description: string }>;
-              documentMode?: string;
-              language?: string;
-            }>(`rounds/${first.slug}`);
+            const data = await getJSON<RoundJSON>(`rounds/${first.slug}`);
             if (data) {
-              loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
-              setRoundDescription(data.description ?? "");
-              setRoundLink(data.link ?? "");
-              lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
+              applyRound(data);
               const url = new URL(window.location.href);
               url.searchParams.set("round", first.slug);
               window.history.replaceState({}, "", url.toString());
@@ -335,27 +366,15 @@ const DocumentFlow = () => {
         }
       })();
     }
-  }, [authHydrated, loadRound, loadDiff, username]);
+  }, [authHydrated, applyRound, loadDiff, username]);
 
   const handlePickRound = useCallback(
     async (slug: string) => {
       setShowRoundPicker(false);
       try {
-        const data = await getJSON<{
-          title: string;
-          description?: string;
-          link?: string;
-          nodes: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }[];
-          edges: { id: string; source: string; target: string; type: string; data?: Record<string, unknown>; sourceHandle?: string; targetHandle?: string }[];
-          citations?: Record<string, { url: string; description: string }>;
-          documentMode?: string;
-          language?: string;
-        }>(`rounds/${slug}`);
+        const data = await getJSON<RoundJSON>(`rounds/${slug}`);
         if (data) {
-          loadRound(data.title, data.nodes as never[], data.edges as never[], data.citations, (data.documentMode as "document" | "pr-review") ?? "document", data.language);
-          setRoundDescription(data.description ?? "");
-          setRoundLink(data.link ?? "");
-          lastSavedSnapshot.current = JSON.stringify({ nodes: data.nodes, edges: data.edges });
+          applyRound(data);
           // Update URL without reload
           const url = new URL(window.location.href);
           url.searchParams.set("round", slug);
@@ -365,7 +384,7 @@ const DocumentFlow = () => {
         console.error("Failed to load round:", err);
       }
     },
-    [loadRound],
+    [applyRound],
   );
 
   // Save modal
@@ -756,6 +775,18 @@ const DocumentFlow = () => {
     setPRTitle("");
   }, [prCode, prTitle, prLanguage, loadPRReview, loadDiff, username]);
 
+  const handleNewArgumentDoc = useCallback(() => {
+    useDocumentStore.setState({ documentMode: "argument", nodes: [], edges: [], citations: {} });
+    setDocumentTitle("Untitled Argument Canvas");
+    useArgumentStore.getState().newArgumentDoc();
+    lastSavedSnapshot.current = "";
+    setRoundDescription("");
+    setRoundLink("");
+    const url = new URL(window.location.href);
+    url.searchParams.delete("round");
+    window.history.replaceState({}, "", url.toString());
+  }, [setDocumentTitle]);
+
   const handleSubmitReply = useCallback(() => {
     if (!username) { setShowUsernameModal(true); return; }
     if (replyNodeId && replyContent.trim()) {
@@ -1054,27 +1085,44 @@ const DocumentFlow = () => {
     try {
       const desc = saveDescription.trim();
       const lnk = saveLink.trim();
+      const isArgument = useDocumentStore.getState().documentMode === "argument";
+      const argState = useArgumentStore.getState();
 
       // Build document JSON
-      const docJSON = {
-        title: documentTitle,
-        description: desc || undefined,
-        link: lnk || undefined,
-        slug,
-        creator: username,
-        savedAt: new Date().toISOString(),
-        nodes: storeNodes.map((n) => ({ id: n.id, type: n.type, position: n.position, data: n.data })),
-        edges: storeEdges.map((e) => ({ id: e.id, source: e.source, target: e.target, type: e.type, data: e.data, sourceHandle: e.sourceHandle, targetHandle: e.targetHandle })),
-        citations: useDocumentStore.getState().citations,
-        documentMode: useDocumentStore.getState().documentMode,
-        language: useDocumentStore.getState().language,
-      };
+      const docJSON = isArgument
+        ? {
+            title: documentTitle,
+            description: desc || undefined,
+            link: lnk || undefined,
+            slug,
+            creator: username,
+            savedAt: new Date().toISOString(),
+            documentMode: "argument",
+            claims: argState.claims,
+            speakers: argState.speakers,
+            kicker: argState.kicker,
+            sources: argState.sources,
+          }
+        : {
+            title: documentTitle,
+            description: desc || undefined,
+            link: lnk || undefined,
+            slug,
+            creator: username,
+            savedAt: new Date().toISOString(),
+            nodes: storeNodes.map((n) => ({ id: n.id, type: n.type, position: n.position, data: n.data })),
+            edges: storeEdges.map((e) => ({ id: e.id, source: e.source, target: e.target, type: e.type, data: e.data, sourceHandle: e.sourceHandle, targetHandle: e.targetHandle })),
+            citations: useDocumentStore.getState().citations,
+            documentMode: useDocumentStore.getState().documentMode,
+            language: useDocumentStore.getState().language,
+          };
       await putJSON(`rounds/${slug}`, docJSON);
+      if (isArgument) argState.setSlug(slug);
 
       // Collect all tags across every node
-      const allTags = Array.from(
-        new Set(storeNodes.flatMap((n) => (n.data.tags as string[]) ?? [])),
-      );
+      const allTags = isArgument
+        ? Array.from(new Set(argState.claims.flatMap((c) => c.marks.flatMap((m) => m.counter.tags))))
+        : Array.from(new Set(storeNodes.flatMap((n) => (n.data.tags as string[]) ?? [])));
 
       // Update catalog
       let catalog: CatalogEntry[] = [];
@@ -1103,7 +1151,9 @@ const DocumentFlow = () => {
       setSaveSlug("");
       setSaveDescription("");
       setSaveLink("");
-      lastSavedSnapshot.current = JSON.stringify({ nodes: storeNodes, edges: storeEdges });
+      lastSavedSnapshot.current = isArgument
+        ? JSON.stringify({ claims: argState.claims, speakers: argState.speakers, kicker: argState.kicker, sources: argState.sources })
+        : JSON.stringify({ nodes: storeNodes, edges: storeEdges });
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -1134,6 +1184,128 @@ const DocumentFlow = () => {
   const hasContent = storeNodes.length > 0;
 
   // ── Render ─────────────────────────────────────────────────────────────────
+
+  // Shared across both the classic canvas and the Argument Canvas — neither
+  // has its own username/save UI, so these two overlays are lifted out here.
+  const usernameModal = showUsernameModal && (
+    <div style={overlayStyle} onClick={() => { if (username) setShowUsernameModal(false); }}>
+      <div
+        style={{ ...cardStyle, width: "340px", maxWidth: "92vw", padding: "24px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ fontWeight: 700, fontSize: "17px", color: "#0f172a" }}>
+          Choose a Username
+        </div>
+        <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
+          This will be shown on your annotations and replies.
+        </div>
+        <input
+          autoFocus
+          value={loginUsername}
+          onChange={(e) => setLoginUsername(e.target.value)}
+          placeholder="Username"
+          style={inputStyle}
+          onKeyDown={(e) => { if (e.key === "Enter") handleSubmitUsername(); }}
+        />
+        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
+          {username && (
+            <button onClick={() => setShowUsernameModal(false)} style={secondaryBtn}>
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={handleSubmitUsername}
+            disabled={!loginUsername.trim()}
+            style={{
+              ...primaryBtn,
+              opacity: loginUsername.trim() ? 1 : 0.45,
+              cursor: loginUsername.trim() ? "pointer" : "default",
+            }}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const saveModal = showSave && (
+    <div style={overlayStyle} onClick={() => setShowSave(false)}>
+      <div
+        style={{ ...cardStyle, width: "400px", maxWidth: "92vw", padding: "20px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>
+          Save to Spaces
+        </div>
+        <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
+          Saves to <code>rounds/{slugify(saveSlug) || "…"}</code>
+        </div>
+        <input
+          autoFocus
+          value={saveSlug}
+          onChange={(e) => setSaveSlug(e.target.value)}
+          placeholder="Document slug (e.g. my-document)"
+          style={inputStyle}
+        />
+        <input
+          value={saveDescription}
+          onChange={(e) => setSaveDescription(e.target.value)}
+          placeholder="Brief description (optional)"
+          style={inputStyle}
+        />
+        <input
+          value={saveLink}
+          onChange={(e) => setSaveLink(e.target.value)}
+          placeholder="Link URL (optional)"
+          style={inputStyle}
+          onKeyDown={(e) => { if (e.key === "Enter" && slugify(saveSlug)) handleSave(); }}
+        />
+        {saveError && (
+          <div style={{ fontSize: "12px", color: "#dc2626" }}>{saveError}</div>
+        )}
+        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
+          <button onClick={() => setShowSave(false)} style={secondaryBtn}>
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!slugify(saveSlug) || saving}
+            style={{
+              ...primaryBtn,
+              opacity: slugify(saveSlug) && !saving ? 1 : 0.45,
+              cursor: slugify(saveSlug) && !saving ? "pointer" : "default",
+            }}
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (documentMode === "argument") {
+    const isDirtyArgument =
+      argClaims.length > 0 &&
+      lastSavedSnapshot.current !== JSON.stringify({ claims: argClaims, speakers: argSpeakers, kicker: argKicker, sources: argSources });
+    return (
+      <>
+        <ArgumentCanvas
+          canSave={isDirtyArgument}
+          onRequestSave={() => {
+            if (!authReady) { setShowUsernameModal(true); return; }
+            setShowSave(true);
+            setSaveSlug(slugify(documentTitle));
+            setSaveDescription(roundDescription);
+            setSaveLink(roundLink);
+            setSaveError(null);
+          }}
+        />
+        {usernameModal}
+        {saveModal}
+      </>
+    );
+  }
 
   return (
     <div
@@ -1382,6 +1554,12 @@ const DocumentFlow = () => {
                 style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
               >
                 + PR Review
+              </button>
+              <button
+                onClick={() => { handleNewArgumentDoc(); setHamburgerOpen(false); }}
+                style={{ ...secondaryBtn, width: "100%", textAlign: "left", marginBottom: "4px" }}
+              >
+                + Argument Canvas
               </button>
               {hasContent && (
                 <button
@@ -2461,104 +2639,8 @@ const DocumentFlow = () => {
         </div>
       )}
 
-      {/* ── Username Modal ────────────────────────────────────────────── */}
-      {showUsernameModal && (
-        <div style={overlayStyle} onClick={() => { if (username) setShowUsernameModal(false); }}>
-          <div
-            style={{ ...cardStyle, width: "340px", maxWidth: "92vw", padding: "24px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, fontSize: "17px", color: "#0f172a" }}>
-              Choose a Username
-            </div>
-            <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
-              This will be shown on your annotations and replies.
-            </div>
-            <input
-              autoFocus
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
-              placeholder="Username"
-              style={inputStyle}
-              onKeyDown={(e) => { if (e.key === "Enter") handleSubmitUsername(); }}
-            />
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
-              {username && (
-                <button onClick={() => setShowUsernameModal(false)} style={secondaryBtn}>
-                  Cancel
-                </button>
-              )}
-              <button
-                onClick={handleSubmitUsername}
-                disabled={!loginUsername.trim()}
-                style={{
-                  ...primaryBtn,
-                  opacity: loginUsername.trim() ? 1 : 0.45,
-                  cursor: loginUsername.trim() ? "pointer" : "default",
-                }}
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Save Modal ───────────────────────────────────────────────────── */}
-      {showSave && (
-        <div style={overlayStyle} onClick={() => setShowSave(false)}>
-          <div
-            style={{ ...cardStyle, width: "400px", maxWidth: "92vw", padding: "20px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>
-              Save to Spaces
-            </div>
-            <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>
-              Saves to <code>rounds/{slugify(saveSlug) || "…"}</code>
-            </div>
-            <input
-              autoFocus
-              value={saveSlug}
-              onChange={(e) => setSaveSlug(e.target.value)}
-              placeholder="Document slug (e.g. my-document)"
-              style={inputStyle}
-            />
-            <input
-              value={saveDescription}
-              onChange={(e) => setSaveDescription(e.target.value)}
-              placeholder="Brief description (optional)"
-              style={inputStyle}
-            />
-            <input
-              value={saveLink}
-              onChange={(e) => setSaveLink(e.target.value)}
-              placeholder="Link URL (optional)"
-              style={inputStyle}
-              onKeyDown={(e) => { if (e.key === "Enter" && slugify(saveSlug)) handleSave(); }}
-            />
-            {saveError && (
-              <div style={{ fontSize: "12px", color: "#dc2626" }}>{saveError}</div>
-            )}
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
-              <button onClick={() => setShowSave(false)} style={secondaryBtn}>
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={!slugify(saveSlug) || saving}
-                style={{
-                  ...primaryBtn,
-                  opacity: slugify(saveSlug) && !saving ? 1 : 0.45,
-                  cursor: slugify(saveSlug) && !saving ? "pointer" : "default",
-                }}
-              >
-                {saving ? "Saving…" : "Save"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {usernameModal}
+      {saveModal}
 
       {/* ── Round Picker Modal ────────────────────────────────────────── */}
       {showRoundPicker && (
