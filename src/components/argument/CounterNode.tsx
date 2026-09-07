@@ -93,7 +93,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
       style={{
         width: 420, padding: "14px 18px", borderLeft: `3px solid ${speaker.color}`, background: rgba(speaker.color, 0.11),
         cursor: "pointer", opacity: dim ? 0.16 : 1, transition: "opacity 0.25s ease",
-        fontFamily: tokens.fontFamily, color: tokens.text,
+        fontFamily: tokens.fontFamily, color: tokens.text, pointerEvents: "auto",
       }}
     >
       <Handle id="left" type="target" position={Position.Left} style={{ opacity: 0, pointerEvents: "none", left: 0, top: 16 }} />

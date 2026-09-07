@@ -110,7 +110,7 @@ const ClaimNode = memo(({ data, id }: ClaimNodeProps) => {
   return (
     <div
       className="nopan"
-      style={{ width: 520, fontFamily: tokens.fontFamily, color: tokens.text, opacity: dim ? 0.18 : 1, transition: "opacity 0.25s ease" }}
+      style={{ width: 520, fontFamily: tokens.fontFamily, color: tokens.text, opacity: dim ? 0.18 : 1, transition: "opacity 0.25s ease", pointerEvents: "auto" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
