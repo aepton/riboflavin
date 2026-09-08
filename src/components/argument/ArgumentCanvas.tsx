@@ -63,6 +63,10 @@ export default function ArgumentCanvas({ canSave, onRequestSave }: ArgumentCanva
 
   useEffect(() => { setEditModeFromUrl(); }, [setEditModeFromUrl]);
 
+  useEffect(() => {
+    document.title = documentTitle ? `${documentTitle} — Riboflavin` : "Riboflavin";
+  }, [documentTitle]);
+
   // Clear the selection toolbar once the browser selection itself collapses.
   useEffect(() => {
     const onChange = () => {
@@ -87,9 +91,11 @@ export default function ArgumentCanvas({ canSave, onRequestSave }: ArgumentCanva
 
   const scrollerRef = useRef<HTMLDivElement>(null);
 
+  const editingClaimId = useArgumentStore((s) => s.editingClaimId);
+
   const { nodes: rawNodes, edges: rawEdges, height } = useMemo(
-    () => layoutArgumentCanvas(claims, speakers, PALETTE),
-    [claims, speakers],
+    () => layoutArgumentCanvas(claims, speakers, PALETTE, editingClaimId),
+    [claims, speakers, editingClaimId],
   );
 
   const filterState = { sideFilter, tagFilter, activeThread };
@@ -147,7 +153,7 @@ export default function ArgumentCanvas({ canSave, onRequestSave }: ArgumentCanva
   const hasFilter = !!activeThread || !!tagFilter;
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: tokens.bg, fontFamily: tokens.fontFamily, color: tokens.text }}>
+    <div style={{ height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", background: tokens.bg, fontFamily: tokens.fontFamily, color: tokens.text }}>
       {/* ── Masthead ─────────────────────────────────────────────────────── */}
       <div style={{ flexShrink: 0, padding: "20px 32px 12px", display: "flex", alignItems: "flex-end", gap: "20px 28px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: "1 1 420px", minWidth: 420 }}>
@@ -298,6 +304,7 @@ export default function ArgumentCanvas({ canSave, onRequestSave }: ArgumentCanva
               zoomOnScroll={false}
               zoomOnPinch={false}
               zoomOnDoubleClick={false}
+              preventScrolling={false}
               proOptions={{ hideAttribution: true }}
               style={{ width: "100%", height: "100%" }}
             />

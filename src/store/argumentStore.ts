@@ -94,6 +94,10 @@ interface ArgumentStore {
   setTagFilter: (tag: string | null) => void;
   setActiveThread: (markId: string | null) => void;
   setSelection: (selection: ArgumentStore["selection"]) => void;
+
+  /** Id of the claim currently open for text editing, if any — lets the layout reserve enough room for a growing textarea instead of letting it overflow its estimated row height. */
+  editingClaimId: string | null;
+  setEditingClaimId: (id: string | null) => void;
 }
 
 function findMark(claims: Claim[], markId: string): Mark | null {
@@ -335,4 +339,7 @@ export const useArgumentStore = create<ArgumentStore>((set, get) => ({
   setTagFilter: (tag) => set((s) => ({ tagFilter: s.tagFilter === tag ? null : tag, activeThread: null })),
   setActiveThread: (markId) => set((s) => ({ activeThread: s.activeThread === markId ? null : markId })),
   setSelection: (selection) => set({ selection }),
+
+  editingClaimId: null,
+  setEditingClaimId: (id) => set({ editingClaimId: id }),
 }));

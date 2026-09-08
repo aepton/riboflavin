@@ -26,6 +26,7 @@ const ClaimNode = memo(({ data, id }: ClaimNodeProps) => {
   const deleteClaim = useArgumentStore((s) => s.deleteClaim);
   const setActiveThread = useArgumentStore((s) => s.setActiveThread);
   const setSelection = useArgumentStore((s) => s.setSelection);
+  const setEditingClaimId = useArgumentStore((s) => s.setEditingClaimId);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -44,6 +45,15 @@ const ClaimNode = memo(({ data, id }: ClaimNodeProps) => {
       requestAnimationFrame(() => textareaRef.current?.focus());
     }
   }, [editingText, claim.text]);
+
+  // Reserve extra row height while editing, so a long draft never overflows
+  // reactflow's `overflow: hidden` node container (see layoutArgumentCanvas).
+  useEffect(() => {
+    if (editingText) {
+      setEditingClaimId(id);
+      return () => setEditingClaimId(null);
+    }
+  }, [editingText, id, setEditingClaimId]);
 
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
@@ -165,7 +175,7 @@ const ClaimNode = memo(({ data, id }: ClaimNodeProps) => {
                 if (e.key === "Escape") { e.preventDefault(); setEditingText(false); }
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveText(); }
               }}
-              style={{ fontFamily: tokens.fontFamily, fontSize: 19, lineHeight: 1.55, minHeight: 120, width: "100%", border: "none", resize: "vertical", background: "rgba(255,255,255,0.8)", padding: "8px 10px", borderLeft: `2px solid ${tokens.neutral300}` }}
+              style={{ fontFamily: tokens.fontFamily, fontSize: 19, lineHeight: 1.55, minHeight: 120, maxHeight: 420, overflowY: "auto", width: "100%", border: "none", resize: "vertical", background: "rgba(255,255,255,0.8)", padding: "8px 10px", borderLeft: `2px solid ${tokens.neutral300}` }}
             />
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
               <button className="nodrag" onClick={saveText} style={{ fontFamily: tokens.fontFamily, fontSize: 12, padding: "4px 12px", background: tokens.text, color: "#fff", border: "none", cursor: "pointer" }}>Save</button>

@@ -4,6 +4,7 @@ import { useArgumentStore } from "../../store/argumentStore";
 import { isMarkDim, sideColor, type Mark } from "../../store/argumentLayout";
 import { REACTION_EMOJIS } from "../EmojiReactions";
 import { tokens, PALETTE, rgba } from "./tokens";
+import { ArgumentMarkdown } from "./ArgumentMarkdown";
 
 interface CounterNodeProps {
   data: { claimId: string; mark: Mark; isNew?: boolean };
@@ -152,7 +153,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
           title={editMode ? "Double-click to edit" : undefined}
           style={{ fontSize: 17, lineHeight: 1.55, textWrap: "pretty" }}
         >
-          {mark.counter.text}
+          <ArgumentMarkdown content={mark.counter.text} fontSize={17} />
         </div>
       )}
 
@@ -212,7 +213,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
                 title={editMode ? "Double-click to edit" : undefined}
                 style={{ fontSize: 15, lineHeight: 1.55 }}
               >
-                {r.text}
+                <ArgumentMarkdown content={r.text} fontSize={15} />
               </div>
             )}
           </div>

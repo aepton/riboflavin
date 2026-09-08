@@ -249,7 +249,7 @@ const DocumentFlow = () => {
   // Hydrate a fetched round (from a slug, the catalog, or the round picker)
   // into whichever store its documentMode belongs to.
   const applyRound = useCallback(
-    (data: RoundJSON) => {
+    (data: RoundJSON, slug: string) => {
       if (data.documentMode === "argument") {
         const claims = data.claims ?? [];
         const speakers = data.speakers ?? [];
@@ -257,7 +257,7 @@ const DocumentFlow = () => {
         const sources = data.sources ?? [];
         useDocumentStore.setState({ documentMode: "argument", nodes: [], edges: [], citations: {} });
         setDocumentTitle(data.title);
-        useArgumentStore.getState().loadArgumentDoc(claims, speakers, kicker, sources);
+        useArgumentStore.getState().loadArgumentDoc(claims, speakers, kicker, sources, slug);
         lastSavedSnapshot.current = JSON.stringify({ claims, speakers, kicker, sources });
       } else {
         loadRound(
@@ -321,7 +321,7 @@ const DocumentFlow = () => {
         try {
           const data = await getJSON<RoundJSON>(`rounds/${slug}`);
           if (data) {
-            applyRound(data);
+            applyRound(data, slug);
 
             // If a node param is present, focus its thread after a brief delay
             if (nodeParam) {
@@ -349,7 +349,7 @@ const DocumentFlow = () => {
             const first = entries[0];
             const data = await getJSON<RoundJSON>(`rounds/${first.slug}`);
             if (data) {
-              applyRound(data);
+              applyRound(data, first.slug);
               const url = new URL(window.location.href);
               url.searchParams.set("round", first.slug);
               window.history.replaceState({}, "", url.toString());
@@ -374,7 +374,7 @@ const DocumentFlow = () => {
       try {
         const data = await getJSON<RoundJSON>(`rounds/${slug}`);
         if (data) {
-          applyRound(data);
+          applyRound(data, slug);
           // Update URL without reload
           const url = new URL(window.location.href);
           url.searchParams.set("round", slug);

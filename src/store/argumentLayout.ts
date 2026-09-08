@@ -76,7 +76,7 @@ export function estimateReplyHeight(reply: Reply): number {
   const padding = 16;
   const marginTop = 14;
   const lines = linesFor(reply.text, 40);
-  return marginTop + header + lines * 23 + padding;
+  return marginTop + header + lines * 23 * 1.15 + padding;
 }
 
 /** A counter card: header + source + quoted target + body + replies + meta row. */
@@ -87,7 +87,9 @@ export function estimateCounterHeight(counter: Counter): number {
   const quoteLines = linesFor(counter.sourceDoc ? counter.text : counter.text, 46);
   const quoteHeight = quoteLines * 19.5 + 8;
   const bodyLines = linesFor(counter.text, 45);
-  const bodyHeight = bodyLines * 26.4;
+  // Body renders as markdown — paragraph/list spacing runs taller than flat
+  // text, so pad the char-count estimate rather than measuring the DOM.
+  const bodyHeight = bodyLines * 26.4 * 1.15;
   const repliesHeight = counter.replies.reduce((sum, r) => sum + estimateReplyHeight(r), 0);
   const metaRow = 36;
   return cardPadding + speakerLabel + sourceLine + quoteHeight + bodyHeight + repliesHeight + metaRow;
@@ -132,13 +134,22 @@ export interface ArgumentLayoutResult {
   height: number;
 }
 
-export function layoutArgumentCanvas(claims: Claim[], speakers: Speaker[], palette: string[]): ArgumentLayoutResult {
+/** Room reserved for a claim's row while it's being edited — matches the edit textarea's maxHeight (420) plus its header/save-row chrome, so a growing draft never overflows its allotted row and clips against reactflow's `overflow: hidden`. */
+export const CLAIM_EDIT_MIN_HEIGHT = 520;
+
+export function layoutArgumentCanvas(
+  claims: Claim[],
+  speakers: Speaker[],
+  palette: string[],
+  editingClaimId: string | null = null,
+): ArgumentLayoutResult {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   let y = 0;
 
   for (const claim of claims) {
-    const claimH = estimateClaimHeight(claim.text);
+    let claimH = estimateClaimHeight(claim.text);
+    if (claim.id === editingClaimId) claimH = Math.max(claimH, CLAIM_EDIT_MIN_HEIGHT);
 
     let stackH = 0;
     claim.marks.forEach((mark, i) => {
