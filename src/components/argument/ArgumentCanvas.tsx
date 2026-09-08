@@ -92,10 +92,11 @@ export default function ArgumentCanvas({ canSave, onRequestSave }: ArgumentCanva
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   const editingClaimId = useArgumentStore((s) => s.editingClaimId);
+  const editingMarkId = useArgumentStore((s) => s.editingMarkId);
 
   const { nodes: rawNodes, edges: rawEdges, height } = useMemo(
-    () => layoutArgumentCanvas(claims, speakers, PALETTE, editingClaimId),
-    [claims, speakers, editingClaimId],
+    () => layoutArgumentCanvas(claims, speakers, PALETTE, editingClaimId, editingMarkId),
+    [claims, speakers, editingClaimId, editingMarkId],
   );
 
   const filterState = { sideFilter, tagFilter, activeThread };

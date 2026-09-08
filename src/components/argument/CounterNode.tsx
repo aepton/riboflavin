@@ -31,6 +31,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
   const addTag = useArgumentStore((s) => s.addTag);
   const reactToMark = useArgumentStore((s) => s.react);
   const setActiveThread = useArgumentStore((s) => s.setActiveThread);
+  const setEditingMarkId = useArgumentStore((s) => s.setEditingMarkId);
 
   const [hovered, setHovered] = useState(false);
   const [hoveredReply, setHoveredReply] = useState<number | null>(null);
@@ -61,6 +62,17 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
     if (isNew) setEditingText(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reserve extra card height while any sub-editor is open (own text, a
+  // reply, or the reply composer), so the edit UI never overflows the card's
+  // estimated row and clips against reactflow's `overflow: hidden`.
+  const isEditingSomething = editingText || replying || editingReply !== null;
+  useEffect(() => {
+    if (isEditingSomething) {
+      setEditingMarkId(id);
+      return () => setEditingMarkId(null);
+    }
+  }, [isEditingSomething, id, setEditingMarkId]);
 
   const startEditReply = useCallback((index: number, field: "text" | "sourceDoc", value: string) => {
     setEditingReply({ index, field });
@@ -140,7 +152,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
               if (e.key === "Escape") { e.preventDefault(); setEditingText(false); }
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveText(); }
             }}
-            style={{ ...inputStyle, fontSize: 17, lineHeight: 1.5, minHeight: 90, resize: "vertical" }}
+            style={{ ...inputStyle, fontSize: 17, lineHeight: 1.5, minHeight: 90, maxHeight: 300, overflowY: "auto", resize: "vertical" }}
           />
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <button onClick={saveText} style={{ fontFamily: tokens.fontFamily, fontSize: 12, padding: "4px 12px", background: tokens.text, color: "#fff", border: "none", cursor: "pointer" }}>Save</button>
@@ -200,7 +212,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Escape") setEditingReply(null); if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveReply(); }}
-                  style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, minHeight: 70, resize: "vertical" }}
+                  style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, minHeight: 70, maxHeight: 240, overflowY: "auto", resize: "vertical" }}
                 />
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={saveReply} style={{ fontFamily: tokens.fontFamily, fontSize: 12, padding: "4px 12px", background: tokens.text, color: "#fff", border: "none", cursor: "pointer" }}>Save</button>
@@ -226,7 +238,7 @@ const CounterNode = memo(({ data, id }: CounterNodeProps) => {
             value={replyDraft}
             onChange={(e) => setReplyDraft(e.target.value)}
             placeholder="Respond to this counter…"
-            style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, minHeight: 64, resize: "vertical" }}
+            style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, minHeight: 64, maxHeight: 200, overflowY: "auto", resize: "vertical" }}
           />
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {speakers.map((s, i) => (

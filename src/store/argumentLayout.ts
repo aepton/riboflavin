@@ -137,11 +137,15 @@ export interface ArgumentLayoutResult {
 /** Room reserved for a claim's row while it's being edited — matches the edit textarea's maxHeight (420) plus its header/save-row chrome, so a growing draft never overflows its allotted row and clips against reactflow's `overflow: hidden`. */
 export const CLAIM_EDIT_MIN_HEIGHT = 520;
 
+/** Same idea as CLAIM_EDIT_MIN_HEIGHT, for a counter card while its own text, a reply, or the reply composer is open — whichever sub-editor is active, the card needs at least this much room. */
+export const COUNTER_EDIT_MIN_HEIGHT = 480;
+
 export function layoutArgumentCanvas(
   claims: Claim[],
   speakers: Speaker[],
   palette: string[],
   editingClaimId: string | null = null,
+  editingMarkId: string | null = null,
 ): ArgumentLayoutResult {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -151,9 +155,14 @@ export function layoutArgumentCanvas(
     let claimH = estimateClaimHeight(claim.text);
     if (claim.id === editingClaimId) claimH = Math.max(claimH, CLAIM_EDIT_MIN_HEIGHT);
 
+    const counterHeights = claim.marks.map((mark) =>
+      mark.id === editingMarkId
+        ? Math.max(estimateCounterHeight(mark.counter), COUNTER_EDIT_MIN_HEIGHT)
+        : estimateCounterHeight(mark.counter),
+    );
     let stackH = 0;
-    claim.marks.forEach((mark, i) => {
-      stackH += estimateCounterHeight(mark.counter);
+    counterHeights.forEach((h, i) => {
+      stackH += h;
       if (i < claim.marks.length - 1) stackH += COUNTER_STACK_GAP;
     });
     const countersH = claim.marks.length > 0 ? COUNTER_PAD_TOP + stackH : 0;
@@ -170,7 +179,7 @@ export function layoutArgumentCanvas(
 
     let counterY = y + COUNTER_PAD_TOP;
     claim.marks.forEach((mark, i) => {
-      const h = estimateCounterHeight(mark.counter);
+      const h = counterHeights[i];
       nodes.push({
         id: mark.id,
         type: "argumentCounter",

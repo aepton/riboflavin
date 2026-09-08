@@ -98,6 +98,10 @@ interface ArgumentStore {
   /** Id of the claim currently open for text editing, if any — lets the layout reserve enough room for a growing textarea instead of letting it overflow its estimated row height. */
   editingClaimId: string | null;
   setEditingClaimId: (id: string | null) => void;
+
+  /** Id of the counter (mark) currently open for editing (its own text, a reply, or the reply composer) — same purpose as editingClaimId, for counter cards. */
+  editingMarkId: string | null;
+  setEditingMarkId: (id: string | null) => void;
 }
 
 function findMark(claims: Claim[], markId: string): Mark | null {
@@ -342,4 +346,7 @@ export const useArgumentStore = create<ArgumentStore>((set, get) => ({
 
   editingClaimId: null,
   setEditingClaimId: (id) => set({ editingClaimId: id }),
+
+  editingMarkId: null,
+  setEditingMarkId: (id) => set({ editingMarkId: id }),
 }));
